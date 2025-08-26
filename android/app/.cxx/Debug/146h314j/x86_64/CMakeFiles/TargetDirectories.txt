@@ -1,0 +1,2 @@
+C:/Users/kkham/Desktop/CIT/s_school_app/android/app/.cxx/Debug/146h314j/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/kkham/Desktop/CIT/s_school_app/android/app/.cxx/Debug/146h314j/x86_64/CMakeFiles/rebuild_cache.dir

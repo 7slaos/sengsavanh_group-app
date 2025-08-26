@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "19246411386",
+    "project_id": "pathana-school-a6577",
+    "storage_bucket": "pathana-school-a6577.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19246411386:android:10c7ceb8c162bd1cca15c3",
+        "android_client_info": {
+          "package_name": "com.pathana.school.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDf5DKdu6Yi5HxMUVGeyGSmP6XNb1MPi8s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19246411386:android:298285378db51eaeca15c3",
+        "android_client_info": {
+          "package_name": "com.sschoolapp.s_school_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDf5DKdu6Yi5HxMUVGeyGSmP6XNb1MPi8s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
