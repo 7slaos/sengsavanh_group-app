@@ -335,12 +335,12 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                                                                               .withOpacity(0.6),
                                                                   child:
                                                                       CustomText(
-                                                                    text: item
+                                                                    text:  (item.firstname.toString() !='' && item.firstname.toString() !='null') ?  item
                                                                         .firstname
                                                                         .toString()
                                                                         .substring(
                                                                             0,
-                                                                            1),
+                                                                            1) : '',
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .bold,
@@ -579,11 +579,11 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                                                                             .withOpacity(0.6),
                                                                 child:
                                                                     CustomText(
-                                                                  text: item
+                                                                  text: (item.firstname.toString() !='' && item.firstname.toString() !='null') ? item
                                                                       .firstname
                                                                       .toString()
                                                                       .substring(
-                                                                          0, 1),
+                                                                          0, 1) : '',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .bold,

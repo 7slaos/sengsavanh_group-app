@@ -20,6 +20,7 @@ import 'package:pathana_school_app/states/check_role_permission_state.dart';
 import 'package:pathana_school_app/states/dashboard_teacher_state.dart';
 import 'package:pathana_school_app/states/follow_student_state.dart';
 import 'package:pathana_school_app/states/profile_teacher_state.dart';
+import 'package:pathana_school_app/states/register_state.dart';
 import 'package:pathana_school_app/widgets/custom_circle_load.dart';
 import 'package:pathana_school_app/widgets/custom_dialog.dart';
 import 'package:pathana_school_app/widgets/custom_text_widget.dart';
@@ -52,11 +53,6 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
       'title': 'take_children',
       'icon': Icons.campaign_outlined,
       'color': Colors.purple
-    },
-    {
-      'title': 'scan-in-out',
-      'icon': Icons.qr_code_scanner,
-      'color': Colors.pink
     }
   ];
   void handleGridTap(String title) {
@@ -153,181 +149,194 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(backgroundColor: appColor.mainColor, toolbarHeight: 0),
-      body: GetBuilder<CheckRolePermissionState>(builder: (checkRole) {
-        if (checkRole.check == false) {
-          return Column(
-            children: [Expanded(child: Center(child: CircleLoad()))],
-          );
-        }
-        if (checkRole.checkRole("access_Fees") == true &&
-            !subjects.any((e) => e['title'] == 'Tuition_fees')) {
-          subjects.add({
-            'title': 'Tuition_fees',
-            'icon': Icons.money,
-            'color': Colors.blue
-          });
-        }
-        if (checkRole.checkRole("access_check_missing_school") == true &&
-            !subjects.any((e) => e['title'] == 'mark-student')) {
-          subjects.add({
-            'title': 'mark-student',
-            'icon': Icons.note_alt,
-            'color': Colors.red
-          });
-        }
-        if (checkRole.checkRole("access_check_in_out") == true &&
-            !subjects.any((e) => e['title'] == 'Click_in-out')) {
-          subjects.add({
-            'title': 'Click_in-out',
-            'icon': Icons.touch_app_outlined,
-            'color': Colors.blue
-          });
-        }
-        if (!subjects.any((e) => e['title'] == 'language')) {
-          subjects.add({
-            'title': 'language',
-            'icon': Icons.language,
-            'color': Colors.green
-          });
-        }
-        if (!subjects.any((e) => e['title'] == 'Delete_Account')) {
-          subjects.add({
-            'title': 'Delete_Account',
-            'icon': Icons.delete,
-            'color': Colors.red
-          });
-        }
-        if (!subjects.any((e) => e['title'] == 'logout')) {
-          subjects.add(
-            {'title': 'logout', 'icon': Icons.logout, 'color': Colors.grey},
-          );
-        }
-        return SafeArea(
-          child: Column(
-            children: [
-              // Profile Card
-              Container(
-                decoration: BoxDecoration(
-                  color: appColor.mainColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(fSize * 0.03),
-                    bottomRight: Radius.circular(fSize * 0.03),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: fSize * 0.004,
-                  vertical: fSize * 0.004,
-                ),
-                child: GetBuilder<ProfileTeacherState>(
-                  builder: (getProfile) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0, vertical: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CircleAvatar(
-                            radius: 35,
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  "${getProfile.repository.urlApi}${getProfile.teacherModels?.imagesProfile}",
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: imageProvider,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              placeholder: (context, url) =>
-                                  CircularProgressIndicator(
-                                color: appColor.mainColor,
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                  decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  image: AssetImage('assets/images/logo.png'),
-                                  fit: BoxFit.cover,
-                                ),
-                              )),
-                            ),
-                          ),
-                          SizedBox(width: size.width * 0.05),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(
-                                  text:
-                                      '${getProfile.teacherModels?.firstname ?? ''} ${getProfile.teacherModels?.lastname ?? ''}',
-                                  color: Colors.white,
-                                  fontSize: fixSize(0.017, context),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                SizedBox(height: fSize * 0.005),
-                                CustomText(
-                                  text: getProfile.teacherModels?.phone ?? '',
-                                  color: Colors.white70,
-                                  fontSize: fixSize(0.014, context),
-                                ),
-                                SizedBox(height: fSize * 0.005),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              logots();
-                            },
-                            icon: Icon(
-                              Icons.power_settings_new,
-                              color: Colors.white,
-                              size: fSize * 0.025,
-                            ),
-                          ),
-                        ],
+      body: GetBuilder<RegisterState>(
+        builder: (getRes) {
+          int appleSetting = getRes.schoolList.first.appleSetting ?? 0;
+          return GetBuilder<CheckRolePermissionState>(builder: (checkRole) {
+            if (checkRole.check == false) {
+              return Column(
+                children: [Expanded(child: Center(child: CircleLoad()))],
+              );
+            }
+            if (appleSetting == 0 &&
+                !subjects.any((e) => e['title'] == 'scan-in-out')) {
+              subjects.add({
+                'title': 'scan-in-out',
+                'icon': Icons.qr_code_scanner,
+                'color': Colors.pink
+              });
+            }
+            if (checkRole.checkRole("access_Fees") == true &&
+                !subjects.any((e) => e['title'] == 'Tuition_fees')) {
+              subjects.add({
+                'title': 'Tuition_fees',
+                'icon': Icons.money,
+                'color': Colors.blue
+              });
+            }
+            if (appleSetting == 0 &&
+                !subjects.any((e) => e['title'] == 'mark-student')) {
+              subjects.add({
+                'title': 'mark-student',
+                'icon': Icons.note_alt,
+                'color': Colors.red
+              });
+            }
+            if (appleSetting == 0 &&
+                !subjects.any((e) => e['title'] == 'Click_in-out')) {
+              subjects.add({
+                'title': 'Click_in-out',
+                'icon': Icons.touch_app_outlined,
+                'color': Colors.blue
+              });
+            }
+            if (!subjects.any((e) => e['title'] == 'language')) {
+              subjects.add({
+                'title': 'language',
+                'icon': Icons.language,
+                'color': Colors.green
+              });
+            }
+            if (!subjects.any((e) => e['title'] == 'Delete_Account')) {
+              subjects.add({
+                'title': 'Delete_Account',
+                'icon': Icons.delete,
+                'color': Colors.red
+              });
+            }
+            if (!subjects.any((e) => e['title'] == 'logout')) {
+              subjects.add(
+                {'title': 'logout', 'icon': Icons.logout, 'color': Colors.grey},
+              );
+            }
+            return SafeArea(
+              child: Column(
+                children: [
+                  // Profile Card
+                  Container(
+                    decoration: BoxDecoration(
+                      color: appColor.mainColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(fSize * 0.03),
+                        bottomRight: Radius.circular(fSize * 0.03),
                       ),
-                    );
-                  },
-                ),
-              ),
-              SizedBox(height: size.height * 0.02),
-              // Subjects Grid
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: GridView.builder(
-                    itemCount: subjects.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
                     ),
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        splashColor: Colors.transparent,
-                        onTap: () {
-                          handleGridTap(subjects[index]['title']);
-                        },
-                        child: SubjectCard(
-                          title: subjects[index]['title'],
-                          icon: subjects[index]['icon'],
-                          color: subjects[index]['color'],
-                        ),
-                      );
-                    },
+                    padding: EdgeInsets.symmetric(
+                      horizontal: fSize * 0.004,
+                      vertical: fSize * 0.004,
+                    ),
+                    child: GetBuilder<ProfileTeacherState>(
+                      builder: (getProfile) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CircleAvatar(
+                                radius: 35,
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      "${getProfile.repository.urlApi}${getProfile.teacherModels?.imagesProfile}",
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(
+                                    color: appColor.mainColor,
+                                  ),
+                                  errorWidget: (context, url, error) => Container(
+                                      decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: AssetImage('assets/images/logo.png'),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )),
+                                ),
+                              ),
+                              SizedBox(width: size.width * 0.05),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(
+                                      text:
+                                          '${getProfile.teacherModels?.firstname ?? ''} ${getProfile.teacherModels?.lastname ?? ''}',
+                                      color: Colors.white,
+                                      fontSize: fixSize(0.017, context),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    SizedBox(height: fSize * 0.005),
+                                    CustomText(
+                                      text: getProfile.teacherModels?.phone ?? '',
+                                      color: Colors.white70,
+                                      fontSize: fixSize(0.014, context),
+                                    ),
+                                    SizedBox(height: fSize * 0.005),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  logots();
+                                },
+                                icon: Icon(
+                                  Icons.power_settings_new,
+                                  color: Colors.white,
+                                  size: fSize * 0.025,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
+                  SizedBox(height: size.height * 0.02),
+                  // Subjects Grid
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: GridView.builder(
+                        itemCount: subjects.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                        ),
+                        shrinkWrap: true,
+                        physics: ScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            splashColor: Colors.transparent,
+                            onTap: () {
+                              handleGridTap(subjects[index]['title']);
+                            },
+                            child: SubjectCard(
+                              title: subjects[index]['title'],
+                              icon: subjects[index]['icon'],
+                              color: subjects[index]['color'],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      }),
+            );
+          });
+        }
+      ),
     );
   }
 

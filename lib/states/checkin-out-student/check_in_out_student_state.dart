@@ -219,12 +219,12 @@ class CheckInOutStudentState extends GetxController {
   }
 
   sendNotificationToParent({required String id, required type}) async{
-   var res =   await repository.post(url: '${repository.urlApi}api/check_in_check_out_push_notification_to_users', body: {
+   await repository.post(url: '${repository.urlApi}api/check_in_check_out_push_notification_to_users', body: {
       'id': id,
       'type': type
     }, auth: true);
-   print('test sen notifications');
-   print(res.body);
+   // print('test sen notifications');
+   // print(res.body);
   }
 
   Future<void> confirmRequestGoHome(

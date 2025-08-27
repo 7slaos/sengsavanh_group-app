@@ -147,7 +147,7 @@ class _InOutPageState extends State<InOutPage> {
                                     text: 'Something went wrong please try again',
                                     backgroundColor: appColor.red);
                             }
-                            if (studentController.dataModels == null && widget.type == 'owner_teacher') {
+                            if (studentController.dataModels == null && widget.type == 'owner_student') {
                               profileStudentState.checkToken();
                               CustomDialogs().showToast(
                                   text: 'Something went wrong please try again',

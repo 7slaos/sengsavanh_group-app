@@ -38,6 +38,8 @@ class CameraScanPageState extends GetxController {
 
   Future<http.Response> scanOut({required BuildContext context, String ? code}) async {
     if (barcode == null && code == null) {
+      playSound();
+      CustomDialogs().showToastWithIcon(context: context, message: 'Qrcode student is empty',icon: Icons.close, backgroundColor: appColors.red);
       return Future.error("empty_barcode");
     }
     try {
@@ -51,8 +53,6 @@ class CameraScanPageState extends GetxController {
           });
       if (res.statusCode == 200) {
         final response = jsonDecode(utf8.decode(res.bodyBytes));
-        // print('111111');
-        // print(response);
         if(response['inRange'] == true){
           postCheckStudent(context, response['data']['id'].toString());
         }else{
@@ -78,6 +78,8 @@ class CameraScanPageState extends GetxController {
             "student_records_id": studentRecordsId,
           });
       final response = jsonDecode(utf8.decode(res.bodyBytes));
+      print('00000000000000');
+      print(response);
       if (res.statusCode == 200 && response['success'] == true) {
         final id = response['data']['id'].toString();
         final type = response['data']['type'].toString();
