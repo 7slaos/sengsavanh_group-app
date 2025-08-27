@@ -9,13 +9,10 @@ import '../states/appverification.dart';
 export 'dart:convert';
 
 class Repository {
-  //String urlApi = 'https://citschool.net/';
-  //String urlApi = 'https://demo.citschool.net/';
-  //String urlApi = 'https://95fa-115-84-87-9.ngrok-free.app/';
-  String urlApi = 'http://192.168.100.155:8000/';
-  String nuXtJsUrlApi = 'http://192.168.100.155:3000/';
-  // String urlApi = 'https://pathana.7slaos.com/';
-  // String nuXtJsUrlApi = 'https://pathanaschool.net/';
+  String urlApi = 'https://main.pathanaschool.net/';
+  String nuXtJsUrlApi = 'https://pathanaschool.net/';
+  // String urlApi = 'http://192.168.100.155:8000/';
+  // String nuXtJsUrlApi = 'http://192.168.100.155:3000/';
   String getFunctionAvailableByRole = 'api/get_function_available_by_role';
   String loginUser = 'api/login_users';
   String logoutUser = 'api/logouts';

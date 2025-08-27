@@ -30,6 +30,7 @@ class ProfileStudentRecordModel {
   String? admissionDate;
   String? parentData;
   String? parentContact;
+  String? studentRecordsId;
 
   ProfileStudentRecordModel(
       {this.id,
@@ -60,7 +61,7 @@ class ProfileStudentRecordModel {
       this.bloodGroup,
       this.admissionDate,
       this.parentData,
-      this.parentContact});
+      this.parentContact, this.studentRecordsId});
 
   ProfileStudentRecordModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -106,6 +107,7 @@ class ProfileStudentRecordModel {
     admissionDate = json['admission_date'];
     parentData = json['parent_data'];
     parentContact = json['parent_contact'];
+    studentRecordsId = json['student_records_id'].toString();
   }
   // Map<String, dynamic> toJson() {
   //   final Map<String, dynamic> data = new Map<String, dynamic>();

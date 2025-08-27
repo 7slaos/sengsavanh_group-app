@@ -328,7 +328,7 @@ class CustomDialogs {
         children: [
           Icon(icon ?? Icons.check, color: iconColor ?? Colors.white),
           const SizedBox(width: 12.0),
-          Text(message, style: TextStyle(color: Colors.white)),
+          Text(message.tr, style: TextStyle(color: Colors.white)),
         ],
       ),
     );

@@ -29,7 +29,7 @@ class ProfileTeacherState extends GetxController {
         url: repository.urlApi + repository.teacherRecordePofiled,
         auth: true,
       );
-      //print(res.body);
+      // print(res.body);
       if (res.statusCode == 200) {
         teacherModels =
             TeacherRcordeModels.fromJson(jsonDecode(res.body)['data']);

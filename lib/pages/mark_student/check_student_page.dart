@@ -150,9 +150,9 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
           },
           auth: true,
         );
-
-        print('333333');
-        print(res.body);
+        //
+        // print('333333');
+        // print(res.body);
         Get.defaultDialog(
           title: "Success",
           middleText: "Saved success",

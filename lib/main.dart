@@ -157,7 +157,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'CIT Schools',
+      title: 'Pathana School',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColor().white),
         useMaterial3: true,

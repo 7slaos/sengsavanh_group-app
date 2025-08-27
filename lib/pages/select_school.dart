@@ -78,125 +78,126 @@ class _SelectSchoolState extends State<SelectSchool> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height:
-                    size.height * 0.07, // Match the height for proper layout
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => {
-                          registerState.updateIndex(0),
-                          registerState.getSchools()
-                        },
-                        child: Container(
-                          height: double
-                              .infinity, // Ensure it covers the full height
-
-                          decoration: BoxDecoration(
-                              color: appColors.white,
-                              border: Border(
-                                  bottom: registerState.index == 0
-                                      ? BorderSide(
-                                          width: 2, color: appColors.mainColor)
-                                      : BorderSide.none)),
-                          child: Center(
-                            child: CustomText(
-                              text: 'student',
-                              color: registerState.index == 0
-                                  ? appColors.mainColor
-                                  : appColors.grey,
-                              fontSize: fixSize(0.0185, context),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          // registerState.updateIndex(1);
-                          // registerState.getPackages();
-                          registerState.cleardropdownList();
-                          Get.to(() => RegisterSchool(packageId: '1'),
-                              transition: Transition.fadeIn);
-                        },
-                        child: Container(
-                          height: double.infinity,
-                          decoration: BoxDecoration(
-                              color: appColors.white,
-                              border: Border(
-                                  bottom: registerState.index == 1
-                                      ? BorderSide(
-                                          width: 2, color: appColors.mainColor)
-                                      : BorderSide.none)),
-                          child: Center(
-                            child: CustomText(
-                              text: 'school',
-                              color: registerState.index == 1
-                                  ? appColors.mainColor
-                                  : appColors.grey,
-                              fontSize: fixSize(0.0185, context),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 8.0),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: size.height * 0.04,
-                      width: 4,
-                      color: appColors.mainColor,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    registerState.index == 0
-                        ? CustomText(
-                            text: 'select_school',
-                            fontSize: fsize * 0.0165,
-                            color: appColors.grey,
-                          )
-                        : CustomText(
-                            text: 'select_package',
-                            fontSize: fsize * 0.0165,
-                            color: appColors.grey,
-                          )
-                  ],
-                ),
-              ),
-              registerState.index == 0
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFielWidget(
-                        width: size.width,
-                        height: fixSize(0.05, context),
-                        icon: Icons.person,
-                        hintText: 'search'.tr,
-                        fixSize: fixSize(0.05, context),
-                        appColor: AppColor(),
-                        controller: searchT,
-                        borderRaduis: 5.0,
-                        margin: 0,
-                        textInputType: TextInputType.text,
-                        iconPrefix: Icon(
-                          Icons.search,
-                          size: fixSize(0.025, context),
-                        ),
-                        onChanged: (p0) {
-                          registerState.update();
-                        },
-                      ),
-                    )
-                  : SizedBox(height: 8.0),
+              // SizedBox(
+              //   height:
+              //       size.height * 0.07, // Match the height for proper layout
+              //   child: Row(
+              //     children: [
+              //       Expanded(
+              //         child: InkWell(
+              //           onTap: () => {
+              //             registerState.updateIndex(0),
+              //             registerState.getSchools()
+              //           },
+              //           child: Container(
+              //             height: double
+              //                 .infinity, // Ensure it covers the full height
+              //
+              //             decoration: BoxDecoration(
+              //                 color: appColors.white,
+              //                 border: Border(
+              //                     bottom: registerState.index == 0
+              //                         ? BorderSide(
+              //                             width: 2, color: appColors.mainColor)
+              //                         : BorderSide.none)),
+              //             child: Center(
+              //               child: CustomText(
+              //                 text: 'student',
+              //                 color: registerState.index == 0
+              //                     ? appColors.mainColor
+              //                     : appColors.grey,
+              //                 fontSize: fixSize(0.0185, context),
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //       Expanded(
+              //         child: InkWell(
+              //           onTap: () {
+              //             // registerState.updateIndex(1);
+              //             // registerState.getPackages();
+              //             registerState.cleardropdownList();
+              //             Get.to(() => RegisterSchool(packageId: '1'),
+              //                 transition: Transition.fadeIn);
+              //           },
+              //           child: Container(
+              //             height: double.infinity,
+              //             decoration: BoxDecoration(
+              //                 color: appColors.white,
+              //                 border: Border(
+              //                     bottom: registerState.index == 1
+              //                         ? BorderSide(
+              //                             width: 2, color: appColors.mainColor)
+              //                         : BorderSide.none)),
+              //             child: Center(
+              //               child: CustomText(
+              //                 text: 'school',
+              //                 color: registerState.index == 1
+              //                     ? appColors.mainColor
+              //                     : appColors.grey,
+              //                 fontSize: fixSize(0.0185, context),
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // SizedBox(height: 8.0),
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 8.0),
+              //   child: Row(
+              //     crossAxisAlignment: CrossAxisAlignment.center,
+              //     children: [
+              //       Container(
+              //         height: size.height * 0.04,
+              //         width: 4,
+              //         color: appColors.mainColor,
+              //       ),
+              //       SizedBox(
+              //         width: 10,
+              //       ),
+              //       registerState.index == 0
+              //           ? CustomText(
+              //               text: 'select_school',
+              //               fontSize: fsize * 0.0165,
+              //               color: appColors.grey,
+              //             )
+              //           : CustomText(
+              //               text: 'select_package',
+              //               fontSize: fsize * 0.0165,
+              //               color: appColors.grey,
+              //             )
+              //     ],
+              //   ),
+              // ),
+              // registerState.index == 0
+              //     ? Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: TextFielWidget(
+              //           width: size.width,
+              //           height: fixSize(0.05, context),
+              //           icon: Icons.person,
+              //           hintText: 'search'.tr,
+              //           fixSize: fixSize(0.05, context),
+              //           appColor: AppColor(),
+              //           controller: searchT,
+              //           borderRaduis: 5.0,
+              //           margin: 0,
+              //           textInputType: TextInputType.text,
+              //           iconPrefix: Icon(
+              //             Icons.search,
+              //             size: fixSize(0.025, context),
+              //           ),
+              //           onChanged: (p0) {
+              //             registerState.update();
+              //           },
+              //         ),
+              //       )
+              //     : SizedBox(height: 8.0),
+              SizedBox(height: 10.0),
               GetBuilder<RegisterState>(builder: (getData) {
                 if (getData.checkSchool == false) {
                   return SizedBox(

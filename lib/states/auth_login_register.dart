@@ -37,7 +37,7 @@ class AuthLoginRegister extends GetxController {
           'password': password,
         },
       );
-      // print(res.body);
+
       if (res.statusCode == 200) {
         update();
         Get.back();
@@ -46,13 +46,14 @@ class AuthLoginRegister extends GetxController {
           text: jsonDecode(res.body)['token'],
           role: roleId,
         );
-        var resNUxt = await repository.post(
+        var resNUxt = await repository.postNUxt(
           url: '${repository.nuXtJsUrlApi}api/login',
           body: {
             'phone': phone,
             'password': password,
           },
         );
+
         if(resNUxt.statusCode == 200){
           await appVerification.setNewNUxtToken(
             token: jsonDecode(resNUxt.body)['token'],

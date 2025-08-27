@@ -27,6 +27,7 @@ class TeacherRcordeModels {
   String? stayAt;
   String? duty;
   String? note;
+  String? teacherRecordId;
 
   TeacherRcordeModels(
       {this.id,
@@ -54,7 +55,7 @@ class TeacherRcordeModels {
       this.yearFinished,
       this.stayAt,
       this.duty,
-      this.note});
+      this.note, this.teacherRecordId});
 
   TeacherRcordeModels.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -97,6 +98,7 @@ class TeacherRcordeModels {
     stayAt = json['stay_at'];
     duty = json['duty'];
     note = json['note'];
+    teacherRecordId = json['teacher_records_id'].toString();
   }
 
   // Map<String, dynamic> toJson() {

@@ -1,4 +1,3 @@
-
 import 'dart:math';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -14,17 +13,19 @@ import '../../functions/determine_postion.dart';
 import '../../states/about_score_state.dart';
 import '../../states/checkin-out-student/check_in_out_student_state.dart';
 import '../../widgets/button_widget.dart';
+import '../../widgets/custom_dialog.dart';
 import '../camera_scan_page.dart';
 import 'package:pathana_school_app/widgets/custom_text_widget.dart';
 
 class CheckInOutPage extends StatefulWidget {
-  const CheckInOutPage({super.key, this.type = '1'});
+  const CheckInOutPage({super.key, this.type = 'teacher'});
   final String type;
   @override
   State<CheckInOutPage> createState() => _CheckInOutPageState();
 }
 
-class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProviderStateMixin{
+class _CheckInOutPageState extends State<CheckInOutPage>
+    with SingleTickerProviderStateMixin {
   AppVerification appVerification = Get.put(AppVerification());
   CameraScanPageState cameraScanPageState = Get.put(CameraScanPageState());
   late AnimationController _controller;
@@ -36,7 +37,8 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
   final searchController = TextEditingController();
   final AppColor appColor = AppColor();
   final Random random = Random();
-
+  String? lat;
+  String? lng;
 
   // Generate a random color
   Color getRandomColor() {
@@ -53,7 +55,10 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
     super.initState();
     getCurrentPosition();
     controller = Get.put(CheckInOutStudentState());
-    if(appVerification.role==""){
+    if(widget.type == 'owner_teacher' || widget.type == 'owner_student') {
+       controller.fetchData(type: widget.type, loadMore: false);
+    }
+    if (appVerification.role == "") {
       appVerification.setInitToken();
     }
     aboutScoreState.getAllMyClasses();
@@ -63,10 +68,15 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
     )..repeat(reverse: true); // 🔁 repeat animation
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
   }
-  getCurrentPosition () async{
+
+  getCurrentPosition() async {
     Position pos = await DeterminePosition().determinePosition();
-    cameraScanPageState.updateLatLng(pos.latitude.toString(), pos.longitude.toString());
-    print("Latitude: ${pos.latitude}, Longitude: ${pos.longitude}");
+    setState(() {
+      lat = pos.latitude.toString();
+      lng = pos.longitude.toString();
+    });
+    cameraScanPageState.updateLatLng(
+        pos.latitude.toString(), pos.longitude.toString());
   }
 
   @override
@@ -248,13 +258,17 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomText(text: 'student', fontWeight: FontWeight.bold, fontSize: fixSize(0.017, context),),
+                    CustomText(
+                      text: 'student',
+                      fontWeight: FontWeight.bold,
+                      fontSize: fixSize(0.017, context),
+                    ),
                     const SizedBox(height: 10),
                     Container(
                       decoration: BoxDecoration(
                         color: appColor.white,
                         borderRadius:
-                        BorderRadius.circular(fixSize(0.01, context)),
+                            BorderRadius.circular(fixSize(0.01, context)),
                         boxShadow: [
                           BoxShadow(
                             color: appColor.grey.withOpacity(0.2),
@@ -294,13 +308,13 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                           children: [
                             CustomText(
                               text:
-                              '${'class_room'.tr}: ${item.myClass ?? 'N/A'}',
+                                  '${'class_room'.tr}: ${item.myClass ?? 'N/A'}',
                               fontSize: fixSize(0.014, context),
                             ),
                             SizedBox(height: fixSize(0.005, context)),
                             CustomText(
                               text:
-                              '${'check_in'.tr}: ${item.checkinDate ?? ''}',
+                                  '${'check_in'.tr}: ${item.checkinDate ?? ''}',
                               color: appColor.mainColor,
                               fontSize: fixSize(0.014, context),
                             ),
@@ -308,7 +322,7 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                               SizedBox(height: fixSize(0.005, context)),
                               CustomText(
                                 text:
-                                '${'check_out'.tr}: ${item.checkoutDate ?? ''}',
+                                    '${'check_out'.tr}: ${item.checkoutDate ?? ''}',
                                 color: appColor.green,
                                 fontSize: fixSize(0.014, context),
                               )
@@ -318,30 +332,40 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                       ),
                     ),
                     const SizedBox(height: 20),
-                    CustomText(text: 'who_go_with', fontWeight: FontWeight.bold, fontSize: fixSize(0.017, context),),
+                    CustomText(
+                      text: 'who_go_with',
+                      fontWeight: FontWeight.bold,
+                      fontSize: fixSize(0.017, context),
+                    ),
                     const SizedBox(height: 10),
                     TextField(
                       controller: searchController,
                       onChanged: controller.searchStudents,
-                      onTap: (){
-                        Get.to(()=> SelectWhoGoWith(branchId: ''), transition: Transition.fadeIn);
+                      onTap: () {
+                        Get.to(() => SelectWhoGoWith(branchId: ''),
+                            transition: Transition.fadeIn);
                       },
                       readOnly: true,
                       decoration: InputDecoration(
                         suffixIcon: const Icon(Icons.search),
-                        labelText: "${'firstname'.tr} ${'or'.tr} ${'car_number'.tr}",
+                        labelText:
+                            "${'firstname'.tr} ${'or'.tr} ${'car_number'.tr}",
                         hintStyle: TextStyle(fontSize: fixSize(0.015, context)),
-                        labelStyle: TextStyle(fontSize: fixSize(0.015, context)),
+                        labelStyle:
+                            TextStyle(fontSize: fixSize(0.015, context)),
                         fillColor: appColor.white.withOpacity(0.98),
                         filled: true,
                         border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 0.5, color: appColor.grey),
+                          borderSide:
+                              BorderSide(width: 0.5, color: appColor.grey),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 0.5, color: appColor.mainColor),
+                          borderSide:
+                              BorderSide(width: 0.5, color: appColor.mainColor),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 0.5, color: appColor.grey),
+                          borderSide:
+                              BorderSide(width: 0.5, color: appColor.grey),
                         ),
                       ),
                     ),
@@ -350,7 +374,7 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                       decoration: BoxDecoration(
                         color: appColor.white,
                         borderRadius:
-                        BorderRadius.circular(fixSize(0.01, context)),
+                            BorderRadius.circular(fixSize(0.01, context)),
                         boxShadow: [
                           BoxShadow(
                             color: appColor.grey.withOpacity(0.2),
@@ -385,8 +409,7 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                           ],
                         ),
                         subtitle: CustomText(
-                          text:
-                          '${'car_number'.tr}: ${item.checkinDate ?? ''}',
+                          text: '${'car_number'.tr}: ${item.checkinDate ?? ''}',
                           color: appColor.mainColor,
                           fontSize: fixSize(0.014, context),
                         ),
@@ -439,7 +462,7 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
       backgroundColor: appColor.white,
       appBar: AppBar(
         title: CustomText(
-          text: widget.type == '1' ? 'scan-in-out' : 'request_go_home',
+          text: widget.type == 'teacher' ? 'scan-in-out' : widget.type == 'owner_teacher' ? 'Click_in-out' : 'request_go_home',
           color: appColor.white,
           fontSize: fixSize(0.02, context),
         ),
@@ -485,7 +508,7 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                   child: InkWell(
                     splashColor: Colors.transparent,
                     onTap: () {
-                      controller.setIndex(0);
+                      controller.setIndex(0, widget.type);
                     },
                     child: Container(
                         padding: EdgeInsets.all(8),
@@ -511,7 +534,7 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                   child: InkWell(
                     splashColor: Colors.transparent,
                     onTap: () {
-                      controller.setIndex(1);
+                      controller.setIndex(1, widget.type);
                     },
                     child: Container(
                         padding: EdgeInsets.all(8),
@@ -562,70 +585,69 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
           ),
 
           // Class Filter Chips
-          GetBuilder<AppVerification>(
-            builder: (appVer) {
-              if(appVer.role == 's'){
-                return const SizedBox();
-              }
-              return GetBuilder<AboutScoreState>(
-                builder: (aboutScore) {
-                  return Container(
-                    height: MediaQuery.of(context).size.height * 0.05,
-                    color: appColor.white,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: aboutScore.allCLasseList.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return GestureDetector(
-                            onTap: () => controller.filterByClass(null),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: fixSize(0.016, context)),
-                              alignment: Alignment.center,
-                              child: Obx(() => CustomText(
-                                    text: 'all'.tr,
-                                    fontSize: fixSize(0.015, context),
-                                    color: controller.selectedClassId.value == null
-                                        ? appColor.mainColor
-                                        : appColor.black,
-                                    fontWeight:
-                                        controller.selectedClassId.value == null
-                                            ? FontWeight.bold
-                                            : null,
-                                  )),
-                            ),
-                          );
-                        }
-
-                        final classes = aboutScore.allCLasseList[index - 1];
+          GetBuilder<AppVerification>(builder: (appVer) {
+            if (appVer.role == 's' || widget.type == 'owner_teacher') {
+              return const SizedBox();
+            }
+            return GetBuilder<AboutScoreState>(
+              builder: (aboutScore) {
+                return Container(
+                  height: MediaQuery.of(context).size.height * 0.05,
+                  color: appColor.white,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: aboutScore.allCLasseList.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
                         return GestureDetector(
-                          onTap: () => controller.filterByClass(classes.id),
+                          onTap: () => controller.filterByClass(null),
                           child: Container(
                             padding: EdgeInsets.symmetric(
                                 horizontal: fixSize(0.016, context)),
                             alignment: Alignment.center,
                             child: Obx(() => CustomText(
-                                  text: classes.name ?? '',
+                                  text: 'all'.tr,
                                   fontSize: fixSize(0.015, context),
                                   color:
-                                      controller.selectedClassId.value == classes.id
+                                      controller.selectedClassId.value == null
                                           ? appColor.mainColor
                                           : appColor.black,
                                   fontWeight:
-                                      controller.selectedClassId.value == classes.id
+                                      controller.selectedClassId.value == null
                                           ? FontWeight.bold
                                           : null,
                                 )),
                           ),
                         );
-                      },
-                    ),
-                  );
-                },
-              );
-            }
-          ),
+                      }
+
+                      final classes = aboutScore.allCLasseList[index - 1];
+                      return GestureDetector(
+                        onTap: () => controller.filterByClass(classes.id),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: fixSize(0.016, context)),
+                          alignment: Alignment.center,
+                          child: Obx(() => CustomText(
+                                text: classes.name ?? '',
+                                fontSize: fixSize(0.015, context),
+                                color: controller.selectedClassId.value ==
+                                        classes.id
+                                    ? appColor.mainColor
+                                    : appColor.black,
+                                fontWeight: controller.selectedClassId.value ==
+                                        classes.id
+                                    ? FontWeight.bold
+                                    : null,
+                              )),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            );
+          }),
 
           // Main Content
           Expanded(
@@ -693,9 +715,9 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                     final item = controller.dataList[index];
                     return InkWell(
                       splashColor: Colors.transparent,
-                      onTap: (){
-                        if(item.returnHome == 1) {
-                          searchWhoGoWith(item, index +1);
+                      onTap: () {
+                        if (item.returnHome == 1) {
+                          searchWhoGoWith(item, index + 1);
                         }
                       },
                       child: Stack(
@@ -720,7 +742,8 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                             ),
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: getRandomColor().withOpacity(0.9),
+                                backgroundColor:
+                                    getRandomColor().withOpacity(0.9),
                                 child: CustomText(
                                   text: '${index + 1}',
                                   fontWeight: FontWeight.bold,
@@ -730,6 +753,23 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  if(widget.type == 'owner_teacher' ) ...[
+                                  CustomText(
+                                    text:
+                                    '${'time_in'.tr}: ${item.checkinDate ?? ''}',
+                                    color: appColor.mainColor,
+                                    fontSize: fixSize(0.014, context),
+                                  ),
+                                  if (item.checkoutDate != null) ...[
+                                    SizedBox(height: fixSize(0.005, context)),
+                                    CustomText(
+                                      text:
+                                      '${'time_out'.tr}: ${item.checkoutDate ?? ''}',
+                                      color: appColor.green,
+                                      fontSize: fixSize(0.014, context),
+                                    )
+                                  ]],
+                                  if(widget.type == 'teacher' || widget.type == 'student') ...[
                                   CustomText(
                                     text: '${item.firstname} ${item.lastname}',
                                     fontSize: fixSize(0.015, context),
@@ -740,18 +780,19 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                                       text: '(${item.nickname})',
                                       fontSize: fixSize(0.014, context),
                                       color: appColor.mainColor,
-                                    ),
+                                    )],
                                 ],
                               ),
-                              subtitle: Column(
+                              subtitle: widget.type == 'owner_teacher' ? null : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  if(item.myClass!=null) ...[
                                   CustomText(
                                     text:
-                                        '${'class_room'.tr}: ${item.myClass ?? 'N/A'}',
+                                        '${'class_room'.tr}: ${item.myClass ?? ''}',
                                     fontSize: fixSize(0.014, context),
                                   ),
-                                  SizedBox(height: fixSize(0.005, context)),
+                                  SizedBox(height: fixSize(0.005, context))],
                                   CustomText(
                                     text:
                                         '${'time_in'.tr}: ${item.checkinDate ?? ''}',
@@ -771,14 +812,17 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
                               ),
                             ),
                           ),
-                          if(item.returnHome == 1 && item.status == 1)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 20,top: 10),
-                            child: FadeTransition(
-                              opacity: _animation,
-                              child: CustomText(text: 'ຂໍກັບບ້ານ',color: appColor.red,fontSize: fixSize(0.0135, context)),
-                            )
-                          )
+                          if (item.returnHome == 1 && item.status == 1)
+                            Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 20, top: 10),
+                                child: FadeTransition(
+                                  opacity: _animation,
+                                  child: CustomText(
+                                      text: 'ຂໍກັບບ້ານ',
+                                      color: appColor.red,
+                                      fontSize: fixSize(0.0135, context)),
+                                ))
                         ],
                       ),
                     );
@@ -789,21 +833,27 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
           ),
         ],
       ),
-      floatingActionButton: widget.type == '1' ? FloatingActionButton(
-        backgroundColor: appColor.mainColor,
-        onPressed: () =>
-            Get.to(() => CameraScanPage(), transition: Transition.fadeIn),
-        child: Icon(Icons.qr_code_scanner, color: appColor.white),
-      ) :  FloatingActionButton(
-        backgroundColor: appColor.mainColor,
-        onPressed: (){
-          showRequestGoHome('student');
-        },
-        child: Icon(Icons.notifications_active, color: appColor.white),
-      ),
+      floatingActionButton: widget.type == 'teacher'
+          ? FloatingActionButton(
+              backgroundColor: appColor.mainColor,
+              onPressed: () =>
+                  Get.to(() => CameraScanPage(), transition: Transition.fadeIn),
+              child: Icon(Icons.qr_code_scanner, color: appColor.white),
+            )
+          : widget.type == 'teacher'
+              ? FloatingActionButton(
+                  backgroundColor: appColor.mainColor,
+                  onPressed: () {
+                    showRequestGoHome('student');
+                  },
+                  child:
+                      Icon(Icons.notifications_active, color: appColor.white),
+                )
+              : const SizedBox(),
     );
   }
-  void showRequestGoHome (String type) {
+
+  void showRequestGoHome(String type) {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.warning,
@@ -816,9 +866,16 @@ class _CheckInOutPageState extends State<CheckInOutPage> with SingleTickerProvid
       dismissOnBackKeyPress: false,
       btnCancelOnPress: () {},
       btnOkOnPress: () {
-          controller.confirmRequestGoHome(type: type);
+        if (lat == null && lng == null) {
+          getCurrentPosition();
+          CustomDialogs().showToast(
+              text: 'Something went wrong please try again',
+              backgroundColor: appColor.red);
+        } else {
+          controller.confirmRequestGoHome(
+              context: context, type: type, lat: lat!, lng: lng!);
+        }
       },
     ).show();
   }
 }
-

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pathana_school_app/states/profile_student_state.dart';
 import 'package:pathana_school_app/states/profile_teacher_state.dart';
+import 'package:pathana_school_app/states/register_state.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -21,6 +22,7 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   AppVerification appVerification = Get.put(AppVerification());
+  RegisterState registerState = Get.put(RegisterState());
   ProfileState profileState = Get.put(ProfileState());
   ProfileStudentState profileStudentState = Get.put(ProfileStudentState());
   ProfileTeacherState profileTeacherState = Get.put(ProfileTeacherState());
@@ -29,6 +31,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+    registerState.getSchools();
     appVerification.setInitToken();
     getProfile();
     //initSplash();

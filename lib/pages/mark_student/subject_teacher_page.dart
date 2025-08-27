@@ -222,16 +222,18 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                                             fontSize: fsize * 0.013,
                                             color: appColors.mainColor,
                                           ),
-                                          const SizedBox(width: 12),
+                                          const SizedBox(width: 8),
                                           Icon(Icons.access_time,
                                               size: fsize * 0.013,
                                               color: appColors.mainColor),
                                           const SizedBox(width: 4),
-                                          CustomText(
-                                            text:
-                                                '${(item["start_time"] ?? "").toString().substring(0, 5)} - ${(item["end_time"] ?? "").toString().substring(0, 5)}',
-                                            fontSize: fsize * 0.013,
-                                            color: appColors.mainColor,
+                                          Expanded(
+                                            child: CustomText(
+                                              text:
+                                                  '${(item["start_time"] ?? "").toString().substring(0, 5)} - ${(item["end_time"] ?? "").toString().substring(0, 5)}',
+                                              fontSize: fsize * 0.013,
+                                              color: appColors.mainColor,
+                                            ),
                                           ),
                                         ],
                                       ),

@@ -51,7 +51,16 @@ class CameraScanPageState extends GetxController {
           });
       if (res.statusCode == 200) {
         final response = jsonDecode(utf8.decode(res.bodyBytes));
-        postCheckStudent(context, response['data']['id'].toString());
+        // print('111111');
+        // print(response);
+        if(response['inRange'] == true){
+          postCheckStudent(context, response['data']['id'].toString());
+        }else{
+          playSound();
+          CustomDialogs().showToastWithIcon(context: context, message: 'You are not the rang location school',icon: Icons.close, backgroundColor: appColors.red);
+          Get.back();
+          return Future.error('You are not the rang location school');
+        }
         return res;
       } else {
         return res;

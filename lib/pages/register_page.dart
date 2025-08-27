@@ -73,6 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
       body: GetBuilder<RegisterState>(builder: (getRes) {
+        int appleSetting = getRes.schoolList.first.appleSetting ?? 0;
         return GetBuilder<AddressState>(builder: (getAdress) {
           return SingleChildScrollView(
             child: Padding(
@@ -181,6 +182,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     controller: registerState.firstname,
                     borderRaduis: 5.0,
                     margin: 0,
+                    fontSize: fixSize(0.0146, context),
                     iconPrefix: Icon(
                       Icons.person,
                       size: fSize * 0.02,
@@ -198,6 +200,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     width: size.width,
                     height: fSize * 0.05,
                     hintText: 'nick_name'.tr,
+                    fontSize: fixSize(0.0146, context),
                     fixSize: fSize,
                     appColor: appColor,
                     controller: registerState.nickname,
@@ -227,6 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     hintText: 'lastname'.tr,
                     fixSize: fSize,
                     appColor: appColor,
+                    fontSize: fixSize(0.0146, context),
                     controller: registerState.lastname,
                     borderRaduis: 5.0,
                     margin: 0,
@@ -248,6 +252,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     height: fSize * 0.05,
                     icon: Icons.lock,
                     hintText: 'birtdaydate'.tr,
+                    fontSize: fixSize(0.0146, context),
                     fixSize: fSize,
                     appColor: appColor,
                     controller: registerState.birthdayDate,
@@ -1027,95 +1032,97 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(
                     height: size.height * 0.02,
                   ),
-                  CustomText(
-                    text: 'living',
-                    fontSize: fSize * 0.0165,
-                  ),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton2<ResidencedownModel>(
-                      isExpanded: true,
-                      hint: CustomText(
-                        text: 'living',
-                        fontSize: fSize * 0.016,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      items: getAdress.residenList
-                          .map((item) => DropdownMenuItem(
-                                value: item,
-                                child: CustomText(
-                                  text: CheckLang(
-                                          nameLa: item.nameLa ?? '',
-                                          nameEn: item.nameEn)
-                                      .toString(),
-                                  fontSize: fSize * 0.016,
-                                ),
-                              ))
-                          .toList(),
-                      value: addressState.selectResidense,
-                      onChanged: (value) {
-                        addressState.updateDropDownResidences(value!);
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: fSize * 0.05,
-                        decoration: BoxDecoration(
-                          color: appColor.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: fixSize(0.0025, context),
-                              offset: const Offset(0, 1),
-                              color: appColor.grey,
-                            ),
-                          ],
-                        ),
-                      ),
-                      dropdownStyleData: const DropdownStyleData(
-                        maxHeight: 200,
-                      ),
-                      menuItemStyleData: MenuItemStyleData(
-                        height: size.height * 0.06,
-                      ),
-                      dropdownSearchData: DropdownSearchData(
-                        searchController: registerState.searchSpecialHealth,
-                        searchInnerWidgetHeight: 50,
-                        searchInnerWidget: Container(
-                          height: 50,
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 4,
-                            right: 8,
-                            left: 8,
-                          ),
-                          child: TextFormField(
-                            expands: true,
-                            maxLines: null,
-                            controller: registerState.searchSpecialHealth,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              hintText: '${'search'.tr}...',
-                              hintStyle: TextStyle(fontSize: fSize * 0.016),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                        searchMatchFn: (item, searchValue) {
-                          final nameLa =
-                              item.value?.nameLa?.toLowerCase() ?? '';
-                          final nameEn =
-                              item.value?.nameEn?.toLowerCase() ?? '';
-                          return nameLa.contains(searchValue.toLowerCase()) ||
-                              nameEn.contains(searchValue.toLowerCase());
-                        },
-                      ),
+                  if (appleSetting == 0) ...[
+                    CustomText(
+                      text: 'living',
+                      fontSize: fSize * 0.0165,
                     ),
-                  ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<ResidencedownModel>(
+                        isExpanded: true,
+                        hint: CustomText(
+                          text: 'living',
+                          fontSize: fSize * 0.016,
+                          color: Theme.of(context).hintColor,
+                        ),
+                        items: getAdress.residenList
+                            .map((item) => DropdownMenuItem(
+                                  value: item,
+                                  child: CustomText(
+                                    text: CheckLang(
+                                            nameLa: item.nameLa ?? '',
+                                            nameEn: item.nameEn)
+                                        .toString(),
+                                    fontSize: fSize * 0.016,
+                                  ),
+                                ))
+                            .toList(),
+                        value: addressState.selectResidense,
+                        onChanged: (value) {
+                          addressState.updateDropDownResidences(value!);
+                        },
+                        buttonStyleData: ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: fSize * 0.05,
+                          decoration: BoxDecoration(
+                            color: appColor.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: fixSize(0.0025, context),
+                                offset: const Offset(0, 1),
+                                color: appColor.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        dropdownStyleData: const DropdownStyleData(
+                          maxHeight: 200,
+                        ),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: size.height * 0.06,
+                        ),
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: registerState.searchSpecialHealth,
+                          searchInnerWidgetHeight: 50,
+                          searchInnerWidget: Container(
+                            height: 50,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 4,
+                              right: 8,
+                              left: 8,
+                            ),
+                            child: TextFormField(
+                              expands: true,
+                              maxLines: null,
+                              controller: registerState.searchSpecialHealth,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                hintText: '${'search'.tr}...',
+                                hintStyle: TextStyle(fontSize: fSize * 0.016),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            final nameLa =
+                                item.value?.nameLa?.toLowerCase() ?? '';
+                            final nameEn =
+                                item.value?.nameEn?.toLowerCase() ?? '';
+                            return nameLa.contains(searchValue.toLowerCase()) ||
+                                nameEn.contains(searchValue.toLowerCase());
+                          },
+                        ),
+                      ),
+                    )
+                  ],
                   SizedBox(
                     height: size.height * 0.02,
                   ),
@@ -1211,6 +1218,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(
                     height: size.height * 0.02,
                   ),
+                  CustomText(
+                    text: 'personal_talent',
+                    fontSize: fixSize(0.0146, context),
+                  ),
                   TextFielWidget(
                     contentPadding: EdgeInsets.only(left: 5),
                     height: fSize * 0.05,
@@ -1220,34 +1231,290 @@ class _RegisterPageState extends State<RegisterPage> {
                     controller: registerState.personalTalent,
                     borderRaduis: 5.0,
                     margin: 0,
+                    fontSize: fixSize(0.0146, context),
                     textInputType: TextInputType.text,
                   ),
                   SizedBox(
                     height: size.height * 0.02,
                   ),
-                  CustomText(
-                    text: 'parent',
-                    fontSize: fSize * 0.0165,
-                  ),
-                  TextFielWidget(
-                    contentPadding: EdgeInsets.only(left: 5),
-                    height: fSize * 0.05,
-                    hintText: 'parent'.tr,
-                    fixSize: fSize,
-                    appColor: appColor,
-                    controller: registerState.parentData,
-                    borderRaduis: 5.0,
-                    margin: 0,
-                    textInputType: TextInputType.text,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
+                  if (appleSetting == 0) ...[
+                    CustomText(
+                      text: 'SelectClass_group',
+                      fontSize: fSize * 0.0165,
+                    ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<ClassGroupDropdownModel>(
+                        isExpanded: true,
+                        hint: CustomText(
+                          text: 'SelectClass_group',
+                          fontSize: fSize * 0.016,
+                          color: Theme.of(context).hintColor,
+                        ),
+                        items: getAdress.classgroupList
+                            .map((item) => DropdownMenuItem(
+                                  value: item,
+                                  child: CustomText(
+                                    text: item.name ?? '',
+                                    fontSize: fSize * 0.016,
+                                  ),
+                                ))
+                            .toList(),
+                        value: registerState.selectclassGroup,
+                        onChanged: (value) {
+                          registerState.selectclassGroupDropdown(value!);
+                          if (value.id != null) {
+                            addressState.getClassList(
+                                id: value.id!.toString(),
+                                branchId: widget.data.id.toString());
+                          }
+                        },
+                        buttonStyleData: ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: fSize * 0.05,
+                          decoration: BoxDecoration(
+                            color: appColor.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: fixSize(0.0025, context),
+                                offset: const Offset(0, 1),
+                                color: appColor.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        dropdownStyleData: const DropdownStyleData(
+                          maxHeight: 200,
+                        ),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: size.height * 0.06,
+                        ),
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: registerState.searchclassGroup,
+                          searchInnerWidgetHeight: 50,
+                          searchInnerWidget: Container(
+                            height: 50,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 4,
+                              right: 8,
+                              left: 8,
+                            ),
+                            child: TextFormField(
+                              expands: true,
+                              maxLines: null,
+                              controller: registerState.searchclassGroup,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                hintText: '${'search'.tr}...',
+                                hintStyle: TextStyle(fontSize: fSize * 0.016),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            return '${item.value!.name}'
+                                .toLowerCase()
+                                .contains(searchValue.toLowerCase());
+                          },
+                        ),
+                        onMenuStateChange: (isOpen) {
+                          registerState.clearDropdownClass();
+                        },
+                      ),
+                    ),
+                    if (getAdress.classList.isNotEmpty)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: size.height * 0.02,
+                          ),
+                          CustomText(
+                            text: 'Select_Class',
+                            fontSize: fSize * 0.0165,
+                          ),
+                          DropdownButtonHideUnderline(
+                            child: DropdownButton2<ClassListDropdownModel>(
+                              isExpanded: true,
+                              hint: CustomText(
+                                text: 'Select_Class',
+                                fontSize: fSize * 0.016,
+                                color: Theme.of(context).hintColor,
+                              ),
+                              items: getAdress.classList
+                                  .map((item) => DropdownMenuItem(
+                                        value: item,
+                                        child: CustomText(
+                                          text: item.name ?? '',
+                                          fontSize: fSize * 0.016,
+                                        ),
+                                      ))
+                                  .toList(),
+                              value: registerState.selectClass,
+                              onChanged: (value) {
+                                registerState.selectclassDropdown(value!);
+                              },
+                              buttonStyleData: ButtonStyleData(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                height: fSize * 0.05,
+                                decoration: BoxDecoration(
+                                  color: appColor.white,
+                                  borderRadius: BorderRadius.circular(5),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      blurRadius: fixSize(0.0025, context),
+                                      offset: const Offset(0, 1),
+                                      color: appColor.grey,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              dropdownStyleData: const DropdownStyleData(
+                                maxHeight: 200,
+                              ),
+                              menuItemStyleData: MenuItemStyleData(
+                                height: size.height * 0.06,
+                              ),
+                              dropdownSearchData: DropdownSearchData(
+                                searchController:
+                                    registerState.searchclassGroup,
+                                searchInnerWidgetHeight: 50,
+                                searchInnerWidget: Container(
+                                  height: 50,
+                                  padding: const EdgeInsets.only(
+                                    top: 8,
+                                    bottom: 4,
+                                    right: 8,
+                                    left: 8,
+                                  ),
+                                  child: TextFormField(
+                                    expands: true,
+                                    maxLines: null,
+                                    controller: registerState.searchclassGroup,
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 8,
+                                      ),
+                                      hintText: '${'search'.tr}...',
+                                      hintStyle:
+                                          TextStyle(fontSize: fSize * 0.016),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                searchMatchFn: (item, searchValue) {
+                                  return '${item.value!.name}'
+                                      .toLowerCase()
+                                      .contains(searchValue.toLowerCase());
+                                },
+                              ),
+                              onMenuStateChange: (isOpen) {
+                                if (!isOpen) {
+                                  // textEditingController.clear();
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    CustomText(
+                      text: '${'phone'.tr}(${'student'.tr})',
+                      fontSize: fSize * 0.0165,
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          height: fSize * 0.05,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.all(5.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5.0),
+                              color: appColor.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    blurRadius: fSize * 0.0025,
+                                    offset: const Offset(0, 1),
+                                    color: appColor.grey)
+                              ]),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/logo_lao.png',
+                                width: size.width * 0.1,
+                              ),
+                              CustomText(
+                                  text: '+85620', fontSize: fSize * 0.0165),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 5),
+                        Expanded(
+                          child: TextFielWidget(
+                            height: fSize * 0.05,
+                            icon: Icons.person,
+                            hintText: 'XXXXXXXX'.tr,
+                            fixSize: fSize,
+                            appColor: appColor,
+                            controller: registerState.phone,
+                            borderRaduis: 5.0,
+                            maxLength: 8,
+                            margin: 0,
+                            fontSize: fSize * 0.0165,
+                            contentPadding: EdgeInsets.only(left: 5),
+                            textInputType: TextInputType.phone,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (appleSetting == 0) ...[
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    CustomText(
+                      text: 'parent',
+                      fontSize: fSize * 0.0165,
+                    ),
+                    TextFielWidget(
+                      contentPadding: EdgeInsets.only(left: 5),
+                      height: fSize * 0.05,
+                      hintText: 'parent'.tr,
+                      fixSize: fSize,
+                      appColor: appColor,
+                      controller: registerState.parentData,
+                      borderRaduis: 5.0,
+                      margin: 0,
+                      fontSize: fixSize(0.0146, context),
+                      textInputType: TextInputType.text,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    )
+                  ],
                   Row(
                     children: [
+                      if(appleSetting == 0)
                       CustomText(text: '*', color: appColor.red),
                       CustomText(
-                        text: '${'phone'.tr}(${'parent'.tr})',
+                        text: appleSetting == 1
+                            ? 'phone'
+                            : '${'phone'.tr}(${'parent'.tr})',
                         fontSize: fSize * 0.0165,
                       ),
                     ],
@@ -1290,250 +1557,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: registerState.parentContact,
                           borderRaduis: 5.0,
                           maxLength: 8,
-                          margin: 0,
-                          contentPadding: EdgeInsets.only(left: 5),
-                          textInputType: TextInputType.phone,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  CustomText(
-                    text: 'SelectClass_group',
-                    fontSize: fSize * 0.0165,
-                  ),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton2<ClassGroupDropdownModel>(
-                      isExpanded: true,
-                      hint: CustomText(
-                        text: 'SelectClass_group',
-                        fontSize: fSize * 0.016,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      items: getAdress.classgroupList
-                          .map((item) => DropdownMenuItem(
-                                value: item,
-                                child: CustomText(
-                                  text: item.name ?? '',
-                                  fontSize: fSize * 0.016,
-                                ),
-                              ))
-                          .toList(),
-                      value: registerState.selectclassGroup,
-                      onChanged: (value) {
-                        registerState.selectclassGroupDropdown(value!);
-                        if (value.id != null) {
-                          addressState.getClassList(
-                              id: value.id!.toString(),
-                              branchId: widget.data.id.toString());
-                        }
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: fSize * 0.05,
-                        decoration: BoxDecoration(
-                          color: appColor.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: fixSize(0.0025, context),
-                              offset: const Offset(0, 1),
-                              color: appColor.grey,
-                            ),
-                          ],
-                        ),
-                      ),
-                      dropdownStyleData: const DropdownStyleData(
-                        maxHeight: 200,
-                      ),
-                      menuItemStyleData: MenuItemStyleData(
-                        height: size.height * 0.06,
-                      ),
-                      dropdownSearchData: DropdownSearchData(
-                        searchController: registerState.searchclassGroup,
-                        searchInnerWidgetHeight: 50,
-                        searchInnerWidget: Container(
-                          height: 50,
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 4,
-                            right: 8,
-                            left: 8,
-                          ),
-                          child: TextFormField(
-                            expands: true,
-                            maxLines: null,
-                            controller: registerState.searchclassGroup,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              hintText: '${'search'.tr}...',
-                              hintStyle: TextStyle(fontSize: fSize * 0.016),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                        searchMatchFn: (item, searchValue) {
-                          return '${item.value!.name}'
-                              .toLowerCase()
-                              .contains(searchValue.toLowerCase());
-                        },
-                      ),
-                      onMenuStateChange: (isOpen) {
-                        registerState.clearDropdownClass();
-                      },
-                    ),
-                  ),
-                  if (getAdress.classList.isNotEmpty)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        CustomText(
-                          text: 'Select_Class',
-                          fontSize: fSize * 0.0165,
-                        ),
-                        DropdownButtonHideUnderline(
-                          child: DropdownButton2<ClassListDropdownModel>(
-                            isExpanded: true,
-                            hint: CustomText(
-                              text: 'Select_Class',
-                              fontSize: fSize * 0.016,
-                              color: Theme.of(context).hintColor,
-                            ),
-                            items: getAdress.classList
-                                .map((item) => DropdownMenuItem(
-                                      value: item,
-                                      child: CustomText(
-                                        text: item.name ?? '',
-                                        fontSize: fSize * 0.016,
-                                      ),
-                                    ))
-                                .toList(),
-                            value: registerState.selectClass,
-                            onChanged: (value) {
-                              registerState.selectclassDropdown(value!);
-                            },
-                            buttonStyleData: ButtonStyleData(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              height: fSize * 0.05,
-                              decoration: BoxDecoration(
-                                color: appColor.white,
-                                borderRadius: BorderRadius.circular(5),
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurRadius: fixSize(0.0025, context),
-                                    offset: const Offset(0, 1),
-                                    color: appColor.grey,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            dropdownStyleData: const DropdownStyleData(
-                              maxHeight: 200,
-                            ),
-                            menuItemStyleData: MenuItemStyleData(
-                              height: size.height * 0.06,
-                            ),
-                            dropdownSearchData: DropdownSearchData(
-                              searchController: registerState.searchclassGroup,
-                              searchInnerWidgetHeight: 50,
-                              searchInnerWidget: Container(
-                                height: 50,
-                                padding: const EdgeInsets.only(
-                                  top: 8,
-                                  bottom: 4,
-                                  right: 8,
-                                  left: 8,
-                                ),
-                                child: TextFormField(
-                                  expands: true,
-                                  maxLines: null,
-                                  controller: registerState.searchclassGroup,
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 8,
-                                    ),
-                                    hintText: '${'search'.tr}...',
-                                    hintStyle:
-                                        TextStyle(fontSize: fSize * 0.016),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              searchMatchFn: (item, searchValue) {
-                                return '${item.value!.name}'
-                                    .toLowerCase()
-                                    .contains(searchValue.toLowerCase());
-                              },
-                            ),
-                            onMenuStateChange: (isOpen) {
-                              if (!isOpen) {
-                                // textEditingController.clear();
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  CustomText(
-                    text: '${'phone'.tr}(${'student'.tr})',
-                    fontSize: fSize * 0.0165,
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        height: fSize * 0.05,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5.0),
-                            color: appColor.white,
-                            boxShadow: [
-                              BoxShadow(
-                                  blurRadius: fSize * 0.0025,
-                                  offset: const Offset(0, 1),
-                                  color: appColor.grey)
-                            ]),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/logo_lao.png',
-                              width: size.width * 0.1,
-                            ),
-                            CustomText(
-                                text: '+85620', fontSize: fSize * 0.0165),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 5),
-                      Expanded(
-                        child: TextFielWidget(
-                          height: fSize * 0.05,
-                          icon: Icons.person,
-                          hintText: 'XXXXXXXX'.tr,
-                          fixSize: fSize,
-                          appColor: appColor,
-                          controller: registerState.phone,
-                          borderRaduis: 5.0,
-                          maxLength: 8,
+                          fontSize: fixSize(0.0146, context),
                           margin: 0,
                           contentPadding: EdgeInsets.only(left: 5),
                           textInputType: TextInputType.phone,
@@ -1558,6 +1582,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     height: fSize * 0.05,
                     icon: Icons.lock,
                     hintText: 'password'.tr,
+                    fontSize: fixSize(0.0146, context),
                     fixSize: fSize,
                     appColor: appColor,
                     controller: registerState.password,
@@ -1608,6 +1633,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     appColor: appColor,
                     controller: registerState.confirmPassword,
                     borderRaduis: 5.0,
+                    fontSize: fixSize(0.0146, context),
                     margin: 0,
                     iconPrefix: Icon(
                       Icons.lock,
@@ -1654,7 +1680,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             addressState.selectDistrict == null ||
                             addressState.selectVillage == null) {
                           CustomDialogs().showToast(
-                              // ignore: deprecated_member_use
+                            // ignore: deprecated_member_use
                               backgroundColor: appColor.red.withOpacity(0.8),
                               text: 'please_enter_complete_information'.tr);
                           return;
@@ -1662,7 +1688,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         if (registerState.password.text !=
                             registerState.confirmPassword.text) {
                           CustomDialogs().showToast(
-                              // ignore: deprecated_member_use
+                            // ignore: deprecated_member_use
                               backgroundColor: appColor.red.withOpacity(0.8),
                               text: 'password_not_match'.tr);
                           return;
@@ -1688,30 +1714,31 @@ class _RegisterPageState extends State<RegisterPage> {
                             proId: addressState.selectProvince!.id.toString(),
                             parentData: registerState.parentData.text,
                             parentContact:
-                                '20${registerState.parentContact.text}',
+                            '20${registerState.parentContact.text}',
                             personalTalent: registerState.personalTalent.text,
                             groupLanguage: addressState.selectlanguageGroup?.id
-                                    .toString() ??
+                                .toString() ??
                                 '',
                             religion:
-                                addressState.selectReligion?.id.toString() ??
-                                    '',
+                            addressState.selectReligion?.id.toString() ??
+                                '',
                             email: registerState.email.text,
                             nationality:
-                                addressState.selectNationality?.id.toString() ??
-                                    '',
+                            addressState.selectNationality?.id.toString() ??
+                                '',
                             spacialHealthy: addressState.selectspecialHealth?.id
-                                    .toString() ??
+                                .toString() ??
                                 '',
                             living:
-                                addressState.selectResidense?.id.toString() ??
-                                    '',
+                            addressState.selectResidense?.id.toString() ??
+                                '',
                             ethnicity:
-                                addressState.selectEthinicity?.id.toString() ??
-                                    '',
+                            addressState.selectEthinicity?.id.toString() ??
+                                '',
                             bloodgroupId:
-                                addressState.selectBloodGroup?.id.toString() ??
-                                    '');
+                            addressState.selectBloodGroup?.id.toString() ??
+                                '',
+                            appleSetting: appleSetting.toString());
                       },
                       text: 'register'),
                   SizedBox(

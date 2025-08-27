@@ -6,6 +6,7 @@ import 'package:pathana_school_app/pages/change_language_page.dart';
 import 'package:pathana_school_app/pages/check-in-out/check_in_out_page.dart';
 import 'package:pathana_school_app/pages/student_records/profile_page.dart';
 import 'package:pathana_school_app/pages/student_records/score_student_page.dart';
+import 'package:pathana_school_app/pages/teacher_recordes/in_out_page.dart';
 import 'package:pathana_school_app/repositorys/repository.dart';
 import 'package:pathana_school_app/states/address_state.dart';
 import 'package:pathana_school_app/states/appverification.dart';
@@ -38,7 +39,7 @@ class _DashboardPageState extends State<DashboardPage> {
     {'title': 'score', 'icon': Icons.score, 'color': Colors.green},
     // {'title': 'subject'.tr, 'icon': Icons.subject, 'color': Colors.blue},
     {'title': 'profile', 'icon': Icons.person_pin, 'color': Colors.orange},
-    {'title': 'request_go_home', 'icon': Icons.notifications_active, 'color': Colors.red},
+    {'title': 'Click_in-out', 'icon': Icons.touch_app_outlined, 'color': Colors.blue},
     {'title': 'language', 'icon': Icons.language, 'color': Colors.teal},
     {'title': 'logout', 'icon': Icons.logout, 'color': Colors.grey},
   ];
@@ -49,7 +50,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Get.to(() => const ScoreStudentPage(), transition: Transition.fadeIn),
       1: () => Get.to(() =>  StudentProfilePage(type: 's'),
           transition: Transition.fadeIn),
-      2: () => Get.to(() => CheckInOutPage(type: '2',),
+      2: () => Get.to(() => InOutPage(type: 'owner_student'),
           transition: Transition.fadeIn),
       3: () => Get.to(() => const ChangeLanguagePage(),
           transition: Transition.fadeIn),

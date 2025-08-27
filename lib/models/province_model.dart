@@ -1,27 +1,32 @@
 class SchoolListModel {
   int? id;
+  String? logo;
   String? nameLa;
   String? nameEn;
   String? nameCn;
   String? addressLa;
   String? addressEn;
   String? addressCn;
+  int? appleSetting;
   SchoolListModel(
       {this.id,
+        this.logo,
       this.nameLa,
       this.nameEn,
       this.nameCn,
       this.addressLa,
       this.addressEn,
-      this.addressCn});
+      this.addressCn, this.appleSetting});
   SchoolListModel.fromMap(Map<String, dynamic> map) {
     id = map['id'];
+    logo = map['logo'];
     nameLa = map['name_la'];
     nameEn = map['name_en'];
     nameCn = map['name_cn'];
     addressLa = map['address_la'];
     addressEn = map['address_en'];
     addressCn = map['address_cn'];
+    appleSetting = map['apple_setting'] ?? 0;
   }
 }
 

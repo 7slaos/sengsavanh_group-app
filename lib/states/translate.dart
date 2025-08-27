@@ -359,7 +359,8 @@ class Translate extends Translations {
           'request_go_home': 'Request go home',
           'who_go_with': 'Choose who the student goes with',
           'time_in': 'Time In',
-          'time_out': 'Time Out'
+          'time_out': 'Time Out',
+          'Click_in-out': 'Click in-out'
         },
         'la_LA': {
           'login': 'ເຂົ້າສູ່ລະບົບ',
@@ -718,6 +719,7 @@ class Translate extends Translations {
           'time_in': 'ເວລາເຂົ້າ',
           'time_out': 'ເວລາອອກ',
           'mark-student':'ໝາຍຂາດນັກຮຽນ',
+          'Click_in-out': 'ກົດ ເຂົ້າ-ອອກ'
         },
         'la_CN': {
           'login': '登入',
@@ -1036,6 +1038,7 @@ class Translate extends Translations {
           'time_in': '时间',
           'time_out': '暂停',
           'mark-student':'Mark student',
+          'Click_in-out': '点击进出'
         },
       };
 }

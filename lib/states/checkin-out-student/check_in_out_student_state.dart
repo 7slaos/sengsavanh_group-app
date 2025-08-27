@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../custom/app_color.dart';
@@ -21,21 +22,20 @@ class StudentCheckInOut {
   final int? status;
   final int? returnHome;
 
-  StudentCheckInOut({
-    required this.id,
-    required this.firstname,
-    required this.lastname,
-    this.nickname,
-    this.firstnameEn,
-    this.lastnameEn,
-    this.phone,
-    this.myClass,
-    this.checkinDate,
-    this.checkoutDate,
-    this.myClassId,
-    this.status,
-    this.returnHome
-  });
+  StudentCheckInOut(
+      {required this.id,
+      required this.firstname,
+      required this.lastname,
+      this.nickname,
+      this.firstnameEn,
+      this.lastnameEn,
+      this.phone,
+      this.myClass,
+      this.checkinDate,
+      this.checkoutDate,
+      this.myClassId,
+      this.status,
+      this.returnHome});
 
   factory StudentCheckInOut.fromMap(Map<String, dynamic> map) {
     return StudentCheckInOut(
@@ -58,11 +58,12 @@ class StudentCheckInOut {
 
 class CheckInOutStudentState extends GetxController {
   var index = 0.obs;
-  setIndex(int i){
+  setIndex(int i, String type) {
     index.value = i;
-    fetchData();
+    fetchData(type: type);
   }
-  Repository repository =  Repository();
+
+  Repository repository = Repository();
   final scrollController = ScrollController();
   final _searchDebouncer = Debouncer(delay: Duration(milliseconds: 500));
   // States
@@ -95,7 +96,7 @@ class CheckInOutStudentState extends GetxController {
 
   bool get _shouldLoadMore {
     return scrollController.position.pixels >=
-        scrollController.position.maxScrollExtent - 200 &&
+            scrollController.position.maxScrollExtent - 200 &&
         !isMoreLoading.value &&
         page.value < lastPage.value;
   }
@@ -106,10 +107,10 @@ class CheckInOutStudentState extends GetxController {
     await fetchData(loadMore: true);
   }
 
-  Future<void> fetchData({bool loadMore = false}) async {
+  Future<void> fetchData({bool loadMore = false, String ? type}) async {
     String status = '1';
-    if(index.value == 1){
-       status = '2';
+    if (index.value == 1) {
+      status = '2';
     }
     if (loadMore) {
       isMoreLoading.value = true;
@@ -131,17 +132,18 @@ class CheckInOutStudentState extends GetxController {
           'end_date': endDate.value.isEmpty ? '' : endDate.value,
           'class_id': selectedClassId.value?.toString() ?? '',
           'search': searchQuery.value.isEmpty ? '' : searchQuery.value,
-          'status': status
+          'status': status,
+          'type': type ?? ''
         },
       );
-      print('${repository.nuXtJsUrlApi}api/Application/checkin-out-student');
-      print(res.body);
 
       if (res.statusCode != 200) {
         throw Exception('Failed to load data: ${res.statusCode}');
       }
 
       final response = jsonDecode(utf8.decode(res.bodyBytes));
+      // print(type);
+      // print(response);
 
       if (response['success'] == true) {
         lastPage.value = response['meta']['last_page'] ?? 1;
@@ -207,42 +209,105 @@ class CheckInOutStudentState extends GetxController {
     super.onClose();
   }
 
-  Future<void> confirmRequestGoHome({String ? student_records_id, String? person_go_with_id, required String type }) async {
+  final player = AudioPlayer();
+  void playSound() async {
+    await player.play(AssetSource('sounds/error.mp3'));
+  }
+
+  void playSuccessSound() async {
+    await player.play(AssetSource('sounds/success.mp3'));
+  }
+
+  sendNotificationToParent({required String id, required type}) async{
+   var res =   await repository.post(url: '${repository.urlApi}api/check_in_check_out_push_notification_to_users', body: {
+      'id': id,
+      'type': type
+    }, auth: true);
+   print('test sen notifications');
+   print(res.body);
+  }
+
+  Future<void> confirmRequestGoHome(
+      {required BuildContext context,
+      String? student_records_id,
+      String? checkin_teacher_records_id,
+      String? person_go_with_id,
+      required String type,
+      required String lat,
+      required String lng}) async {
     try {
       CustomDialogs().dialogLoading();
       final res = await repository.postNUxt(
-        url: '${repository.nuXtJsUrlApi}api/Application/checkin-out-student/request_go_home',
+        url:
+            '${repository.nuXtJsUrlApi}api/Application/checkin-out-student/request_go_home',
         auth: true,
         body: {
           'student_records_id': student_records_id ?? '',
           'person_go_with_id': person_go_with_id ?? '',
-          'type': type
+          'type': type,
+          'checkin_teacher_records_id': checkin_teacher_records_id ?? '',
+          'lat': lat,
+          'lng': lng
         },
       );
       Get.back();
       final response = jsonDecode(utf8.decode(res.bodyBytes));
+      // print(student_records_id);
+      // print(type);
+      // print(response);
       if (response['success'] == true && res.statusCode == 200) {
-        CustomDialogs().showToast(
-          // ignore: deprecated_member_use
-          backgroundColor: AppColor().green.withOpacity(0.8),
-          text: 'success',
-        );
-        refreshData();
-      } else if(res.statusCode == 422) {
-        print('000000');
-        CustomDialogs().showToast(
-          // ignore: deprecated_member_use
-          backgroundColor: AppColor().red.withOpacity(0.8),
-          text: 'You request go home already!',
-        );
+        playSuccessSound();
+        CustomDialogs().showToastWithIcon(
+            context: context,
+            backgroundColor: AppColor().green.withOpacity(0.8),
+            message: 'success',
+            icon: Icons.check);
+        if(type == 'owner_teacher') {
+          checkCurrentCheckIn(checkin_teacher_records_id: checkin_teacher_records_id);
+        }else if(student_records_id !=null){
+          await sendNotificationToParent(id: student_records_id, type: response['action']);
+          checkCurrentCheckIn(student_records_id: student_records_id);
+        }
+      } else if (res.statusCode == 422) {
+        playSound();
+        CustomDialogs().showToastWithIcon(
+            context: context,
+            backgroundColor: AppColor().red.withOpacity(0.8),
+            message: response['message'],
+            icon: Icons.close);
+      } else {
+        playSound();
+        CustomDialogs().showToastWithIcon(
+            context: context,
+            backgroundColor: AppColor().red.withOpacity(0.8),
+            message: response['message'],
+            icon: Icons.close);
       }
-      else{
-        CustomDialogs().showToast(
-          // ignore: deprecated_member_use
-          backgroundColor: AppColor().red.withOpacity(0.8),
-          text: 'something_went_wrong',
-        );
+    } catch (e) {
+      debugPrint('Error fetching student data: $e');
+    }
+  }
+  bool checkIn = false;
+  Future<void> checkCurrentCheckIn(
+      {
+        String? student_records_id,
+        String? checkin_teacher_records_id}) async {
+    try {
+      checkIn = false;
+      final res = await repository.postNUxt(
+        url:
+        '${repository.nuXtJsUrlApi}api/Application/checkin-out-student/check-current-check-in',
+        auth: true,
+        body: {
+          'student_records_id': student_records_id ?? '',
+          'checkin_teacher_records_id': checkin_teacher_records_id ?? '',
+        },
+      );
+      final response = jsonDecode(utf8.decode(res.bodyBytes));
+      if (response['success'] == true) {
+        checkIn =true;
       }
+      update();
     } catch (e) {
       debugPrint('Error fetching student data: $e');
     }

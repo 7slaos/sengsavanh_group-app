@@ -304,6 +304,7 @@ class RegisterState extends GetMaterialController {
     String? proId,
     String? personalTalent,
     XFile? fileImage,
+    String? appleSetting
   }) async {
     CustomDialogs().dialogLoading();
     try {
@@ -336,7 +337,8 @@ class RegisterState extends GetMaterialController {
         'dis_id': disId ?? '',
         'pro_id': proId ?? '',
         'personal_talent': personalTalent ?? '',
-        'phone': phone
+        'phone': phone,
+        'apple_setting': appleSetting ?? ''
       });
       if (fileImage != null) {
         var picture =
