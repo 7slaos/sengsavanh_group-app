@@ -34,6 +34,8 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
   late DateTime _startDate;
   late DateTime _endDate;
 
+  List<Map<String, dynamic>> markStatusList = [];
+
   // data + loading states
   bool _loading = true;
   String? _error;
@@ -46,6 +48,7 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
     _startDate = DateTime(now.year, now.month, now.day);
     _endDate = DateTime(now.year, now.month, now.day);
     _load(); // initial fetch
+    _fetchMarkStatus(); // โหลดสถานะจาก DB
   }
 
   String _fmtYMD(DateTime d) =>
@@ -130,7 +133,10 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
         final map = jsonDecode(text) as Map<String, dynamic>;
         final list = (map['items'] ?? []) as List;
         setState(() {
-          _items = list.map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e as Map)).toList();
+          _items = list
+              .map<Map<String, dynamic>>(
+                  (e) => Map<String, dynamic>.from(e as Map))
+              .toList();
           _loading = false;
         });
       } else {
@@ -147,9 +153,36 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
     }
   }
 
+  Future<void> _fetchMarkStatus() async {
+    try {
+      final data = await repo.getMarkStatusUpdateAPI();
+      print("📥 MarkStatus API: $data");
+
+      if (data['success'] == true && data['data'] != null) {
+        final raw = data['data'];
+
+        if (raw is List) {
+          setState(() {
+            markStatusList = raw.map<Map<String, dynamic>>((e) {
+              final map = Map<String, dynamic>.from(e);
+
+              // ✅ force parse int
+              map['id'] = int.tryParse(map['id'].toString());
+              map['score'] = int.tryParse(map['score'].toString());
+
+              return map;
+            }).toList();
+          });
+        }
+      } else {
+        Get.snackbar("Error", "ไม่พบข้อมูลสถานะ");
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    }
+  }
+
   Future<bool?> _showEditForm(Map<String, dynamic> student) async {
-    final scoreController =
-        TextEditingController(text: student['score']?.toString() ?? '');
     final noteController =
         TextEditingController(text: student['note']?.toString() ?? '');
 
@@ -172,7 +205,7 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
 
     int? statusValue = (student['status'] is int)
         ? student['status'] as int
-        : int.tryParse("${student['status'] ?? ''}") ?? 1;
+        : int.tryParse("${student['status'] ?? ''}");
 
     String _formatDate(DateTime d) =>
         "${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}";
@@ -198,20 +231,18 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                 return;
               }
 
-              final rawScore = scoreController.text.trim();
-              final int? score =
-                  rawScore.isEmpty ? null : int.tryParse(rawScore);
-              if (rawScore.isNotEmpty && score == null) {
-                Get.snackbar("Warning", "Score should be a number",
-                    snackPosition: SnackPosition.BOTTOM);
-                return;
-              }
-
-              if (statusValue == null || statusValue == 0) {
+              if (statusValue == null) {
                 Get.snackbar("Warning", "Please select status",
                     snackPosition: SnackPosition.BOTTOM);
                 return;
               }
+
+              // ✅ หา score จาก markStatusList ที่โหลดมาจาก API
+              final selectedStatusItem = markStatusList.firstWhere(
+                (item) => item['id'] == statusValue,
+                orElse: () => <String, dynamic>{}, // ✅ ต้องเป็น Map
+              );
+              final scoreValue = selectedStatusItem['score'] ?? 0;
 
               final dated =
                   "${_formatDate(selectedDate)} ${_formatTime(selectedTime)}:00";
@@ -221,7 +252,7 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
 
                 final res = await repo.editCheckMissingStudentAPI(
                   id: id is int ? id : int.tryParse(id.toString()) ?? -1,
-                  score: score,
+                  score: scoreValue, // ✅ ใช้ score จาก API
                   status: statusValue,
                   note: noteController.text.trim().isEmpty
                       ? null
@@ -232,7 +263,8 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                 if (res['success'] == true) {
                   Get.back(result: true);
                   Get.snackbar("Success", "Updated successfully",
-                      snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green);
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.green);
                 } else {
                   Get.snackbar(
                     "Error",
@@ -273,97 +305,32 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                     Text(
                       "ແກ້ໄຂຂໍ້ມູນ: ${student['firstname']} ${student['lastname']}",
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 16),
 
-                    // Status + Score
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: DropdownButtonFormField<int>(
-                            value: statusValue,
-                            decoration: const InputDecoration(
-                              labelText: "ສະຖານະ",
-                              border: OutlineInputBorder(),
-                            ),
-                            items: const [
-                              DropdownMenuItem(
-                                  value: 1, child: Text("ຂາດໝົດມື້")),
-                              DropdownMenuItem(value: 2, child: Text("ມາຊ້າ")),
-                            ],
-                            onChanged: (v) =>
-                                setSheetState(() => statusValue = v),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: scoreController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: "ຄະແນນ",
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                      ],
+                    // 🔹 Status (Dropdown จาก API)
+                    DropdownButtonFormField<int>(
+                      value: statusValue,
+                      decoration: const InputDecoration(
+                        labelText: "ສະຖານະ",
+                        border: OutlineInputBorder(),
+                      ),
+                      items: markStatusList.map((item) {
+                        return DropdownMenuItem<int>(
+                          value:
+                              item['id'] as int, // ✅ ตอนนี้เป็น int แน่นอนแล้ว
+                          child: Text("${item['name']} (${item['score']})"),
+                        );
+                      }).toList(),
+                      onChanged: (v) => setSheetState(() => statusValue = v),
                     ),
+
                     const SizedBox(height: 16),
 
-                    // Date + Time
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () async {
-                              final picked = await showDatePicker(
-                                context: context,
-                                initialDate: selectedDate,
-                                firstDate: DateTime(2020),
-                                lastDate: DateTime(2100),
-                              );
-                              if (picked != null) {
-                                setSheetState(() => selectedDate = picked);
-                              }
-                            },
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: "ວັນທີ",
-                                border: OutlineInputBorder(),
-                              ),
-                              child: Text(
-                                  "${_fmtYMD(selectedDate)}"), // user sees Y-M-D
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () async {
-                              final picked = await showTimePicker(
-                                context: context,
-                                initialTime: selectedTime,
-                              );
-                              if (picked != null) {
-                                setSheetState(() => selectedTime = picked);
-                              }
-                            },
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: "ເວລາ",
-                                border: OutlineInputBorder(),
-                              ),
-                              child: Text(
-                                  "${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}"),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
+                    // 🔹 Note
                     TextField(
                       controller: noteController,
                       decoration: const InputDecoration(
@@ -371,26 +338,66 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                         border: OutlineInputBorder(),
                       ),
                     ),
+                    const SizedBox(height: 16),
+
+                    // 🔹 Date + Time (disabled)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: IgnorePointer(
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                labelText: "ວັນທີ",
+                                border: OutlineInputBorder(),
+                                enabled: false,
+                              ),
+                              child: Text(
+                                "${_formatDate(selectedDate)}",
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: IgnorePointer(
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                labelText: "ເວລາ",
+                                border: OutlineInputBorder(),
+                                enabled: false,
+                              ),
+                              child: Text(
+                                "${_formatTime(selectedTime)}",
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
 
                     const SizedBox(height: 20),
 
+                    // 🔹 Save button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: isSaving ? null : _save,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orangeAccent,
-                          foregroundColor: Colors.white, // ສີຂໍ້ຄວາມ
-                          padding: const EdgeInsets.symmetric(vertical: 14), // ກຳນົດຄວາມສູງ
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8), // ໂຄ້ງມຸມ
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         child: isSaving
                             ? const SizedBox(
                                 height: 18,
                                 width: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Text("ແກ້ໄຂ"),
                       ),
@@ -405,46 +412,46 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
     );
   }
 
-Future<void> _confirmDelete(Map<String, dynamic> row) async {
-  // get numeric id safely
-  final int? id = row['id'] is int
-      ? row['id'] as int
-      : int.tryParse("${row['id'] ?? ''}");
+  Future<void> _confirmDelete(Map<String, dynamic> row) async {
+    // get numeric id safely
+    final int? id = row['id'] is int
+        ? row['id'] as int
+        : int.tryParse("${row['id'] ?? ''}");
 
-  if (id == null) {
-    Get.snackbar("Error", "Record id not found", snackPosition: SnackPosition.BOTTOM);
-    return;
-  }
-
-  // confirm dialog
-  final bool? ok = await Get.defaultDialog<bool?>(
-    title: "Confirm delete",
-    middleText:
-        "${row['firstname'] ?? ''} ${row['lastname'] ?? ''}",
-    textCancel: "Cancel",
-    textConfirm: "Delete",
-    confirmTextColor: Colors.white,
-    buttonColor: Colors.red,
-    onConfirm: () => Get.back(result: true),
-    onCancel: () => Get.back(result: false),
-  );
-
-  if (ok != true) return;
-
-  try {
-    final resp = await repo.deleteCheckMissingAPI(id: id);
-    if (resp['success'] == true) {
-      Get.snackbar("Deleted", "Delete success", snackPosition: SnackPosition.BOTTOM);
-      _load(); // refresh list
-    } else {
-      Get.snackbar("Error", resp['message']?.toString() ?? "Delete failed",
+    if (id == null) {
+      Get.snackbar("Error", "Record id not found",
           snackPosition: SnackPosition.BOTTOM);
+      return;
     }
-  } catch (e) {
-    Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
-  }
-}
 
+    // confirm dialog
+    final bool? ok = await Get.defaultDialog<bool?>(
+      title: "Confirm delete",
+      middleText: "${row['firstname'] ?? ''} ${row['lastname'] ?? ''}",
+      textCancel: "Cancel",
+      textConfirm: "Delete",
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      onConfirm: () => Get.back(result: true),
+      onCancel: () => Get.back(result: false),
+    );
+
+    if (ok != true) return;
+
+    try {
+      final resp = await repo.deleteCheckMissingAPI(id: id);
+      if (resp['success'] == true) {
+        Get.snackbar("Deleted", "Delete success",
+            snackPosition: SnackPosition.BOTTOM);
+        _load(); // refresh list
+      } else {
+        Get.snackbar("Error", resp['message']?.toString() ?? "Delete failed",
+            snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -461,13 +468,13 @@ Future<void> _confirmDelete(Map<String, dynamic> row) async {
           color: appColors.white,
         ),
 // ใน AppBar
-leading: IconButton(
-  icon: Icon(Icons.arrow_back, color: appColors.white),
-  onPressed: () {
-    // ไปหน้า SubjectTeacherPage แบบเคลียร์ stack ทั้งหมด
-    Get.offAll(() => const SubjectTeacherPage());
-  },
-),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: appColors.white),
+          onPressed: () {
+            // ไปหน้า SubjectTeacherPage แบบเคลียร์ stack ทั้งหมด
+            Get.offAll(() => const SubjectTeacherPage());
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle, color: Colors.white),
@@ -522,8 +529,7 @@ leading: IconButton(
 
             // Data area
             if (_loading)
-              const Expanded(
-                  child: Center(child: CircularProgressIndicator()))
+              const Expanded(child: Center(child: CircularProgressIndicator()))
             else if (_error != null)
               Expanded(child: Center(child: Text('Error: $_error')))
             else if (_items.isEmpty)
@@ -574,7 +580,7 @@ leading: IconButton(
                                   const SizedBox(width: 4),
                                   CustomText(
                                     text:
-                                        "${student['score']?.toString() ?? '-'} ຄະແນນ",
+                                        "- ${student['score']?.toString() ?? '-'} ຄະແນນ",
                                     fontSize: fsize * 0.013,
                                   ),
                                   const SizedBox(width: 12),
@@ -595,17 +601,17 @@ leading: IconButton(
                                       size: fsize * 0.014, color: Colors.green),
                                   const SizedBox(width: 4),
                                   CustomText(
-                                    text:
-                                        (student['time']?.toString() ?? '').toString(),
+                                    text: (student['time']?.toString() ?? '')
+                                        .toString(),
                                     fontSize: fsize * 0.013,
                                     color: Colors.green,
                                   ),
                                   const SizedBox(width: 8),
-                                  IconButton(
-                                    icon: Icon(Icons.delete,
-                                        size: fsize * 0.018, color: Colors.red),
-                                    onPressed: () => _confirmDelete(student),
-                                  ),
+                                  // IconButton(
+                                  //   icon: Icon(Icons.delete,
+                                  //       size: fsize * 0.018, color: Colors.red),
+                                  //   onPressed: () => _confirmDelete(student),
+                                  // ),
                                 ],
                               ),
                             ],

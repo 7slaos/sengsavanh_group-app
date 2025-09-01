@@ -12,7 +12,6 @@ import 'package:pathana_school_app/pages/mark_student/subject_teacher_page.dart'
 import 'package:pathana_school_app/pages/parent_recordes/take_children_page.dart';
 import 'package:pathana_school_app/pages/score_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/follow_student_page.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/in_out_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/profile_teacher_recorde.dart';
 import 'package:pathana_school_app/states/address_state.dart';
 import 'package:pathana_school_app/states/auth_login_register.dart';
@@ -57,6 +56,11 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
       'title': 'scan-in-out',
       'icon': Icons.qr_code_scanner,
       'color': Colors.pink
+    },
+    {
+      'title': 'mark-student',
+      'icon': Icons.note_alt,
+      'color': Colors.red
     }
   ];
   void handleGridTap(String title) {
@@ -76,8 +80,6 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
           Get.to(() => CheckInOutPage(), transition: Transition.fadeIn),
       'mark-student': () =>
           Get.to(() => SubjectTeacherPage(), transition: Transition.fadeIn),
-      'Click_in-out': () =>
-          Get.to(() => InOutPage(), transition: Transition.fadeIn),
       'Tuition_fees': () => Get.to(
           () => HistoryPaymentPage(
                 type: 't',
@@ -164,22 +166,6 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
           subjects.add({
             'title': 'Tuition_fees',
             'icon': Icons.money,
-            'color': Colors.blue
-          });
-        }
-        if (checkRole.checkRole("access_check_missing_school") == true &&
-            !subjects.any((e) => e['title'] == 'mark-student')) {
-          subjects.add({
-            'title': 'mark-student',
-            'icon': Icons.note_alt,
-            'color': Colors.red
-          });
-        }
-        if (checkRole.checkRole("access_check_in_out") == true &&
-            !subjects.any((e) => e['title'] == 'Click_in-out')) {
-          subjects.add({
-            'title': 'Click_in-out',
-            'icon': Icons.touch_app_outlined,
             'color': Colors.blue
           });
         }
