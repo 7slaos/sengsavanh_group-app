@@ -32,6 +32,8 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
 
+  List<Map<String, dynamic>> markStatusList = []; // ✅ เก็บค่าจาก API
+
   int? selectedStatus;
   List<Map<String, dynamic>> students = [];
   final Set<int> selectedIndexes = {};
@@ -40,10 +42,28 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
   @override
   void initState() {
     super.initState();
+    _fetchMarkStatus();
     _fetchStudents();
   }
 
   /// ดึงรายชื่อนักเรียนจาก API
+  /// /// ดึงข้อมูล mark_status จาก API
+  Future<void> _fetchMarkStatus() async {
+    try {
+      final data = await repo.getMarkStatusAPI(); // เรียก API ที่คุณเขียนไว้
+
+      if (data['success'] == true && data['data'] != null) {
+        setState(() {
+          markStatusList = List<Map<String, dynamic>>.from(data['data']);
+        });
+      } else {
+        Get.snackbar("Error", "ไม่พบข้อมูลสถานะ");
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    }
+  }
+
   Future<void> _fetchStudents() async {
     try {
       final data = await repo.getStudentBySubjectAPI(widget.subjectTeacherId);
@@ -82,17 +102,6 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
       return;
     }
 
-    // ✅ Validate score
-    if (cutScoreController.text.isEmpty) {
-      Get.snackbar("Warning", "Please input score");
-      return;
-    }
-    final scoreValue = int.tryParse(cutScoreController.text);
-    if (scoreValue == null) {
-      Get.snackbar("Warning", "Score should be number");
-      return;
-    }
-
     // ✅ Validate note
     if (noteController.text.isEmpty) {
       Get.snackbar("Warning", "Please input note");
@@ -104,6 +113,13 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
       Get.snackbar("Warning", "Please select status");
       return;
     }
+
+    // ✅ หาค่า score จาก markStatusList ตาม selectedStatus
+    final selectedStatusItem = markStatusList.firstWhere(
+      (item) => item['id'] == selectedStatus,
+      orElse: () => {},
+    );
+    final scoreValue = selectedStatusItem['score'] ?? 0;
 
     // ✅ รวมวันที่ + เวลา เป็น DateTime เดียว
     final combinedDateTime = DateTime(
@@ -124,7 +140,7 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
         final st = students[i];
         return {
           "student_records_id": st['student_records_id'],
-          "score": scoreValue,
+          "score": scoreValue, // ✅ ใช้ score จาก API
           "note": noteController.text,
           "status": selectedStatus,
         };
@@ -137,8 +153,9 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
       final result = await repo.saveCheckStudentAPI(payload);
 
       if (result['success'] == true) {
-       var res =  await Repository().post(
-          url: '${Repository().urlApi}api/check_in_check_out_push_notification_to_users',
+        var res = await Repository().post(
+          url:
+              '${Repository().urlApi}api/check_in_check_out_push_notification_to_users',
           body: {
             'type': 'missing_school',
             'student_record_ids': jsonEncode(
@@ -150,9 +167,8 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
           },
           auth: true,
         );
-        //
-        // print('333333');
-        // print(res.body);
+
+        print(res.body);
         Get.defaultDialog(
           title: "Success",
           middleText: "Saved success",
@@ -162,8 +178,8 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
             Get.offAll(() => ListCheckStudentPage(
                   subjectTeacherId: widget.subjectTeacherId,
                   scheduleItemsId: widget.scheduleItemsId,
-                  className: widget.className, // 👈 เพิ่มตรงนี้
-                  subjectName: widget.subjectName, // 👈 เพิ่มตรงนี้
+                  className: widget.className,
+                  subjectName: widget.subjectName,
                 ));
           },
         );
@@ -284,89 +300,78 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
                   ),
                   child: Column(
                     children: [
-                      // Row 1: Score + Note
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: TextField(
-                              controller: cutScoreController,
-                              decoration: InputDecoration(
-                                hintText: 'Score',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                              keyboardType: TextInputType.number,
-                            ),
+                      // Row 1: Status (เต็มแถว)
+                      DropdownButtonFormField<int>(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(6),
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            flex: 2,
-                            child: TextField(
-                              controller: noteController,
-                              decoration: InputDecoration(
-                                hintText: 'Note',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                            ),
+                        ),
+                        hint: const Text('Status'),
+                        value: selectedStatus,
+                        items: markStatusList.map((item) {
+                          return DropdownMenuItem<int>(
+                            value: item['id'],
+                            child: Text(
+                                "${item['name']} (- ${item['score'] ?? 0} Score)"),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedStatus = value;
+                          });
+                        },
+                      ),
+
+                      const SizedBox(height: 8),
+                      // Row 4: Note (เต็มแถว)
+                      TextField(
+                        controller: noteController,
+                        decoration: InputDecoration(
+                          hintText: 'Note',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(6),
                           ),
-                        ],
+                        ),
                       ),
 
                       const SizedBox(height: 8),
 
-                      // Row 2: Date + Time
+                      // Row 2: Date + Time (disabled)
                       Row(
                         children: [
                           Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                final picked = await showDatePicker(
-                                  context: context,
-                                  initialDate: selectedDate,
-                                  firstDate: DateTime(2020),
-                                  lastDate: DateTime(2100),
-                                );
-                                if (picked != null) {
-                                  setState(() => selectedDate = picked);
-                                }
-                              },
+                            child: IgnorePointer(
                               child: InputDecorator(
                                 decoration: InputDecoration(
                                   labelText: "Date",
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(6),
                                   ),
+                                  enabled: false,
                                 ),
                                 child: Text(
                                   "${selectedDate.toLocal()}".split(' ')[0],
+                                  style: const TextStyle(color: Colors.grey),
                                 ),
                               ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                final picked = await showTimePicker(
-                                  context: context,
-                                  initialTime: selectedTime,
-                                );
-                                if (picked != null) {
-                                  setState(() => selectedTime = picked);
-                                }
-                              },
+                            child: IgnorePointer(
                               child: InputDecorator(
                                 decoration: InputDecoration(
                                   labelText: "Time",
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(6),
                                   ),
+                                  enabled: false,
                                 ),
-                                child: Text(selectedTime.format(context)),
+                                child: Text(
+                                  selectedTime.format(context),
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
                               ),
                             ),
                           ),
@@ -375,56 +380,29 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
 
                       const SizedBox(height: 8),
 
-                      // Row 3: Status + Confirm
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: DropdownButtonFormField<int>(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                              hint: const Text('Status'),
-                              items: const [
-                                DropdownMenuItem(
-                                  value: 1,
-                                  child: Text('All days'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 2,
-                                  child: Text('Come late'),
-                                ),
-                              ],
-                              onChanged: (value) {
-                                selectedStatus = value;
-                              },
+                      // Row 3: Confirm Button (เต็มแถว)
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: selectedIndexes.isEmpty
+                                ? Colors.grey
+                                : Colors.blue,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: selectedIndexes.isEmpty
-                                  ? Colors.grey
-                                  : Colors.blue, // ถ้าไม่มีเลือก = 灰色
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            onPressed: selectedIndexes.isEmpty
-                                ? null
-                                : _onConfirm, // ❌ disable ถ้าไม่เลือก
-                            child: const Text('Confirm'),
-                          )
-                        ],
+                          onPressed:
+                              selectedIndexes.isEmpty ? null : _onConfirm,
+                          child: const Text('Confirm'),
+                        ),
                       ),
                     ],
                   ),
-                ),
+                )
               ],
             ),
     );

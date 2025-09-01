@@ -83,7 +83,15 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    double fsize = size.width + size.height;
+
+    // ฟังก์ชันคำนวณ font size (ป้องกันตัวหนังสือใหญ่เกินจนล้น)
+    double fs(double factor) =>
+        (size.width * factor).clamp(10.0, 20.0).toDouble();
+
+    String fmtTime(dynamic v) {
+      final s = (v ?? "").toString();
+      return s.length >= 5 ? s.substring(0, 5) : s;
+    }
 
     return Scaffold(
       backgroundColor: appColors.white,
@@ -93,12 +101,13 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
         title: CustomText(
           text: 'Subjects for teach'.tr,
           color: appColors.white,
+          fontSize: fs(0.05),
+          fontWeight: FontWeight.bold,
+          maxLines: 1,
         ),
-// ใน AppBar
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: appColors.white),
           onPressed: () {
-            // ไปหน้า TeacherDashboardPage แบบเคลียร์ stack ทั้งหมด
             Get.offAll(() => const TeacherDashboardPage());
           },
         ),
@@ -109,6 +118,7 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
               padding: EdgeInsets.all(size.width * 0.03),
               child: Column(
                 children: [
+                  // ✅ แถวเลือกวันแนวนอน
                   SizedBox(
                     height: 45,
                     child: ListView(
@@ -135,8 +145,9 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                                 color: isSelected
                                     ? Colors.white
                                     : appColors.mainColor,
-                                fontSize: fsize * 0.013,
+                                fontSize: fs(0.035),
                                 fontWeight: FontWeight.w500,
+                                maxLines: 1,
                               ),
                             ),
                           ),
@@ -145,13 +156,14 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
+
+                  // ✅ รายการวิชา
                   Expanded(
                     child: subjectData.isEmpty
                         ? const Center(child: Text("ບໍ່ມີຂໍ້ມູນ"))
                         : ListView(
                             children: subjectData.where((item) {
-                              String apiDay =
-                                  days[(item["days"] ?? 1) - 1]; // ✅ ใช้ Map
+                              String apiDay = days[(item["days"] ?? 1) - 1];
                               return apiDay == selectedDay;
                             }).map((item) {
                               return Container(
@@ -173,15 +185,12 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                                     Get.to(
                                       () => ListCheckStudentPage(
                                         subjectTeacherId:
-                                            item["subject_teacher_id"] ??
-                                                0, // 👈 ส่งค่าที่มีอยู่แล้ว
+                                            item["subject_teacher_id"] ?? 0,
                                         scheduleItemsId:
-                                            item["schedule_items_id"] ??
-                                                0, // 👈 ต้องส่งเพิ่มอันนี้
-                                        className: item["class_name"] ??
-                                            "-", // 👈 ต้องมีค่านี้
-                                        subjectName: item["subject_name"] ??
-                                            "-", // 👈 ต้องมีค่านี้
+                                            item["schedule_items_id"] ?? 0,
+                                        className: item["class_name"] ?? "-",
+                                        subjectName:
+                                            item["subject_name"] ?? "-",
                                       ),
                                       transition: Transition.rightToLeft,
                                     );
@@ -190,50 +199,70 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      // ✅ ห่อ subject name ด้วย Expanded
                                       Row(
                                         children: [
                                           Icon(Icons.menu_book,
-                                              size: fsize * 0.016,
+                                              size: fs(0.04),
                                               color: appColors.mainColor),
                                           const SizedBox(width: 6),
-                                          CustomText(
-                                            text: item["subject_name"] ?? "-",
-                                            fontSize: fsize * 0.015,
-                                            fontWeight: FontWeight.bold,
+                                          Expanded(
+                                            child: CustomText(
+                                              text: item["subject_name"] ?? "-",
+                                              fontSize: fs(0.045),
+                                              fontWeight: FontWeight.bold,
+                                              maxLines: 1,
+                                            ),
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 4),
-                                      Row(
+
+                                      // ✅ ใช้ Wrap กันล้นเวลาแสดงรายละเอียด
+                                      Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        spacing: 12,
+                                        runSpacing: 6,
                                         children: [
                                           CustomText(
                                             text:
                                                 'ຊັ້ນ: ${item["class_name"] ?? "-"}',
-                                            fontSize: fsize * 0.013,
+                                            fontSize: fs(0.035),
                                             color: Colors.grey[700],
+                                            maxLines: 1,
                                           ),
-                                          const SizedBox(width: 16),
-                                          Icon(Icons.calendar_today,
-                                              size: fsize * 0.013,
-                                              color: appColors.mainColor),
-                                          const SizedBox(width: 4),
-                                          CustomText(
-                                            text: days[(item["days"] ?? 1) - 1],
-                                            fontSize: fsize * 0.013,
-                                            color: appColors.mainColor,
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.calendar_today,
+                                                  size: fs(0.035),
+                                                  color: appColors.mainColor),
+                                              const SizedBox(width: 4),
+                                              CustomText(
+                                                text: days[
+                                                    (item["days"] ?? 1) - 1],
+                                                fontSize: fs(0.035),
+                                                color: appColors.mainColor,
+                                                maxLines: 1,
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(width: 8),
-                                          Icon(Icons.access_time,
-                                              size: fsize * 0.013,
-                                              color: appColors.mainColor),
-                                          const SizedBox(width: 4),
-                                          Expanded(
-                                            child: CustomText(
-                                              text:
-                                                  '${(item["start_time"] ?? "").toString().substring(0, 5)} - ${(item["end_time"] ?? "").toString().substring(0, 5)}',
-                                              fontSize: fsize * 0.013,
-                                              color: appColors.mainColor,
-                                            ),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.access_time,
+                                                  size: fs(0.035),
+                                                  color: appColors.mainColor),
+                                              const SizedBox(width: 4),
+                                              CustomText(
+                                                text:
+                                                    '${fmtTime(item["start_time"])} - ${fmtTime(item["end_time"])}',
+                                                fontSize: fs(0.035),
+                                                color: appColors.mainColor,
+                                                maxLines: 1,
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
