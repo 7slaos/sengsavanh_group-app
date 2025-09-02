@@ -31,7 +31,7 @@ class _AdminStudentsState extends State<AdminStudents> {
   }
 
   getData() {
-    Future.delayed(Duration(seconds: 5));
+    // Future.delayed(Duration(seconds: 5));
     adminStudentsState.getData('', '', branchId: widget.branchId);
   }
 

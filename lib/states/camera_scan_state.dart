@@ -38,6 +38,7 @@ class CameraScanPageState extends GetxController {
 
   Future<http.Response> scanOut({required BuildContext context, String ? code}) async {
     if (barcode == null && code == null) {
+      print('llllllll');
       playSound();
       CustomDialogs().showToastWithIcon(context: context, message: 'Qrcode student is empty',icon: Icons.close, backgroundColor: appColors.red);
       return Future.error("empty_barcode");
@@ -51,8 +52,11 @@ class CameraScanPageState extends GetxController {
             "lat": lat,
             "lng": lng
           });
+      print('kkkkkkkkk');
+
+      final response = jsonDecode(utf8.decode(res.bodyBytes));
+      print(response);
       if (res.statusCode == 200) {
-        final response = jsonDecode(utf8.decode(res.bodyBytes));
         if(response['inRange'] == true){
           postCheckStudent(context, response['data']['id'].toString());
         }else{
@@ -82,7 +86,7 @@ class CameraScanPageState extends GetxController {
       print(response);
       if (res.statusCode == 200 && response['success'] == true) {
         final id = response['data']['id'].toString();
-        final type = response['data']['type'].toString();
+        final type = response['data']['type'] !=null ? response['data']['type'].toString() : 'Success';
         playSuccessSound();
         CustomDialogs().showToastWithIcon(context: context, message: type=='check_in' ? 'Check In ສໍາເລັດແລ້ວ' : 'Check Out ສໍາເລັດແລ້ວ', backgroundColor: appColors.green);
         await sendNotificationToParent(id: id, type: type);
@@ -90,13 +94,14 @@ class CameraScanPageState extends GetxController {
         Get.back(result: true);
       }else if(res.statusCode == 422){
         playSound();
-        CustomDialogs().showToastWithIcon(context: context, message: 'Already Check In/Out',icon: Icons.close, backgroundColor: appColors.red);
-        Get.back(result: true);
+        print('99999999');
+        return CustomDialogs().showToastWithIcon(context: context, message: 'Already Check In/Out',icon: Icons.close, backgroundColor: appColors.red);
       }
-    }catch(e){
-      playSound();
+    }catch(e, StackTrack){
+      print(e);
+      print(StackTrack);
+      //playSound();
       CustomDialogs().showToastWithIcon(context: context, message: 'something_went_wrong', icon: Icons.close, backgroundColor: appColors.red);
-      Get.back(result: true);
     }
   }
   sendNotificationToParent({required String id, required type}) async{
