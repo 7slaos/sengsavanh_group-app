@@ -64,6 +64,23 @@
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>This app needs access to your location for check in check out.</string>
 
+    <!-- iPhone -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+      <string>UIInterfaceOrientationPortrait</string>
+      <!-- add UIInterfaceOrientationPortraitUpsideDown if you also want upside-down -->
+    </array>
+
+    <!-- iPad (portrait only) -->
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+      <string>UIInterfaceOrientationPortrait</string>
+    </array>
+
+    <!-- Required to avoid iPad multitasking/orientation checks -->
+    <key>UIRequiresFullScreen</key>
+    <true/>
+
 
 </dict>
 </plist>

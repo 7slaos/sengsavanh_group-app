@@ -2,6 +2,7 @@ import 'package:pathana_school_app/models/province_model.dart';
 
 class TeacherRcordeModels {
   int? id;
+  String? code;
   String? firstname;
   String? lastname;
   String? phone;
@@ -28,9 +29,13 @@ class TeacherRcordeModels {
   String? duty;
   String? note;
   String? teacherRecordId;
+  double? lat;
+  double? lng;
+  double? km;
 
   TeacherRcordeModels(
       {this.id,
+        this.code,
       this.firstname,
       this.lastname,
       this.phone,
@@ -55,10 +60,12 @@ class TeacherRcordeModels {
       this.yearFinished,
       this.stayAt,
       this.duty,
-      this.note, this.teacherRecordId});
+      this.note, this.teacherRecordId, this.lat
+      ,this.lng,this.km});
 
   TeacherRcordeModels.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    code = json['code'];
     firstname = json['firstname'];
     lastname = json['lastname'];
     phone = json['phone'];
@@ -99,6 +106,9 @@ class TeacherRcordeModels {
     duty = json['duty'];
     note = json['note'];
     teacherRecordId = json['teacher_records_id'].toString();
+    lat = double.parse(json['lat'].toString());
+    lng = double.parse(json['lng'].toString());
+    km = double.parse(json['km'].toString());
   }
 
   // Map<String, dynamic> toJson() {

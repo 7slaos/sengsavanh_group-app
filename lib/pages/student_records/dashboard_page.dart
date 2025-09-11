@@ -3,10 +3,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pathana_school_app/custom/app_color.dart';
 import 'package:pathana_school_app/pages/change_language_page.dart';
-import 'package:pathana_school_app/pages/check-in-out/check_in_out_page.dart';
 import 'package:pathana_school_app/pages/student_records/profile_page.dart';
 import 'package:pathana_school_app/pages/student_records/score_student_page.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/in_out_page.dart';
+import 'package:pathana_school_app/pages/student_records/student_card_page.dart';
+import 'package:pathana_school_app/pages/teacher_recordes/check_in_map_page.dart';
+import 'package:pathana_school_app/pages/teacher_recordes/dashboard_page.dart';
 import 'package:pathana_school_app/repositorys/repository.dart';
 import 'package:pathana_school_app/states/address_state.dart';
 import 'package:pathana_school_app/states/appverification.dart';
@@ -20,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../custom/app_size.dart';
+import '../teacher_recordes/chec_in_check_out_page.dart';
 
 // ignore: must_be_immutable
 class DashboardPage extends StatefulWidget {
@@ -39,7 +41,7 @@ class _DashboardPageState extends State<DashboardPage> {
     {'title': 'score', 'icon': Icons.score, 'color': Colors.green},
     // {'title': 'subject'.tr, 'icon': Icons.subject, 'color': Colors.blue},
     {'title': 'profile', 'icon': Icons.person_pin, 'color': Colors.orange},
-    {'title': 'Click_in-out', 'icon': Icons.touch_app_outlined, 'color': Colors.blue},
+    {'title': 'scan-in-out', 'icon': Icons.qr_code_scanner, 'color': Colors.red},
     {'title': 'language', 'icon': Icons.language, 'color': Colors.teal},
     {'title': 'logout', 'icon': Icons.logout, 'color': Colors.grey},
   ];
@@ -50,8 +52,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Get.to(() => const ScoreStudentPage(), transition: Transition.fadeIn),
       1: () => Get.to(() =>  StudentProfilePage(type: 's'),
           transition: Transition.fadeIn),
-      2: () => Get.to(() => InOutPage(type: 'owner_student'),
-          transition: Transition.fadeIn),
+      2: () => Get.to(() => CheckInCheckOutPage(type: 's'), transition: Transition.fadeIn),
       3: () => Get.to(() => const ChangeLanguagePage(),
           transition: Transition.fadeIn),
       4: () => logots(),
@@ -85,6 +86,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double fSize = size.width + size.height;
+    final scale = (size.width / 390).clamp(0.9, 1.3);
     AppColor appColor = AppColor();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -144,7 +146,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   children: [
                                     CustomText(
                                       text:
-                                          '${'label_code'.tr}: ${(get.dataModels?.admissionNumber.toString() != 'null' && get.dataModels?.admissionNumber.toString() != '') ? get.dataModels?.admissionNumber : 'XXXXXX'}',
+                                          '${'label_code'.tr}: ${(get.dataModels?.code.toString() != 'null' && get.dataModels?.code.toString() != '') ? get.dataModels?.code : 'XXXXXX'}',
                                       color: appColor.white,
                                       fontSize: fixSize(0.0125, context),
                                       fontWeight: FontWeight.bold,
@@ -203,6 +205,41 @@ class _DashboardPageState extends State<DashboardPage> {
                   color: appColor.white,
                 )
               ],
+            ),
+            SizedBox(height: size.height * 0.02),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10 * scale),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  QuickAction(
+                    scale: scale,
+                    icon: Icons.location_on,
+                    label: 'Check-In',
+                    onTap: () {
+                      Get.to(() => CheckInMapPage(type: 's',status: 'check_in'), transition: Transition.fadeIn);
+                    },
+                  ),
+                  // SizedBox(width: 20),
+                  // QuickAction(
+                  //   scale: scale,
+                  //   icon: Icons.qr_code_scanner,
+                  //   label: 'Scan',
+                  //   onTap: () {
+                  //
+                  //   },
+                  // ),
+                  SizedBox(width: 20),
+                  QuickAction(
+                    scale: scale,
+                    icon: Icons.qr_code_2,
+                    label: 'My QR',
+                    onTap: () {
+                      Get.to(() => StudentCardPage(), transition: Transition.fadeIn);
+                    },
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: size.height * 0.02),
             // Subjects Grid

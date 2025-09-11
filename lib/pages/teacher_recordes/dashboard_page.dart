@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pathana_school_app/custom/app_color.dart';
 import 'package:pathana_school_app/custom/app_size.dart';
 import 'package:pathana_school_app/notifications/init_listen_noti.dart';
@@ -12,8 +13,10 @@ import 'package:pathana_school_app/pages/mark_student/subject_teacher_page.dart'
 import 'package:pathana_school_app/pages/parent_recordes/take_children_page.dart';
 import 'package:pathana_school_app/pages/score_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/follow_student_page.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/in_out_page.dart';
+import 'package:pathana_school_app/pages/teacher_recordes/google_map_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/profile_teacher_recorde.dart';
+import 'package:pathana_school_app/pages/teacher_recordes/teacher_card_page.dart';
+import 'package:pathana_school_app/pages/teacher_recordes/chec_in_check_out_page.dart';
 import 'package:pathana_school_app/states/address_state.dart';
 import 'package:pathana_school_app/states/auth_login_register.dart';
 import 'package:pathana_school_app/states/check_role_permission_state.dart';
@@ -27,6 +30,7 @@ import 'package:pathana_school_app/widgets/custom_text_widget.dart';
 import 'package:pathana_school_app/widgets/subject_card_widget.dart';
 
 import '../check-in-out/check_in_out_page.dart';
+import 'check_in_map_page.dart';
 
 class TeacherDashboardPage extends StatefulWidget {
   const TeacherDashboardPage({super.key});
@@ -69,11 +73,9 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
       'take_children': () =>
           Get.to(() => const TakeChildrenPage(), transition: Transition.fadeIn),
       'scan-in-out': () =>
-          Get.to(() => CheckInOutPage(), transition: Transition.fadeIn),
+          Get.to(() => CheckInCheckOutPage(type: 't'), transition: Transition.fadeIn),
       'mark-student': () =>
           Get.to(() => SubjectTeacherPage(), transition: Transition.fadeIn),
-      'Click_in-out': () =>
-          Get.to(() => InOutPage(), transition: Transition.fadeIn),
       'Tuition_fees': () => Get.to(
           () => HistoryPaymentPage(
                 type: 't',
@@ -146,6 +148,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
     AppColor appColor = AppColor();
     Size size = MediaQuery.of(context).size;
     double fSize = size.height + size.width;
+    final scale = (size.width / 390).clamp(0.9, 1.3);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(backgroundColor: appColor.mainColor, toolbarHeight: 0),
@@ -180,14 +183,6 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                 'title': 'mark-student',
                 'icon': Icons.note_alt,
                 'color': Colors.red
-              });
-            }
-            if (appleSetting == 0 &&
-                !subjects.any((e) => e['title'] == 'Click_in-out')) {
-              subjects.add({
-                'title': 'Click_in-out',
-                'icon': Icons.touch_app_outlined,
-                'color': Colors.blue
               });
             }
             if (!subjects.any((e) => e['title'] == 'language')) {
@@ -300,7 +295,61 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                       },
                     ),
                   ),
+                  if (appleSetting == 0) ...[
                   SizedBox(height: size.height * 0.02),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10 * scale),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        QuickAction(
+                          scale: scale,
+                          icon: Icons.location_on,
+                          label: 'Check-In',
+                          onTap: () {
+                            Get.to(() => CheckInMapPage(type: 't',status: 'check_in'), transition: Transition.fadeIn);
+                          },
+                        ),
+                        // SizedBox(width: 20),
+                        // QuickAction(
+                        //   scale: scale,
+                        //   icon: Icons.qr_code_scanner,
+                        //   label: 'Scan',
+                        //   onTap: () {
+                        //     Get.to(() => GoogleMapPage(
+                        //       points: const [
+                        //         PhotoPoint(
+                        //           id: 'c1',
+                        //           position: LatLng(17.9757, 102.6331),
+                        //           imageUrl: 'https://picsum.photos/id/1011/400/400',
+                        //         ),
+                        //         PhotoPoint(
+                        //           id: 'c2',
+                        //           position: LatLng(17.9738, 102.6268),
+                        //           imageUrl: 'https://picsum.photos/id/1015/400/400',
+                        //         ),
+                        //         PhotoPoint(
+                        //           id: 'c3',
+                        //           position: LatLng(17.9692, 102.6209),
+                        //           imageUrl: 'https://picsum.photos/id/1025/400/400',
+                        //         ),
+                        //       ],
+                        //     ), transition: Transition.fadeIn);
+                        //   },
+                        // ),
+                        SizedBox(width: 20),
+                        QuickAction(
+                          scale: scale,
+                          icon: Icons.qr_code_2,
+                          label: 'My QR',
+                          onTap: () {
+                            Get.to(() => TeacherCardPage(), transition: Transition.fadeIn);
+                          },
+                        ),
+                      ],
+                    ),
+                  )],
+                  SizedBox(height: size.height * 0.01),
                   // Subjects Grid
                   Expanded(
                     child: Padding(
@@ -347,5 +396,50 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
     if (res == true) {
       loginRegister.logouts();
     }
+  }
+}
+
+
+// ---------------- Quick Action ----------------
+class QuickAction extends StatelessWidget {
+  const QuickAction({
+    required this.scale,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final double scale;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = 40.0 * scale;
+
+    return Column(
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(size),
+          onTap: onTap,
+          child: Container(
+            width: size,
+            height: size,
+            decoration:  BoxDecoration(
+              color: AppColor().mainColor,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                    color: Color(0x22000000), blurRadius: 8, offset: Offset(0, 3))
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 20 * scale),
+          ),
+        ),
+        SizedBox(height: 6 * scale),
+        CustomText(text: label, fontSize: 10 * scale,)
+      ],
+    );
   }
 }

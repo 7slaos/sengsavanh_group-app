@@ -363,8 +363,9 @@ class _LoginPageState extends State<LoginPage> {
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0),
               child: Text(
-                'Version: $version',
-                style: TextStyle(color: appColors.grey),
+                'V $version',
+                style: TextStyle(color: appColors.grey, fontSize:  fixSize(0.01, context)),
+                
               ),
             ),
           ],

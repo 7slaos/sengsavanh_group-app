@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:pathana_school_app/custom/app_color.dart';
 import 'package:pathana_school_app/pages/parent_recordes/take_children_page.dart';
 import 'package:pathana_school_app/pages/splash_page.dart';
@@ -136,6 +137,11 @@ Future<void> main() async {
   if (initialMessage != null) {
     handleMessage(initialMessage);
   }
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,        // allow upright
+    //DeviceOrientation.portraitDown,      // (optional) allow upside-down
+  ]);
 
   runApp(const MyApp());
 }

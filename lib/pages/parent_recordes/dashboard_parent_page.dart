@@ -5,6 +5,7 @@ import 'package:pathana_school_app/pages/parent_recordes/follow_missing_school.d
 import 'package:pathana_school_app/pages/parent_recordes/parent_student_page.dart';
 import 'package:pathana_school_app/pages/parent_recordes/take_children_page.dart';
 import 'package:pathana_school_app/pages/profile_page.dart';
+import 'package:pathana_school_app/pages/teacher_recordes/chec_in_check_out_page.dart';
 import 'package:pathana_school_app/repositorys/repository.dart';
 import 'package:pathana_school_app/states/address_state.dart';
 import 'package:pathana_school_app/states/auth_login_register.dart';
@@ -14,6 +15,8 @@ import 'package:pathana_school_app/widgets/custom_dialog.dart';
 import 'package:pathana_school_app/widgets/custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../check-in-out/check_in_out_page.dart' show CheckInOutPage;
 
 // ignore: must_be_immutable
 class DashboardParentPage extends StatefulWidget {
@@ -52,6 +55,11 @@ class _DashboardParentPageState extends State<DashboardParentPage> {
       'color': Colors.black
     },
     {
+      'title': 'scan-in-out',
+      'icon': Icons.qr_code_scanner,
+      'color': Colors.pink
+    },
+    {
       'title': 'profile',
       'icon': Icons.perm_identity_outlined,
       'color': Colors.orange
@@ -70,10 +78,11 @@ class _DashboardParentPageState extends State<DashboardParentPage> {
           transition: Transition.fadeIn),
       4: () =>
           Get.to(() => const TakeChildrenPage(), transition: Transition.fadeIn),
-      5: () => Get.to(() => const ProfilePage(), transition: Transition.fadeIn),
-      6: () => Get.to(() => const ChangeLanguagePage(),
+      5: () => Get.to(() => CheckInCheckOutPage(type: 'p',), transition: Transition.fadeIn),
+      6: () => Get.to(() => const ProfilePage(), transition: Transition.fadeIn),
+      7: () => Get.to(() => const ChangeLanguagePage(),
           transition: Transition.fadeIn),
-      7: () => logots(),
+      8: () => logots(),
     };
     actions[index]!.call();
   }

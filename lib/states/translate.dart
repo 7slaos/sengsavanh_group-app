@@ -360,7 +360,10 @@ class Translate extends Translations {
           'who_go_with': 'Choose who the student goes with',
           'time_in': 'Time In',
           'time_out': 'Time Out',
-          'Click_in-out': 'Click in-out'
+          'Click_in-out': 'Click in-out',
+          'your_current_position': 'Your current position',
+          'academic_year': 'Academic year',
+          'scan': 'Scan'
         },
         'la_LA': {
           'login': 'ເຂົ້າສູ່ລະບົບ',
@@ -719,7 +722,10 @@ class Translate extends Translations {
           'time_in': 'ເວລາເຂົ້າ',
           'time_out': 'ເວລາອອກ',
           'mark-student':'ໝາຍຂາດນັກຮຽນ',
-          'Click_in-out': 'ກົດ ເຂົ້າ-ອອກ'
+          'Click_in-out': 'ກົດ ເຂົ້າ-ອອກ',
+          'your_current_position': 'ຕໍາແໜ່ງຂອງທ່ານ',
+          'academic_year': 'ສົກຮຽນ',
+          'scan': 'ສະແກນ'
         },
         'la_CN': {
           'login': '登入',
@@ -1038,7 +1044,10 @@ class Translate extends Translations {
           'time_in': '时间',
           'time_out': '暂停',
           'mark-student':'Mark student',
-          'Click_in-out': '点击进出'
+          'Click_in-out': '点击进出',
+          'your_current_position': '您的当前职位',
+          'academic_year': '学年',
+          'scan': '扫描'
         },
       };
 }

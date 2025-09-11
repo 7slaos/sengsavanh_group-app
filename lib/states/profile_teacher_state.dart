@@ -35,6 +35,7 @@ class ProfileTeacherState extends GetxController {
             TeacherRcordeModels.fromJson(jsonDecode(res.body)['data']);
       }
     } catch (e) {
+      // print(e);
       CustomDialogs().showToast(
         // ignore: deprecated_member_use
         backgroundColor: AppColor().black.withOpacity(0.8),

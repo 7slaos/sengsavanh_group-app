@@ -291,10 +291,10 @@ class _AdminStudentsState extends State<AdminStudents> {
                     return InkWell(
                       splashColor: Colors.transparent,
                       onTap: (){
-                         if(widget.checkInOut == true){
-                           Get.back();
-                           cameraScanPageState.scanOut(context: context, code: value[index].admissionNumber);
-                         }
+                         // if(widget.checkInOut == true){
+                         //   Get.back();
+                         //   cameraScanPageState.scanOut(context: context, code: value[index].admissionNumber);
+                         // }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),

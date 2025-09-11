@@ -326,7 +326,7 @@ class CustomDialogs {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon ?? Icons.check, color: iconColor ?? Colors.white),
+         Icon(icon ?? Icons.check, color: iconColor ?? Colors.white),
           const SizedBox(width: 12.0),
           Text(message.tr, style: TextStyle(color: Colors.white)),
         ],
