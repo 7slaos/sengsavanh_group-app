@@ -13,10 +13,10 @@ class Repository {
   //String urlApi = 'https://citschool.net/';
   //String urlApi = 'https://demo.citschool.net/';
   //String urlApi = 'https://95fa-115-84-87-9.ngrok-free.app/';
-  String urlApi = 'https://main.pathanaschool.net/';
-  String nuXtJsUrlApi = 'https://pathanaschool.net/';
-  // String urlApi = 'http://192.168.100.48:8001/';
-  // String nuXtJsUrlApi = 'http://192.168.100.48:3001/';
+  // String urlApi = 'https://main.pathanaschool.net/';
+  // String nuXtJsUrlApi = 'https://pathanaschool.net/';
+  String urlApi = 'http://192.168.100.168:8000/';
+  String nuXtJsUrlApi = 'http://192.168.100.168:3000/';
   String getFunctionAvailableByRole = 'api/get_function_available_by_role';
   String loginUser = 'api/login_users';
   String logoutUser = 'api/logouts';
