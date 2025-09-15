@@ -129,10 +129,17 @@ class _LoginPageState extends State<LoginPage> {
                 minHeight: size.height,
               ),
               child: GetBuilder<RegisterState>(builder: (getS) {
-                if (getS.schoolList.isEmpty && getS.checkSchool == false) {
-                  return CircleLoad();
-                }
-                var item = getS.schoolList.first;
+final item = getS.schoolList.firstWhereOrNull((_) => true);
+if (item == null) {
+  return Center(
+    child: ElevatedButton(
+      onPressed: () => Get.to(() => const SelectSchool(), transition: Transition.fadeIn),
+      child: Text('select_school'.tr),
+    ),
+  );
+}
+// use `item` safely here
+
                 return Center(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,

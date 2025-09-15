@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pathana_school_app/custom/app_color.dart';
 import 'package:pathana_school_app/pages/change_language_page.dart';
 import 'package:pathana_school_app/pages/parent_recordes/follow_missing_school.dart';
+import 'package:pathana_school_app/pages/parent_recordes/history_missing_school_page.dart';
 import 'package:pathana_school_app/pages/parent_recordes/parent_student_page.dart';
 import 'package:pathana_school_app/pages/parent_recordes/take_children_page.dart';
 import 'package:pathana_school_app/pages/profile_page.dart';
@@ -29,54 +30,48 @@ class _DashboardParentPageState extends State<DashboardParentPage> {
   AuthLoginRegister loginRegister = Get.put(AuthLoginRegister());
   AddressState addressState = Get.put(AddressState());
 
-  List<Map<String, dynamic>> subjects = [
-    {'title': 'score', 'icon': Icons.feed_outlined, 'color': Colors.green},
-    {
-      'title': 'Missing_school',
-      'icon': Icons.calendar_month_outlined,
-      'color': Colors.blue
-    },
-    {
-      'title': 'Tuition_fees',
-      'icon': Icons.school_outlined,
-      'color': Colors.red
-    },
-    {
-      'title': 'student',
-      'icon': Icons.diversity_3_outlined,
-      'color': Colors.black
-    },
-    {
-      'title': 'take_children',
-      'icon': Icons.campaign_outlined,
-      'color': Colors.black
-    },
-    {
-      'title': 'profile',
-      'icon': Icons.perm_identity_outlined,
-      'color': Colors.orange
-    },
-    {'title': 'language', 'icon': Icons.language, 'color': Colors.teal},
-    {'title': 'logout', 'icon': Icons.logout, 'color': Colors.grey},
-  ];
+  // keep your subjects as-is
+final List<Map<String, dynamic>> subjects = [
+  {'title': 'score', 'icon': Icons.feed_outlined, 'color': Colors.green},
+  {'title': 'Missing_school', 'icon': Icons.calendar_month_outlined, 'color': Colors.blue},
+  {'title': 'check_in_check_out', 'icon': Icons.nordic_walking_sharp, 'color': Colors.blue},
+  {'title': 'Tuition_fees', 'icon': Icons.school_outlined, 'color': Colors.red},
+  {'title': 'student', 'icon': Icons.diversity_3_outlined, 'color': Colors.black},
+  {'title': 'take_children', 'icon': Icons.campaign_outlined, 'color': Colors.black},
+  {'title': 'profile', 'icon': Icons.perm_identity_outlined, 'color': Colors.orange},
+  {'title': 'language', 'icon': Icons.language, 'color': Colors.teal},
+  {'title': 'logout', 'icon': Icons.logout, 'color': Colors.grey},
+];
 
-  void handleGridTap(int index) {
-    final actions = {
-      0: () => homeState.setCurrentPage(1),
-      2: () => homeState.setCurrentPage(2),
-      1: () => Get.to(() => const FollowMissingSchool(),
-          transition: Transition.fadeIn),
-      3: () => Get.to(() => const ParentStudentPage(),
-          transition: Transition.fadeIn),
-      4: () =>
-          Get.to(() => const TakeChildrenPage(), transition: Transition.fadeIn),
-      5: () => Get.to(() => const ProfilePage(), transition: Transition.fadeIn),
-      6: () => Get.to(() => const ChangeLanguagePage(),
-          transition: Transition.fadeIn),
-      7: () => logots(),
-    };
-    actions[index]!.call();
+void handleGridTap(int index) {
+  if (index < 0 || index >= subjects.length) {
+    debugPrint('handleGridTap: bad index $index');
+    return;
   }
+
+  final key = subjects[index]['title'] as String?; // 'score', 'Missing_school', ...
+  if (key == null) {
+    debugPrint('handleGridTap: item has no title at index $index');
+    return;
+  }
+
+  final routes = <String, VoidCallback>{
+    'score'           : () => homeState.setCurrentPage(1),
+    'Tuition_fees'    : () => homeState.setCurrentPage(2),
+    'Missing_school'  : () => Get.to(() => const FollowMissingSchool(),    transition: Transition.fadeIn),
+    'check_in_check_out'  : () => Get.to(() => const HistoryMissingSchoolPage(),    transition: Transition.fadeIn),
+    'student'         : () => Get.to(() => const ParentStudentPage(),      transition: Transition.fadeIn),
+    'take_children'   : () => Get.to(() => const TakeChildrenPage(),       transition: Transition.fadeIn),
+    'profile'         : () => Get.to(() => const ProfilePage(),            transition: Transition.fadeIn),
+    'language'        : () => Get.to(() => const ChangeLanguagePage(),     transition: Transition.fadeIn),
+    'logout'          : logots,
+  };
+
+  (routes[key] ?? () {
+    debugPrint('No action mapped for title "$key"');
+  }).call();
+}
+
 
   @override
   void initState() {

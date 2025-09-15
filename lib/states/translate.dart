@@ -351,7 +351,8 @@ class Translate extends Translations {
           'Adjust': 'Adjust',
           'Please_pay_the_tuition_fee': 'Please pay the tuition fee',
           'Total_income_plan': 'Total income plan',
-          'Do_you_want_to_allow_new_notifications': 'Do you want to allow new notifications',
+          'Do_you_want_to_allow_new_notifications':
+              'Do you want to allow new notifications',
           'transaction': 'Transaction',
           'scan-in-out': 'Scan in-out',
           'check_in': 'Check In',
@@ -360,7 +361,15 @@ class Translate extends Translations {
           'who_go_with': 'Choose who the student goes with',
           'time_in': 'Time In',
           'time_out': 'Time Out',
-          'Click_in-out': 'Click in-out'
+          'Click_in-out': 'Click in-out',
+          'history_missing_school': 'History missing school',
+          'check_in_check_out': 'Checkin-checkout school',
+          'scan_in': 'Scan in',
+          'IN': 'IN',
+          'OUT': 'OUT',
+          'aLl_score': 'ALl score',
+          'score_cuted': 'Score cuted',
+          'total_score': 'Total score',
         },
         'la_LA': {
           'login': 'ເຂົ້າສູ່ລະບົບ',
@@ -709,7 +718,8 @@ class Translate extends Translations {
           'Adjust': 'ປັບເພີ່ມ',
           'Please_pay_the_tuition_fee': 'ກະລຸນາ ຊໍາລະຄ່າຮຽນ',
           'Total_income_plan': 'ແຜນລາຍຮັບທັງໝົດ',
-          'Do_you_want_to_allow_new_notifications': 'ທ່ານຕ້ອງການ ອະນຸຍາດ ເປີດແຈ້ງເຕືອນໃໝ່ບໍ',
+          'Do_you_want_to_allow_new_notifications':
+              'ທ່ານຕ້ອງການ ອະນຸຍາດ ເປີດແຈ້ງເຕືອນໃໝ່ບໍ',
           'transaction': 'ທຸລະກໍາ',
           'scan-in-out': 'ສະແກນເຂົ້າ-ອອກ',
           'check_in': 'ກວດເຂົ້າ',
@@ -718,8 +728,16 @@ class Translate extends Translations {
           'who_go_with': 'ເລືອກຜູ້ທີ່ນັກຮຽນໄປກັບ',
           'time_in': 'ເວລາເຂົ້າ',
           'time_out': 'ເວລາອອກ',
-          'mark-student':'ໝາຍຂາດນັກຮຽນ',
-          'Click_in-out': 'ກົດ ເຂົ້າ-ອອກ'
+          'mark-student': 'ໝາຍຂາດນັກຮຽນ',
+          'Click_in-out': 'ກົດ ເຂົ້າ-ອອກ',
+          'history_missing_school': 'ປະຫວັດຂາດຮຽນ',
+          'check_in_check_out': 'ເຂົ້າ-ອອກໂຮງຮຽນ',
+          'scan_in': 'ສະເເກນເຂົ້າ',
+          'IN': 'ເຂົ້າ',
+          'OUT': 'ອອກ',
+          'aLl_score': 'ຄະແນນຄຸນສົມບັດທັງໝົດ',
+          'score_cuted': 'ລວມຄະແນນຖືກຕັດ',
+          'total_score': 'ຄະແນນຄຸນສົມບັດຄົງເຫຼືອ',
         },
         'la_CN': {
           'login': '登入',
@@ -1037,7 +1055,7 @@ class Translate extends Translations {
           'who_go_with': '选择学生与谁一起去。',
           'time_in': '时间',
           'time_out': '暂停',
-          'mark-student':'Mark student',
+          'mark-student': 'Mark student',
           'Click_in-out': '点击进出'
         },
       };

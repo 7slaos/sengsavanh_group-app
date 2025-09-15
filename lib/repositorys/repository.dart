@@ -72,6 +72,8 @@ class Repository {
   String DeleteCheckMissing =
       'api/api_for_app/mark_student/delete_check_missing';
   String GetMarkStatus = 'api/api_for_app/mark_student/get_mark_status';
+  String GetHistoryCheckInOut = 'api/api_for_app/mark_student/get_history_check_in_out';
+  String GetStudentMissingSchool = 'api/api_for_app/mark_student/get_student_missing_school';
   AppVerification appVerification = Get.put(AppVerification());
   Future<http.Response> get(
       {required String url, Map<String, String>? header, bool? auth}) async {
@@ -592,5 +594,161 @@ class Repository {
     throw Exception("Failed to fetch mark_status: ${res.statusCode}");
   }
 }
+
+/// Fetch check-in/out history from Nuxt API
+
+Future<Map<String, dynamic>> getHistoryCheckInOutAPI({
+  required DateTime startDate,
+  required DateTime endDate,
+  int? parentRecordId,   // optional (ไม่ต้องส่งก็ได้ เมื่อเป็น parent-only)
+  int? parentUserId,     // optional
+  int? studentRecordsId, // optional
+  int? studentUserId,    // optional
+}) async {
+  String _two(int n) => n.toString().padLeft(2, '0');
+  String _ymd(DateTime d) => '${d.year}-${_two(d.month)}-${_two(d.day)}';
+
+  // --- sanitize ---
+  if (endDate.isBefore(startDate)) {
+    endDate = startDate;
+  }
+
+  // สร้าง URL
+  final base = nuXtJsUrlApi.endsWith('/')
+      ? nuXtJsUrlApi.substring(0, nuXtJsUrlApi.length - 1)
+      : nuXtJsUrlApi;
+  final path = GetHistoryCheckInOut.startsWith('/')
+      ? GetHistoryCheckInOut.substring(1)
+      : GetHistoryCheckInOut;
+  final url = "$base/$path";
+
+  // 🚩 ส่ง all:true เพื่อให้ API ดึง "ทั้งหมด" ในช่วงวันที่
+  // ไม่ส่ง page/perPage เลย
+  final body = <String, dynamic>{
+    'start_date': _ymd(startDate),
+    'end_date'  : _ymd(endDate),
+    'all'       : true,
+    if (parentRecordId   != null) 'parent_record_id'   : parentRecordId,
+    if (parentUserId     != null) 'parent_user_id'     : parentUserId,
+    if (studentRecordsId != null) 'student_records_id' : studentRecordsId,
+    if (studentUserId    != null) 'student_user_id'    : studentUserId,
+  };
+
+  // Header + Token
+  final token = appVerification.nUxtToken;
+  final headers = <String, String>{
+    'Accept'      : 'application/json',
+    'Content-Type': 'application/json',
+    if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+  };
+
+  // ส่งคำขอ
+  final res = await postNUxt(url: url, header: headers, body: body);
+
+  // แปลงข้อความ (รองรับ bodyBytes)
+  final text = (() {
+    try { return utf8.decode(res.bodyBytes); } catch (_) { return res.body; }
+  })();
+
+  if (res.statusCode == 200) {
+    try {
+      final decoded = jsonDecode(text);
+      if (decoded is Map<String, dynamic>) return decoded;
+      throw Exception('Invalid JSON structure');
+    } catch (e) {
+      throw Exception('Invalid JSON from get_history_check_in_out: $e • raw=$text');
+    }
+  }
+
+  if (res.statusCode == 401 || res.statusCode == 403) {
+    appVerification.storage.erase();
+    appVerification.removeToken();
+    Get.offAll(() => const LoginPage());
+    throw Exception('Unauthorized (${res.statusCode}).');
+  }
+
+  throw Exception('get_history_check_in_out failed: HTTP ${res.statusCode} • $text');
+}
+
+
+/// Fetch student missing-school history (UI ใช้หน้า "ประวัติลูกขาดเรียน")
+/// รองรับ API ใหม่: api/api_for_app/mark_student/get_student_missing_school
+Future<Map<String, dynamic>> getStudentMissingSchoolAPI({
+  required DateTime startDate,
+  required DateTime endDate,
+  String? q,                 // ✅ เพิ่มพารามิเตอร์ q
+  int? studentRecordsId, // optional: ถ้าต้องการกรองเฉพาะนักเรียน
+}) async {
+  String _two(int n) => n.toString().padLeft(2, '0');
+  String _ymd(DateTime d) => '${d.year}-${_two(d.month)}-${_two(d.day)}';
+
+  // --- sanitize ช่วงวัน ---
+  if (endDate.isBefore(startDate)) {
+    endDate = startDate;
+  }
+
+  // --- สร้าง URL ---
+  final base = nuXtJsUrlApi.endsWith('/')
+      ? nuXtJsUrlApi.substring(0, nuXtJsUrlApi.length - 1)
+      : nuXtJsUrlApi;
+
+  // ใช้คอนสแตนต์ใหม่ (ต้องมีตัวแปร String GetStudentMissingSchool)
+  final path = GetStudentMissingSchool.startsWith('/')
+      ? GetStudentMissingSchool.substring(1)
+      : GetStudentMissingSchool;
+
+  final url = "$base/$path";
+
+  // --- Body: ไม่มี pagination ใช้แค่ช่วงวันที่ และ student_records_id (optional) ---
+  final body = <String, dynamic>{
+    'start_date': _ymd(startDate),     // รูปแบบ YYYY-MM-DD
+    'end_date'  : _ymd(endDate),
+     if (q != null && q.trim().isNotEmpty) 'q': q.trim(), // ✅ ส่ง q
+    if (studentRecordsId != null && studentRecordsId > 0)
+      'student_records_id': studentRecordsId,
+  };
+
+  // --- Header + Token ---
+  final token = appVerification.nUxtToken;
+  final headers = <String, String>{
+    'Accept'      : 'application/json',
+    'Content-Type': 'application/json',
+    if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+  };
+
+  // --- ส่งคำขอ ---
+  final res = await postNUxt(url: url, header: headers, body: body);
+
+  // --- แปลงข้อความ (รองรับ bodyBytes) ---
+  final text = (() {
+    try { return utf8.decode(res.bodyBytes); } catch (_) { return res.body; }
+  })();
+
+  // --- ตรวจผลลัพธ์ ---
+  if (res.statusCode == 200) {
+    try {
+      final decoded = jsonDecode(text);
+      if (decoded is Map<String, dynamic>) return decoded;
+      throw Exception('Invalid JSON structure');
+    } catch (e) {
+      throw Exception('Invalid JSON from get_student_missing_school: $e • raw=$text');
+    }
+  }
+
+  if (res.statusCode == 401 || res.statusCode == 403) {
+    // จัดการ token หมดอายุ / ไม่มีสิทธิ์
+    appVerification.storage.erase();
+    appVerification.removeToken();
+    Get.offAll(() => const LoginPage());
+    throw Exception('Unauthorized (${res.statusCode}).');
+  }
+
+  throw Exception('get_student_missing_school failed: HTTP ${res.statusCode} • $text');
+}
+
+
+
+
+
 
 }
