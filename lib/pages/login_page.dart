@@ -149,8 +149,11 @@ class _LoginPageState extends State<LoginPage> {
                             CachedNetworkImage(
                               imageUrl:
                                   "${Repository().urlApi}${item.logo}",
+                              width: fsize * 0.18,
                               placeholder: (context, url) =>
-                                  CircularProgressIndicator(),
+                                  SizedBox(
+                                      height: 150,
+                                      child: CircularProgressIndicator(color: appColors.mainColor)),
                               errorWidget: (context, url, error) => Image.asset(
                                 "assets/images/logo.png",
                                 width: fsize * 0.18,

@@ -10,10 +10,10 @@ import '../states/appverification.dart';
 export 'dart:convert';
 
 class Repository {
-  // String urlApi = 'https://main.pathanaschool.net/';
-  // String nuXtJsUrlApi = 'https://pathanaschool.net/';
-  String urlApi = 'http://192.168.100.172:8000/';
-  String nuXtJsUrlApi = 'http://192.168.100.172:3000/';
+  String urlApi = 'https://main.pathanaschool.net/';
+  String nuXtJsUrlApi = 'https://pathanaschool.net/';
+  // String urlApi = 'http://192.168.100.172:8000/';
+  // String nuXtJsUrlApi = 'http://192.168.100.172:3000/';
   String getFunctionAvailableByRole = 'api/get_function_available_by_role';
   String loginUser = 'api/login_users';
   String logoutUser = 'api/logouts';
