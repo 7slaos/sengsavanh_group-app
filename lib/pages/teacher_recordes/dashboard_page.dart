@@ -3,17 +3,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pathana_school_app/custom/app_color.dart';
 import 'package:pathana_school_app/custom/app_size.dart';
 import 'package:pathana_school_app/notifications/init_listen_noti.dart';
 import 'package:pathana_school_app/pages/change_language_page.dart';
 import 'package:pathana_school_app/pages/history_payment_page.dart';
 import 'package:pathana_school_app/pages/mark_student/subject_teacher_page.dart';
+import 'package:pathana_school_app/pages/parent_recordes/home_page.dart';
 import 'package:pathana_school_app/pages/parent_recordes/take_children_page.dart';
 import 'package:pathana_school_app/pages/score_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/follow_student_page.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/google_map_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/profile_teacher_recorde.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/teacher_card_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/chec_in_check_out_page.dart';
@@ -28,8 +28,6 @@ import 'package:pathana_school_app/widgets/custom_circle_load.dart';
 import 'package:pathana_school_app/widgets/custom_dialog.dart';
 import 'package:pathana_school_app/widgets/custom_text_widget.dart';
 import 'package:pathana_school_app/widgets/subject_card_widget.dart';
-
-import '../check-in-out/check_in_out_page.dart';
 import 'check_in_map_page.dart';
 
 class TeacherDashboardPage extends StatefulWidget {
@@ -49,16 +47,8 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
   FollowStudentState followStudentState = Get.put(FollowStudentState());
   ProfileTeacherState profileTeacherState = Get.put(ProfileTeacherState());
   AddressState addressState = Get.put(AddressState());
-  List<Map<String, dynamic>> subjects = [
-    {'title': 'score', 'icon': Icons.score, 'color': Colors.blue},
-    {'title': 'profile', 'icon': Icons.person_pin, 'color': Colors.orange},
-    {'title': 'Missing_school', 'icon': Icons.cancel, 'color': Colors.red},
-    {
-      'title': 'take_children',
-      'icon': Icons.campaign_outlined,
-      'color': Colors.purple
-    }
-  ];
+  String version = '';
+  List<Map<String, dynamic>> subjects = [];
   void handleGridTap(String title) {
     final actions = {
       'score': () =>
@@ -72,8 +62,8 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
           Get.to(() => FollowStudentPage(), transition: Transition.fadeIn),
       'take_children': () =>
           Get.to(() => const TakeChildrenPage(), transition: Transition.fadeIn),
-      'scan-in-out': () =>
-          Get.to(() => CheckInCheckOutPage(type: 't'), transition: Transition.fadeIn),
+      'scan-in-out': () => Get.to(() => CheckInCheckOutPage(type: 't'),
+          transition: Transition.fadeIn),
       'mark-student': () =>
           Get.to(() => SubjectTeacherPage(), transition: Transition.fadeIn),
       'Tuition_fees': () => Get.to(
@@ -83,6 +73,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
           transition: Transition.fadeIn),
       'language': () => Get.to(() => const ChangeLanguagePage(),
           transition: Transition.fadeIn),
+      'parent': () => Get.to(() => HomePage()),
       'Delete_Account': () => deleteAccount(context),
       'logout': () => logots(),
     };
@@ -127,6 +118,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
 
   @override
   void initState() {
+    getAppVersion();
     getData();
     super.initState();
   }
@@ -143,6 +135,15 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
     addressState.geteducationLevel();
   }
 
+  getAppVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String v = packageInfo.version;
+    String buildNumber = packageInfo.buildNumber;
+    setState(() {
+      version = '$v+$buildNumber';
+    }); // Build number
+  }
+
   @override
   Widget build(BuildContext context) {
     AppColor appColor = AppColor();
@@ -152,16 +153,42 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(backgroundColor: appColor.mainColor, toolbarHeight: 0),
-      body: GetBuilder<RegisterState>(
-        builder: (getRes) {
-          int appleSetting = getRes.schoolList.first.appleSetting ?? 0;
+      body: GetBuilder<ProfileTeacherState>(builder: (getProfile) {
           return GetBuilder<CheckRolePermissionState>(builder: (checkRole) {
             if (checkRole.check == false) {
               return Column(
                 children: [Expanded(child: Center(child: CircleLoad()))],
               );
             }
-            if (appleSetting == 0 &&
+            subjects.clear();
+            subjects.addAll([
+              {'title': 'score', 'icon': Icons.score, 'color': Colors.blue},
+              {
+                'title': 'profile',
+                'icon': Icons.person_pin,
+                'color': Colors.orange
+              },
+              {
+                'title': 'Missing_school',
+                'icon': Icons.cancel,
+                'color': Colors.red
+              },
+              {
+                'title': 'take_children',
+                'icon': Icons.campaign_outlined,
+                'color': Colors.purple
+              }
+            ]);
+            if (getProfile.teacherModels != null &&
+                getProfile.teacherModels!.student.isNotEmpty &&
+                !subjects.any((e) => e['title'] == 'parent')) {
+              subjects.add({
+                'title': 'parent',
+                'icon': Icons.diversity_1,
+                'color': Colors.blue
+              });
+            }
+            if (getProfile.teacherModels != null && getProfile.teacherModels!.appleStore == 1 &&
                 !subjects.any((e) => e['title'] == 'scan-in-out')) {
               subjects.add({
                 'title': 'scan-in-out',
@@ -177,7 +204,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                 'color': Colors.blue
               });
             }
-            if (appleSetting == 0 &&
+            if (getProfile.teacherModels != null && getProfile.teacherModels!.appleStore == 1 &&
                 !subjects.any((e) => e['title'] == 'mark-student')) {
               subjects.add({
                 'title': 'mark-student',
@@ -220,135 +247,180 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                       horizontal: fSize * 0.004,
                       vertical: fSize * 0.004,
                     ),
-                    child: GetBuilder<ProfileTeacherState>(
-                      builder: (getProfile) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              CircleAvatar(
-                                radius: 35,
-                                child: CachedNetworkImage(
-                                  imageUrl:
-                                      "${getProfile.repository.urlApi}${getProfile.teacherModels?.imagesProfile}",
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CircleAvatar(
+                            radius: 35,
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  "${getProfile.repository.urlApi}${getProfile.teacherModels?.imagesProfile}",
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: imageProvider,
+                                    fit: BoxFit.cover,
                                   ),
-                                  placeholder: (context, url) =>
-                                      CircularProgressIndicator(
-                                    color: appColor.mainColor,
-                                  ),
-                                  errorWidget: (context, url, error) => Container(
-                                      decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(
-                                      image: AssetImage('assets/images/logo.png'),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )),
                                 ),
                               ),
-                              SizedBox(width: size.width * 0.05),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomText(
-                                      text:
-                                          '${getProfile.teacherModels?.firstname ?? ''} ${getProfile.teacherModels?.lastname ?? ''}',
-                                      color: Colors.white,
-                                      fontSize: fixSize(0.017, context),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    SizedBox(height: fSize * 0.005),
-                                    CustomText(
-                                      text: getProfile.teacherModels?.phone ?? '',
-                                      color: Colors.white70,
-                                      fontSize: fixSize(0.014, context),
-                                    ),
-                                    SizedBox(height: fSize * 0.005),
-                                  ],
-                                ),
+                              placeholder: (context, url) =>
+                                  CircularProgressIndicator(
+                                color: appColor.mainColor,
                               ),
-                              IconButton(
-                                onPressed: () {
-                                  logots();
-                                },
-                                icon: Icon(
-                                  Icons.power_settings_new,
-                                  color: Colors.white,
-                                  size: fSize * 0.025,
+                              errorWidget: (context, url, error) => Container(
+                                  decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: AssetImage('assets/images/logo.png'),
+                                  fit: BoxFit.cover,
                                 ),
-                              ),
-                            ],
+                              )),
+                            ),
                           ),
-                        );
-                      },
+                          SizedBox(width: size.width * 0.05),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  text:
+                                      '${getProfile.teacherModels?.firstname ?? ''} ${getProfile.teacherModels?.lastname ?? ''}',
+                                  color: Colors.white,
+                                  fontSize: fixSize(0.017, context),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                SizedBox(height: fSize * 0.005),
+                                CustomText(
+                                  text: getProfile.teacherModels?.phone ?? '',
+                                  color: Colors.white70,
+                                  fontSize: fixSize(0.014, context),
+                                ),
+                                SizedBox(height: fSize * 0.005),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              logots();
+                            },
+                            icon: Icon(
+                              Icons.power_settings_new,
+                              color: Colors.white,
+                              size: fSize * 0.025,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  if (appleSetting == 0) ...[
-                  SizedBox(height: size.height * 0.02),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10 * scale),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        QuickAction(
-                          scale: scale,
-                          icon: Icons.location_on,
-                          label: 'Check-In',
-                          onTap: () {
-                            Get.to(() => CheckInMapPage(type: 't',status: 'check_in'), transition: Transition.fadeIn);
-                          },
-                        ),
-                        // SizedBox(width: 20),
-                        // QuickAction(
-                        //   scale: scale,
-                        //   icon: Icons.qr_code_scanner,
-                        //   label: 'Scan',
-                        //   onTap: () {
-                        //     Get.to(() => GoogleMapPage(
-                        //       points: const [
-                        //         PhotoPoint(
-                        //           id: 'c1',
-                        //           position: LatLng(17.9757, 102.6331),
-                        //           imageUrl: 'https://picsum.photos/id/1011/400/400',
-                        //         ),
-                        //         PhotoPoint(
-                        //           id: 'c2',
-                        //           position: LatLng(17.9738, 102.6268),
-                        //           imageUrl: 'https://picsum.photos/id/1015/400/400',
-                        //         ),
-                        //         PhotoPoint(
-                        //           id: 'c3',
-                        //           position: LatLng(17.9692, 102.6209),
-                        //           imageUrl: 'https://picsum.photos/id/1025/400/400',
-                        //         ),
-                        //       ],
-                        //     ), transition: Transition.fadeIn);
-                        //   },
-                        // ),
-                        SizedBox(width: 20),
-                        QuickAction(
-                          scale: scale,
-                          icon: Icons.qr_code_2,
-                          label: 'My QR',
-                          onTap: () {
-                            Get.to(() => TeacherCardPage(), transition: Transition.fadeIn);
-                          },
-                        ),
-                      ],
+                  if (getProfile.teacherModels !=null && getProfile.teacherModels!.appleStore == 1) ...[
+                    SizedBox(height: size.height * 0.01),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10 * scale),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          QuickAction(
+                            scale: scale,
+                            icon: Icons.location_on,
+                            label: 'Check-In',
+                            onTap: () {
+                              Get.to(
+                                  () => CheckInMapPage(
+                                      type: 't', status: 'check_in'),
+                                  transition: Transition.fadeIn);
+                            },
+                          ),
+                          SizedBox(width: 20),
+                          QuickAction(
+                            scale: scale,
+                            icon: Icons.qr_code_2,
+                            label: 'My QR',
+                            onTap: () {
+                              Get.to(() => TeacherCardPage(),
+                                  transition: Transition.fadeIn);
+                            },
+                          ),
+                          SizedBox(width: 20),
+                          QuickAction(
+                            scale: scale,
+                            icon: Icons.location_on,
+                            label: 'Check-Out',
+                            color: appColor.red,
+                            onTap: () {
+                              Get.to(
+                                  () => CheckInMapPage(
+                                      type: 't',
+                                      status: 'check_out',
+                                      id: 'today'),
+                                  transition: Transition.fadeIn);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  )],
+                    if (getProfile.teacherModels != null &&
+                        getProfile.teacherModels!.student.isNotEmpty) ...[
+                      SizedBox(height: size.height * 0.01),
+                      Wrap(
+                        spacing: 20,
+                        children: [
+                          for (var st
+                              in profileTeacherState.teacherModels!.student)
+                            InkWell(
+                              onTap: () {
+                                Get.to(() => HomePage());
+                              },
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 24,
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          "${profileTeacherState.repository.urlApi}${st.profile}",
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          CircularProgressIndicator(
+                                        color: appColor.mainColor,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Container(
+                                              decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                              'assets/images/cute-cartoon-boy-student-character-on-transparent-background-generative-ai-png.png'),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )),
+                                    ),
+                                  ),
+                                  SizedBox(height: 6 * scale),
+                                  CustomText(
+                                    text: st.firstname ?? '',
+                                    fontSize: 10 * scale,
+                                  )
+                                ],
+                              ),
+                            ),
+                        ],
+                      )
+                    ]
+                  ],
                   SizedBox(height: size.height * 0.01),
                   // Subjects Grid
                   Expanded(
@@ -384,8 +456,22 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
               ),
             );
           });
-        }
-      ),
+        }),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: Text(
+                'V $version',
+                style: TextStyle(
+                    color: appColor.grey, fontSize: fixSize(0.01, context)),
+              ),
+            ),
+          ],
+        )
     );
   }
 
@@ -399,20 +485,20 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
   }
 }
 
-
 // ---------------- Quick Action ----------------
 class QuickAction extends StatelessWidget {
-  const QuickAction({
-    required this.scale,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+  const QuickAction(
+      {required this.scale,
+      required this.icon,
+      required this.label,
+      required this.onTap,
+      this.color});
 
   final double scale;
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -426,19 +512,24 @@ class QuickAction extends StatelessWidget {
           child: Container(
             width: size,
             height: size,
-            decoration:  BoxDecoration(
-              color: AppColor().mainColor,
+            decoration: BoxDecoration(
+              color: color ?? AppColor().mainColor,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                    color: Color(0x22000000), blurRadius: 8, offset: Offset(0, 3))
+                    color: Color(0x22000000),
+                    blurRadius: 8,
+                    offset: Offset(0, 3))
               ],
             ),
             child: Icon(icon, color: Colors.white, size: 20 * scale),
           ),
         ),
         SizedBox(height: 6 * scale),
-        CustomText(text: label, fontSize: 10 * scale,)
+        CustomText(
+          text: label,
+          fontSize: 10 * scale,
+        )
       ],
     );
   }

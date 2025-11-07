@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pathana_school_app/pages/adminschool/admin_school_dashboard.dart';
 import 'package:pathana_school_app/pages/student_records/dashboard_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/dashboard_page.dart';
 import '../../custom/app_color.dart';
@@ -127,8 +128,8 @@ class CheckInOutStudentState extends GetxController {
       // }
 
       final response = jsonDecode(utf8.decode(res.bodyBytes));
-      print(type);
-      print(response);
+      // print(type);
+      // print(response);
 
       if (response['success'] == true) {
         lastPage.value = response['meta']['last_page'] ?? 1;
@@ -224,6 +225,9 @@ class CheckInOutStudentState extends GetxController {
       canCheckIn = false;
       note = 'ບໍ່ມີການຕັ້ງຄ່າເວລາ';
       update();
+      if(type == 'a'){
+        type = 't';
+      }
       final res = await repository.postNUxt(
         url: "${repository.nuXtJsUrlApi}api/Application/checkin-out-student/get_check_in_out_setting_time",
         body: {
@@ -277,13 +281,14 @@ class CheckInOutStudentState extends GetxController {
     final middleSec  = _toSeconds(settingTimeData['middle_time']  ?? '23:59:59');
     final backSec  = _toSeconds(settingTimeData['back_time']  ?? '23:59:59');
     if(checkOut == true){
-     if (nowSec > backSec) {
+     // if (nowSec > backSec) {
         canCheckIn = true;
         note = '';
-     }else{
-       canCheckIn = false;
-       note = 'ຍັງບໍ່ຮອດເວລາ Check-Out';
-     }
+     //}
+     // else{
+     //   canCheckIn = false;
+     //   note = 'ຍັງບໍ່ຮອດເວລາ Check-Out';
+     // }
      update();
      return;
   }
@@ -354,6 +359,8 @@ class CheckInOutStudentState extends GetxController {
       );
       Get.back();
       final response = jsonDecode(utf8.decode(res.bodyBytes));
+      // print('222222222');
+      // print(response);
       if (response['success'] == true && res.statusCode == 200) {
         playSuccessSound();
         CustomDialogs().showToastWithIcon(
@@ -364,7 +371,10 @@ class CheckInOutStudentState extends GetxController {
         if(type == 't'){
            Get.off(() => TeacherDashboardPage(), transition: Transition.fadeIn);
         }
-        if(type == 's' && student_records_id !=null){
+        else if(type == 'a'){
+          Get.off(() => AdminSchoolDashboard(), transition: Transition.fadeIn);
+        }
+        else if(type == 's' && student_records_id !=null){
           await sendNotificationToParent(id: student_records_id, type: response['action']);
           Get.off(() => DashboardPage(), transition: Transition.fadeIn);
         }

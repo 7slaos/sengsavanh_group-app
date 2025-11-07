@@ -27,6 +27,7 @@ class AuthLoginRegister extends GetxController {
     required BuildContext context,
     required String phone,
     required String password,
+    bool rememberMe = false
   }) async {
     CustomDialogs().dialogLoading();
     try {
@@ -45,6 +46,9 @@ class AuthLoginRegister extends GetxController {
         await appVerification.setNewToken(
           text: jsonDecode(res.body)['token'],
           role: roleId,
+          phone: phone,
+          password: password,
+          rememberMe: rememberMe
         );
         var resNUxt = await repository.postNUxt(
           url: '${repository.nuXtJsUrlApi}api/login',

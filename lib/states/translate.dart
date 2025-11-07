@@ -363,7 +363,14 @@ class Translate extends Translations {
           'Click_in-out': 'Click in-out',
           'your_current_position': 'Your current position',
           'academic_year': 'Academic year',
-          'scan': 'Scan'
+          'scan': 'Scan',
+          'history_missing_school': 'History missing school',
+          'check_in_check_out': 'Checkin-checkout school',
+          'scan_in': 'Scan in',
+          'IN': 'IN',
+          'OUT': 'OUT',
+          'aLl_score': 'ALl score',
+          'score_cuted': 'Score cuted',
         },
         'la_LA': {
           'login': 'ເຂົ້າສູ່ລະບົບ',
@@ -725,7 +732,14 @@ class Translate extends Translations {
           'Click_in-out': 'ກົດ ເຂົ້າ-ອອກ',
           'your_current_position': 'ຕໍາແໜ່ງຂອງທ່ານ',
           'academic_year': 'ສົກຮຽນ',
-          'scan': 'ສະແກນ'
+          'scan': 'ສະແກນ',
+          'history_missing_school': 'ປະຫວັດຂາດຮຽນ',
+          'check_in_check_out': 'ເຂົ້າ-ອອກໂຮງຮຽນ',
+          'scan_in': 'ສະເເກນເຂົ້າ',
+          'IN': 'ເຂົ້າ',
+          'OUT': 'ອອກ',
+          'aLl_score': 'ຄະແນນຄຸນສົມບັດທັງໝົດ',
+          'score_cuted': 'ລວມຄະແນນຖືກຕັດ',
         },
         'la_CN': {
           'login': '登入',
@@ -1047,7 +1061,15 @@ class Translate extends Translations {
           'Click_in-out': '点击进出',
           'your_current_position': '您的当前职位',
           'academic_year': '学年',
-          'scan': '扫描'
+          'scan': '扫描',
+          'history_missing_school': '缺课记录',
+          'check_in_check_out': '进出学校',
+          'scan_in': '扫码签到',
+          'IN': '入',
+          'OUT': '出',
+          'aLl_score': '品德总分',
+          'score_cuted': '扣分总计',
+          'missing_school': '缺课'
         },
       };
 }

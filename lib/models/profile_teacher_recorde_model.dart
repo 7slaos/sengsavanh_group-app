@@ -1,5 +1,5 @@
+// teacher_record_models.dart
 import 'package:pathana_school_app/models/province_model.dart';
-
 class TeacherRcordeModels {
   int? id;
   String? code;
@@ -18,8 +18,8 @@ class TeacherRcordeModels {
   BloodGroupDropdownModel? bloodGroup;
   EducationLevelDropdownModel? educationLevel;
   String? address;
-  String? birtdayDate;
-  String? salary;
+  String? birtdayDate; // 'dd/MM/yyyy' or ''
+  String? salary;      // formatted string, e.g. "1,200,000"
   String? educationSystem;
   String? specialSubject;
   String? finishSchool;
@@ -32,119 +32,200 @@ class TeacherRcordeModels {
   double? lat;
   double? lng;
   double? km;
+  int? appleStore;
 
-  TeacherRcordeModels(
-      {this.id,
-        this.code,
-      this.firstname,
-      this.lastname,
-      this.phone,
-      this.imagesProfile,
-      this.nickname,
-      this.email,
-      this.religion,
-      this.gender,
-      this.villId,
-      this.disId,
-      this.proId,
-      this.nationality,
-      this.bloodGroup,
-      this.address,
-      this.birtdayDate,
-      this.salary,
-      this.educationSystem,
-      this.educationLevel,
-      this.specialSubject,
-      this.finishSchool,
-      this.yearSystemLearn,
-      this.yearFinished,
-      this.stayAt,
-      this.duty,
-      this.note, this.teacherRecordId, this.lat
-      ,this.lng,this.km});
+  /// New: student list from API (`select u.id, u.firstname, u.lastname, u.phone, student_records_id`)
+  List<StudentLite> student;
 
-  TeacherRcordeModels.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    code = json['code'];
-    firstname = json['firstname'];
-    lastname = json['lastname'];
-    phone = json['phone'];
-    imagesProfile = json['images_profile'];
-    nickname = json['nickname'];
-    email = json['email'];
-    religion = json['religion'] != null
-        ? new ReligionDropdownModel.fromMap(json['religion'])
-        : null;
-    gender = json['gender'];
-    villId = json['vill_id'] != null
-        ? new VillageDropdownModel.fromMap(json['vill_id'])
-        : null;
-    disId = json['dis_id'] != null
-        ? new DistrictDropdownModel.fromMap(json['dis_id'])
-        : null;
-    proId = json['pro_id'] != null
-        ? new ProvinceDropdownModel.fromMap(json['pro_id'])
-        : null;
-    nationality = json['nationality'] != null
-        ? new NationalityDropdownModel.fromMap(json['nationality'])
-        : null;
-    bloodGroup = json['blood_group'] != null
-        ? new BloodGroupDropdownModel.fromMap(json['blood_group'])
-        : null;
-    address = json['address'];
-    birtdayDate = json['birtday_date'];
-    salary = json['salary'];
-    educationSystem = json['education_system'];
-    educationLevel = json['education_level'] != null
-        ? new EducationLevelDropdownModel.fromMap(json['education_level'])
-        : null;
-    specialSubject = json['special_subject'];
-    finishSchool = json['finish_school'];
-    yearSystemLearn = json['year_system_learn'];
-    yearFinished = json['year_finished'].toString();
-    stayAt = json['stay_at'];
-    duty = json['duty'];
-    note = json['note'];
-    teacherRecordId = json['teacher_records_id'].toString();
-    lat = double.parse(json['lat'].toString());
-    lng = double.parse(json['lng'].toString());
-    km = double.parse(json['km'].toString());
+  TeacherRcordeModels({
+    this.id,
+    this.code,
+    this.firstname,
+    this.lastname,
+    this.phone,
+    this.imagesProfile,
+    this.nickname,
+    this.email,
+    this.religion,
+    this.gender,
+    this.villId,
+    this.disId,
+    this.proId,
+    this.nationality,
+    this.bloodGroup,
+    this.educationLevel,
+    this.address,
+    this.birtdayDate,
+    this.salary,
+    this.educationSystem,
+    this.specialSubject,
+    this.finishSchool,
+    this.yearSystemLearn,
+    this.yearFinished,
+    this.stayAt,
+    this.duty,
+    this.note,
+    this.teacherRecordId,
+    this.lat,
+    this.lng,
+    this.km,
+    this.appleStore,
+    List<StudentLite>? student,
+  }) : student = student ?? <StudentLite>[];
+
+  factory TeacherRcordeModels.fromJson(Map<String, dynamic> json) {
+    return TeacherRcordeModels(
+      id: _asInt(json['id']),
+      code: json['code']?.toString(),
+      firstname: json['firstname']?.toString(),
+      lastname: json['lastname']?.toString(),
+      phone: json['phone']?.toString(),
+      imagesProfile: json['images_profile']?.toString(),
+      nickname: json['nickname']?.toString(),
+      email: json['email']?.toString(),
+      religion: json['religion'] != null
+          ? ReligionDropdownModel.fromMap(json['religion'])
+          : null,
+      gender: json['gender']?.toString(),
+      villId: json['vill_id'] != null
+          ? VillageDropdownModel.fromMap(json['vill_id'])
+          : null,
+      disId: json['dis_id'] != null
+          ? DistrictDropdownModel.fromMap(json['dis_id'])
+          : null,
+      proId: json['pro_id'] != null
+          ? ProvinceDropdownModel.fromMap(json['pro_id'])
+          : null,
+      nationality: json['nationality'] != null
+          ? NationalityDropdownModel.fromMap(json['nationality'])
+          : null,
+      bloodGroup: json['blood_group'] != null
+          ? BloodGroupDropdownModel.fromMap(json['blood_group'])
+          : null,
+      educationLevel: json['education_level'] != null
+          ? EducationLevelDropdownModel.fromMap(json['education_level'])
+          : null,
+      address: json['address']?.toString(),
+      birtdayDate: json['birtday_date']?.toString(),
+      salary: json['salary']?.toString(),
+      educationSystem: json['education_system']?.toString(),
+      specialSubject: json['special_subject']?.toString(),
+      finishSchool: json['finish_school']?.toString(),
+      yearSystemLearn: json['year_system_learn']?.toString(),
+      yearFinished: json['year_finished']?.toString(),
+      stayAt: json['stay_at']?.toString(),
+      duty: json['duty']?.toString(),
+      note: json['note']?.toString(),
+      teacherRecordId: json['teacher_records_id']?.toString(),
+      lat: _asDouble(json['lat']),
+      lng: _asDouble(json['lng']),
+      km: _asDouble(json['km']),
+      appleStore: _asInt(json['apple_store']),
+      student: (json['student'] is List)
+          ? (json['student'] as List)
+          .whereType<Map<String, dynamic>>()
+          .map(StudentLite.fromJson)
+          .toList()
+          : <StudentLite>[],
+    );
   }
 
-  // Map<String, dynamic> toJson() {
-  //   final Map<String, dynamic> data = new Map<String, dynamic>();
-  //   data['id'] = this.id;
-  //   data['firstname'] = this.firstname;
-  //   data['lastname'] = this.lastname;
-  //   data['phone'] = this.phone;
-  //   data['images_profile'] = this.imagesProfile;
-  //   data['nickname'] = this.nickname;
-  //   data['email'] = this.email;
-  //   if (this.religion != null) {
-  //     data['religion'] = this.religion!.toJson();
-  //   }
-  //   data['gender'] = this.gender;
-  //   data['vill_id'] = this.villId;
-  //   data['dis_id'] = this.disId;
-  //   data['pro_id'] = this.proId;
-  //   if (this.nationality != null) {
-  //     data['nationality'] = this.nationality!.toJson();
-  //   }
-  //   if (this.bloodGroup != null) {
-  //     data['blood_group'] = this.bloodGroup!.toJson();
-  //   }
-  //   data['address'] = this.address;
-  //   data['birtday_date'] = this.birtdayDate;
-  //   data['salary'] = this.salary;
-  //   data['education_system'] = this.educationSystem;
-  //   data['education_level'] = this.educationLevel;
-  //   data['special_subject'] = this.specialSubject;
-  //   data['finish_school'] = this.finishSchool;
-  //   data['year_system_learn'] = this.yearSystemLearn;
-  //   data['year_finished'] = this.yearFinished;
-  //   data['stay_at'] = this.stayAt;
-  //   data['duty'] = this.duty;
-  //   data['note'] = this.note;
-  //   return data;
-  // }
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['id'] = id;
+    data['code'] = code;
+    data['firstname'] = firstname;
+    data['lastname'] = lastname;
+    data['phone'] = phone;
+    data['images_profile'] = imagesProfile;
+    data['nickname'] = nickname;
+    data['email'] = email;
+    if (religion != null) data['religion'] = religion!.toJson();
+    data['gender'] = gender;
+    if (villId != null) data['vill_id'] = villId!.toJson();
+    if (disId != null) data['dis_id'] = disId!.toJson();
+    if (proId != null) data['pro_id'] = proId!.toJson();
+    if (nationality != null) data['nationality'] = nationality!.toJson();
+    if (bloodGroup != null) data['blood_group'] = bloodGroup!.toJson();
+    if (educationLevel != null) {
+      data['education_level'] = educationLevel!.toJson();
+    }
+    data['address'] = address;
+    data['birtday_date'] = birtdayDate;
+    data['salary'] = salary;
+    data['education_system'] = educationSystem;
+    data['special_subject'] = specialSubject;
+    data['finish_school'] = finishSchool;
+    data['year_system_learn'] = yearSystemLearn;
+    data['year_finished'] = yearFinished;
+    data['stay_at'] = stayAt;
+    data['duty'] = duty;
+    data['note'] = note;
+    data['teacher_records_id'] = teacherRecordId;
+    data['lat'] = lat;
+    data['lng'] = lng;
+    data['km'] = km;
+    data['apple_store'] = appleStore;
+    data['student'] = student.map((e) => e.toJson()).toList();
+    return data;
+  }
+}
+
+/// Minimal student item matching your SELECT:
+///  u.id, u.firstname, u.lastname, u.phone, student_records_id
+class StudentLite {
+  final int? id; // user (u.id)
+  final String? profile;
+  final String? firstname;
+  final String? lastname;
+  final String? phone;
+  final int? studentRecordsId;
+
+  const StudentLite({
+    this.id,
+    this.profile,
+    this.firstname,
+    this.lastname,
+    this.phone,
+    this.studentRecordsId,
+  });
+
+  factory StudentLite.fromJson(Map<String, dynamic> json) => StudentLite(
+    id: _asInt(json['id']),
+    profile: json['profile']?.toString(),
+    firstname: json['firstname']?.toString(),
+    lastname: json['lastname']?.toString(),
+    phone: json['phone']?.toString(),
+    studentRecordsId: _asInt(json['student_records_id']),
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'profile': profile,
+    'firstname': firstname,
+    'lastname': lastname,
+    'phone': phone,
+    'student_records_id': studentRecordsId,
+  };
+
+  String get fullName =>
+      [firstname, lastname].where((e) => (e ?? '').isNotEmpty).join(' ').trim();
+}
+
+/// ===== helpers =====
+
+int? _asInt(dynamic v) {
+  if (v == null) return null;
+  if (v is int) return v;
+  if (v is num) return v.toInt();
+  if (v is String) return int.tryParse(v);
+  return null;
+}
+
+double? _asDouble(dynamic v) {
+  if (v == null) return null;
+  if (v is double) return v;
+  if (v is num) return v.toDouble();
+  if (v is String) return double.tryParse(v);
+  return null;
 }

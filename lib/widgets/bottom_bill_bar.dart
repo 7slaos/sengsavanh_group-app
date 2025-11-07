@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../pages/adminschool/admin_school_dashboard.dart' show AdminSchoolDashboard;
 import '../pages/student_records/dashboard_page.dart';
 import '../pages/teacher_recordes/dashboard_page.dart';
 
@@ -76,7 +77,10 @@ class BottomPillBar extends StatelessWidget {
                   Get.off(() => TeacherDashboardPage(), transition: Transition.fadeIn);
                 }else if(type == 's'){
                   Get.off(() => DashboardPage(), transition: Transition.fadeIn);
-                }else {
+                }else if(type == 'a'){
+                  Get.off(() => AdminSchoolDashboard(), transition: Transition.fadeIn);
+                }
+                else {
                   Get.back();
                 }
               },

@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:pathana_school_app/custom/app_color.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/scan_result_page.dart';
+import 'package:pathana_school_app/states/profile_state.dart';
 import 'package:pathana_school_app/widgets/custom_dialog.dart';
 
 import '../../functions/determine_postion.dart';
@@ -63,6 +64,7 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
 
   final ProfileTeacherState profileTeacherState = Get.put(ProfileTeacherState());
   final ProfileStudentState profileStudentState = Get.put(ProfileStudentState());
+  final ProfileState profileState = Get.put(ProfileState());
   final CheckInOutStudentState checkInOutStudentState =
   Get.put(CheckInOutStudentState());
 
@@ -106,7 +108,10 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
   @override
   void initState() {
     super.initState();
-
+    if (profileState.profiledModels == null &&
+        widget.type == 'a') {
+      profileState.checkToken();
+    }
     if (profileTeacherState.teacherModels == null &&
         widget.type == 't') {
       profileTeacherState.checkToken();
@@ -183,7 +188,14 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
   }
 
   void _applySchoolCenterFromState() {
-    if(widget.type == 't'){
+    if(widget.type == 'a'){
+      final a = profileState.profiledModels;
+      if (a != null && a.lat != null && a.lng != null) {
+        _schoolCenter = LatLng(a.lat!, a.lng!);
+        _geofenceKm = _toDouble(a.km); // ເຂດ km ຈາກ DB
+      }
+    }
+    else if(widget.type == 't'){
       final t = profileTeacherState.teacherModels;
       if (t != null && t.lat != null && t.lng != null) {
         _schoolCenter = LatLng(t.lat!, t.lng!);
@@ -239,7 +251,7 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
         position: _userNow!,
         infoWindow: InfoWindow(
             title:
-            widget.type == 't' ? 'ຄູ (ປັດຈຸບັນ)' : 'ນັກຮຽນ (ປັດຈຸບັນ)'),
+            widget.type == 'a' ? 'ຜູ້ບໍລິຫານ (ປັດຈຸບັນ)' : widget.type == 't' ? 'ຄູ (ປັດຈຸບັນ)' : 'ນັກຮຽນ (ປັດຈຸບັນ)'),
         icon: _profileIcon ??
             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
         anchor: const Offset(0.5, 1.0),

@@ -210,7 +210,7 @@ class _DashboardPageState extends State<DashboardPage> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10 * scale),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   QuickAction(
                     scale: scale,
@@ -220,15 +220,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       Get.to(() => CheckInMapPage(type: 's',status: 'check_in'), transition: Transition.fadeIn);
                     },
                   ),
-                  // SizedBox(width: 20),
-                  // QuickAction(
-                  //   scale: scale,
-                  //   icon: Icons.qr_code_scanner,
-                  //   label: 'Scan',
-                  //   onTap: () {
-                  //
-                  //   },
-                  // ),
                   SizedBox(width: 20),
                   QuickAction(
                     scale: scale,
@@ -236,6 +227,16 @@ class _DashboardPageState extends State<DashboardPage> {
                     label: 'My QR',
                     onTap: () {
                       Get.to(() => StudentCardPage(), transition: Transition.fadeIn);
+                    },
+                  ),
+                  SizedBox(width: 20),
+                  QuickAction(
+                    scale: scale,
+                    icon: Icons.location_on,
+                    label: 'Check-Out',
+                    color: appColor.red,
+                    onTap: () {
+                      Get.to(() => CheckInMapPage(type: 's',status: 'check_out', id: 'today'), transition: Transition.fadeIn);
                     },
                   ),
                 ],

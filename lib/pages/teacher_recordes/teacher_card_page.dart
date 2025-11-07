@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pathana_school_app/repositorys/repository.dart';
+import 'package:pathana_school_app/states/profile_state.dart';
 import 'package:pathana_school_app/states/profile_teacher_state.dart';
 import 'package:pathana_school_app/widgets/custom_text_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -21,66 +22,78 @@ class TeacherCardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🔶 was blue -> now deep orange
-      backgroundColor: const Color(0xFFEA580C),
+      backgroundColor: const Color(0xFF0D47A1),
       body: GetBuilder<ProfileTeacherState>(builder: (getPro) {
-        return Stack(
-          children: [
-            const _Background(),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    const _TopBar(title: 'TEACHER ID CARD'),
-                    const SizedBox(height: 12),
-                    Expanded(
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              _Avatar(
-                                  name:
-                                      '${getPro.teacherModels?.firstname ?? ""} ${getPro.teacherModels?.lastname ?? ""}',
-                                  url: '${Repository().urlApi}${getPro.teacherModels?.imagesProfile}'),
-                              const SizedBox(height: 14),
-                              CustomText(
-                                text:
-                                    '${getPro.teacherModels?.firstname ?? ""} ${getPro.teacherModels?.lastname ?? ""}',
-                                textAlign: TextAlign.center,
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
+        return GetBuilder<ProfileState>(
+          builder: (getAdminProfile) {
+            return Stack(
+              children: [
+                const _Background(),
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        const _TopBar(title: 'TEACHER ID CARD'),
+                        const SizedBox(height: 12),
+                        Expanded(
+                          child: Center(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  _Avatar(
+                                      name:
+                                          '${getPro.teacherModels?.firstname ?? getAdminProfile.profiledModels?.firstname ?? ""} ${getPro.teacherModels?.lastname ?? getAdminProfile.profiledModels?.lastname ?? ""}',
+                                      url: '${Repository().urlApi}${getPro.teacherModels?.imagesProfile}'),
+                                  const SizedBox(height: 14),
+                                  CustomText(
+                                    text:
+                                    '${getPro.teacherModels?.firstname ?? getAdminProfile.profiledModels?.firstname ?? ""} ${getPro.teacherModels?.lastname ?? getAdminProfile.profiledModels?.lastname ?? ""}',
+                                    textAlign: TextAlign.center,
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                  if(getPro.teacherModels?.duty !=null)...[
+                                  const SizedBox(height: 4),
+                                  CustomText(
+                                    text: getPro.teacherModels?.duty ?? "",
+                                    color: Colors.white70,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  )],
+                                  if(getAdminProfile.profiledModels !=null)...[
+                                    const SizedBox(height: 4),
+                                    CustomText(
+                                      text: "ຜູ້ບໍລິຫານ",
+                                      color: Colors.white70,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    )],
+                                  const SizedBox(height: 18),
+                                  QrCard(
+                                      value: getPro.teacherModels?.code ?? getAdminProfile.profiledModels?.code ?? qrValue),
+                                  const SizedBox(height: 18),
+                                  CustomText(
+                                    text:
+                                        '${"academic_year".tr}: ${currentAcademicYear(startMonth: 9)}',
+                                    textAlign: TextAlign.center,
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 4),
-                              CustomText(
-                                text: getPro.teacherModels?.duty ?? "",
-                                color: Colors.white70,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              const SizedBox(height: 18),
-                              QrCard(
-                                  value: getPro.teacherModels?.code ?? qrValue),
-                              const SizedBox(height: 18),
-                              CustomText(
-                                text:
-                                    '${"academic_year".tr}: ${currentAcademicYear(startMonth: 9)}',
-                                textAlign: TextAlign.center,
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          }
         );
       }),
     );
@@ -93,13 +106,12 @@ class _Background extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        // 🔶 blue gradient -> orange gradient
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFF97316), // orange-500
-            Color(0xFFFFA24C), // soft orange
+            Color(0xFF0D47A1),
+            Color(0xFF1976D2),
           ],
         ),
       ),
@@ -194,7 +206,6 @@ class _Avatar extends StatelessWidget {
         backgroundColor: Colors.white,
         child: CircleAvatar(
           radius: 43,
-          // 🔶 soft warm background (was bluish)
           backgroundColor: const Color(0xFFFFF7ED),
           child: (url != null && url!.isNotEmpty)
               ? ClipOval(
@@ -239,26 +250,31 @@ class QrCard extends StatelessWidget {
               color: Color(0x33000000), blurRadius: 22, offset: Offset(0, 10)),
         ],
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
-        ),
-        padding: const EdgeInsets.all(8),
-        child: QrImageView(
-          data: value.isEmpty ? 'fallback' : value,
-          version: QrVersions.auto,
-          size: 210,
-          backgroundColor: Colors.white,
-          eyeStyle: const QrEyeStyle(
-            eyeShape: QrEyeShape.square,
-            color: Colors.black,
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            padding: const EdgeInsets.all(8),
+            child: QrImageView(
+              data: value.isEmpty ? 'fallback' : value,
+              version: QrVersions.auto,
+              size: 210,
+              backgroundColor: Colors.white,
+              eyeStyle: const QrEyeStyle(
+                eyeShape: QrEyeShape.square,
+                color: Colors.black,
+              ),
+              dataModuleStyle: const QrDataModuleStyle(
+                dataModuleShape: QrDataModuleShape.square,
+                color: Colors.black,
+              ),
+            ),
           ),
-          dataModuleStyle: const QrDataModuleStyle(
-            dataModuleShape: QrDataModuleShape.square,
-            color: Colors.black,
-          ),
-        ),
+          CustomText(text: value)
+        ],
       ),
     );
   }

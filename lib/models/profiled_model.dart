@@ -2,6 +2,7 @@ import 'package:pathana_school_app/models/province_model.dart';
 
 class ProfiledModels {
   int? id;
+  String? code;
   String? profileImage;
   String? firstname;
   String? nickname;
@@ -18,9 +19,13 @@ class ProfiledModels {
   String? disId;
   String? proId;
   String? birtdayDate;
+  double? lat;
+  double? lng;
+  double? km;
 
   ProfiledModels(
       {this.id,
+        this.code,
       this.profileImage,
       this.firstname,
       this.nickname,
@@ -36,10 +41,11 @@ class ProfiledModels {
       this.villId,
       this.disId,
       this.proId,
-      this.birtdayDate});
+      this.birtdayDate,this.lat,this.lng,this.km});
 
   ProfiledModels.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    code = json['code'];
     profileImage = json['profile_image'];
     firstname = json['firstname'];
     nickname = json['nickname'];
@@ -59,5 +65,8 @@ class ProfiledModels {
     disId = json['dis_id'].toString();
     proId = json['pro_id'].toString();
     birtdayDate = json['birtday_date'];
+    lat = double.parse(json['lat'].toString());
+    lng = double.parse(json['lng'].toString());
+    km = double.parse(json['km'].toString());
   }
 }

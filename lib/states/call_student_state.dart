@@ -186,9 +186,9 @@ class CallStudentState extends GetxController {
           body: {'id': id, 'status': status},
           auth: true);
       Get.back();
-      print('666666666666666666666666');
-      print(status);
-      print(res.body);
+      // print('666666666666666666666666');
+      // print(status);
+      // print(res.body);
       if (res.statusCode == 200) {
         getData((int.parse(status) - 1).toString(), 'all');
         CustomDialogs().showToast(

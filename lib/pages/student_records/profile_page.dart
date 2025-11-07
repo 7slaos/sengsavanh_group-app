@@ -33,6 +33,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   AddressState addressState = Get.put(AddressState());
   bool obscureText = true;
   bool obscureTextPasseord = true;
+  bool get _generalFieldsEnabled => false;
   @override
   void initState() {
     getData();
@@ -199,9 +200,11 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                 },
                               ),
                               InkWell(
-                                onTap: () {
-                                  pickImageState.showPickImage(context);
-                                },
+                                onTap: _generalFieldsEnabled
+                                    ? () {
+                                        pickImageState.showPickImage(context);
+                                      }
+                                    : null,
                                 child: CircleAvatar(
                                   backgroundColor:
                                       pickImageState.appColor.mainColor,
@@ -239,9 +242,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                     value: '2',
                                     groupValue: registerState.gender,
                                     activeColor: appColor.mainColor,
-                                    onChanged: (v) => {
-                                      registerState.updateGender(v.toString())
-                                    },
+                                    onChanged: _generalFieldsEnabled
+                                        ? (v) {
+                                            registerState
+                                                .updateGender(v.toString());
+                                          }
+                                        : null,
                                   ),
                                   CustomText(
                                     text: 'male',
@@ -255,9 +261,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                     value: '1',
                                     groupValue: registerState.gender,
                                     activeColor: appColor.mainColor,
-                                    onChanged: (v) => {
-                                      registerState.updateGender(v.toString())
-                                    },
+                                    onChanged: _generalFieldsEnabled
+                                        ? (v) {
+                                            registerState
+                                                .updateGender(v.toString());
+                                          }
+                                        : null,
                                   ),
                                   CustomText(
                                     text: 'female',
@@ -271,9 +280,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                     value: '3',
                                     groupValue: registerState.gender,
                                     activeColor: appColor.mainColor,
-                                    onChanged: (v) => {
-                                      registerState.updateGender(v.toString())
-                                    },
+                                    onChanged: _generalFieldsEnabled
+                                        ? (v) {
+                                            registerState
+                                                .updateGender(v.toString());
+                                          }
+                                        : null,
                                   ),
                                   CustomText(
                                     text: 'other',
@@ -305,6 +317,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                           controller: getRes.firstname,
                           borderRaduis: 5.0,
                           margin: 0,
+                          readOnly: !_generalFieldsEnabled,
                           iconPrefix: Icon(
                             Icons.person,
                             size: fSize * 0.02,
@@ -327,6 +340,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                           controller: registerState.nickname,
                           borderRaduis: 5.0,
                           margin: 0,
+                          readOnly: !_generalFieldsEnabled,
                           iconPrefix: Icon(
                             Icons.person,
                             size: fSize * 0.02,
@@ -354,6 +368,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                           controller: registerState.lastname,
                           borderRaduis: 5.0,
                           margin: 0,
+                          readOnly: !_generalFieldsEnabled,
                           iconPrefix: Icon(
                             Icons.person,
                             size: fSize * 0.02,
@@ -388,9 +403,11 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                           ),
                           readOnly: true,
                           textInputType: TextInputType.text,
-                          onTap: () {
-                            registerState.selectDate(context);
-                          },
+                          onTap: _generalFieldsEnabled
+                              ? () {
+                                  registerState.selectDate(context);
+                                }
+                              : null,
                         ),
                         SizedBox(
                           height: size.height * 0.02,
@@ -423,12 +440,16 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                       ))
                                   .toList(),
                               value: getAdress.selectProvince,
-                              onChanged: (value) {
-                                addressState.updateDropDownProvince(value!);
-                                if (value.id != null) {
-                                  addressState.getDistrict(value.id!, null);
-                                }
-                              },
+                              onChanged: _generalFieldsEnabled
+                                  ? (value) {
+                                      addressState
+                                          .updateDropDownProvince(value!);
+                                      if (value.id != null) {
+                                        addressState.getDistrict(
+                                            value.id!, null);
+                                      }
+                                    }
+                                  : null,
                               buttonStyleData: ButtonStyleData(
                                 padding: EdgeInsets.symmetric(horizontal: 16),
                                 height: fSize * 0.05,
@@ -489,10 +510,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                       .contains(searchValue.toLowerCase());
                                 },
                               ),
-                              onMenuStateChange: (isOpen) {
-                                addressState.clearDistrict();
-                                addressState.clearVillage();
-                              },
+                              onMenuStateChange: _generalFieldsEnabled
+                                  ? (isOpen) {
+                                      addressState.clearDistrict();
+                                      addressState.clearVillage();
+                                    }
+                                  : null,
                             ),
                           );
                         }),
@@ -530,14 +553,17 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                             ))
                                         .toList(),
                                     value: getAdress.selectDistrict,
-                                    onChanged: (value) {
-                                      addressState
-                                          .updateDropDownDistrict(value!);
-                                      if (value.id != null) {
-                                        addressState.getVillage(
-                                            value.id!, null);
-                                      }
-                                    },
+                                    onChanged: _generalFieldsEnabled
+                                        ? (value) {
+                                            addressState
+                                                .updateDropDownDistrict(
+                                                    value!);
+                                            if (value.id != null) {
+                                              addressState.getVillage(
+                                                  value.id!, null);
+                                            }
+                                          }
+                                        : null,
                                     buttonStyleData: ButtonStyleData(
                                       padding:
                                           EdgeInsets.symmetric(horizontal: 16),
@@ -602,9 +628,11 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                 searchValue.toLowerCase());
                                       },
                                     ),
-                                    onMenuStateChange: (isOpen) {
-                                      addressState.clearVillage();
-                                    },
+                                    onMenuStateChange: _generalFieldsEnabled
+                                        ? (isOpen) {
+                                            addressState.clearVillage();
+                                          }
+                                        : null,
                                   ),
                                 );
                               }),
@@ -644,10 +672,13 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                             ))
                                         .toList(),
                                     value: getAdress.selectVillage,
-                                    onChanged: (value) {
-                                      addressState
-                                          .updateDropDownVillage(value!);
-                                    },
+                                    onChanged: _generalFieldsEnabled
+                                        ? (value) {
+                                            addressState
+                                                .updateDropDownVillage(
+                                                    value!);
+                                          }
+                                        : null,
                                     buttonStyleData: ButtonStyleData(
                                       padding:
                                           EdgeInsets.symmetric(horizontal: 16),
@@ -751,9 +782,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         addressState.selectReligion?.id
                                             .toString()) ??
                                 addressState.selectReligion,
-                            onChanged: (value) {
-                              addressState.updateDropdownReligion(value!);
-                            },
+                            onChanged: _generalFieldsEnabled
+                                ? (value) {
+                                    addressState
+                                        .updateDropdownReligion(value!);
+                                  }
+                                : null,
                             buttonStyleData: ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               height: fSize * 0.05,
@@ -850,9 +884,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         addressState.selectNationality?.id
                                             .toString()) ??
                                 addressState.selectNationality,
-                            onChanged: (value) {
-                              addressState.updateDropDownNationality(value!);
-                            },
+                            onChanged: _generalFieldsEnabled
+                                ? (value) {
+                                    addressState
+                                        .updateDropDownNationality(value!);
+                                  }
+                                : null,
                             buttonStyleData: ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               height: fSize * 0.05,
@@ -949,9 +986,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         addressState.selectlanguageGroup?.id
                                             .toString()) ??
                                 addressState.selectlanguageGroup,
-                            onChanged: (value) {
-                              addressState.updateDropDownlanguageDrop(value!);
-                            },
+                            onChanged: _generalFieldsEnabled
+                                ? (value) {
+                                    addressState
+                                        .updateDropDownlanguageDrop(value!);
+                                  }
+                                : null,
                             buttonStyleData: ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               height: fSize * 0.05,
@@ -1049,9 +1089,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         addressState.selectEthinicity?.id
                                             .toString()) ??
                                 addressState.selectEthinicity,
-                            onChanged: (value) {
-                              addressState.updateDropDownEthinicity(value!);
-                            },
+                            onChanged: _generalFieldsEnabled
+                                ? (value) {
+                                    addressState
+                                        .updateDropDownEthinicity(value!);
+                                  }
+                                : null,
                             buttonStyleData: ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               height: fSize * 0.05,
@@ -1148,9 +1191,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         addressState.selectspecialHealth?.id
                                             .toString()) ??
                                 addressState.selectspecialHealth,
-                            onChanged: (value) {
-                              addressState.updateDropDownspecialHealth(value!);
-                            },
+                            onChanged: _generalFieldsEnabled
+                                ? (value) {
+                                    addressState
+                                        .updateDropDownspecialHealth(value!);
+                                  }
+                                : null,
                             buttonStyleData: ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               height: fSize * 0.05,
@@ -1248,9 +1294,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         addressState.selectResidense?.id
                                             .toString()) ??
                                 addressState.selectResidense,
-                            onChanged: (value) {
-                              addressState.updateDropDownResidences(value!);
-                            },
+                            onChanged: _generalFieldsEnabled
+                                ? (value) {
+                                    addressState
+                                        .updateDropDownResidences(value!);
+                                  }
+                                : null,
                             buttonStyleData: ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               height: fSize * 0.05,
@@ -1349,9 +1398,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         addressState.selectBloodGroup?.id
                                             .toString()) ??
                                 addressState.selectBloodGroup,
-                            onChanged: (value) {
-                              addressState.updateDropDownBloodGroup(value!);
-                            },
+                            onChanged: _generalFieldsEnabled
+                                ? (value) {
+                                    addressState
+                                        .updateDropDownBloodGroup(value!);
+                                  }
+                                : null,
                             buttonStyleData: ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               height: fSize * 0.05,
@@ -1431,6 +1483,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                           controller: registerState.personalTalent,
                           borderRaduis: 5.0,
                           margin: 0,
+                          readOnly: !_generalFieldsEnabled,
                           textInputType: TextInputType.text,
                         ),
                         SizedBox(
@@ -1465,20 +1518,24 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         ))
                                     .toList(),
                                 value: registerState.selectclassGroup,
-                                onChanged: (value) {
-                                  registerState
-                                      .selectclassGroupDropdown(value!);
-                                  if (value.id != null) {
-                                    addressState.getClassList(
-                                        id: value.id!.toString(),
-                                        branchId: widget.type == 's'
-                                            ? profileStudentState
-                                                    .dataModels?.branchId
-                                                    .toString() ??
-                                                '0'
-                                            : widget.data?.branchId ?? '');
-                                  }
-                                },
+                                onChanged: _generalFieldsEnabled
+                                    ? (value) {
+                                        registerState
+                                            .selectclassGroupDropdown(value!);
+                                        if (value.id != null) {
+                                          addressState.getClassList(
+                                              id: value.id!.toString(),
+                                              branchId: widget.type == 's'
+                                                  ? profileStudentState
+                                                          .dataModels
+                                                          ?.branchId
+                                                          .toString() ??
+                                                      '0'
+                                                  : widget.data?.branchId ??
+                                                      '');
+                                        }
+                                      }
+                                    : null,
                                 buttonStyleData: ButtonStyleData(
                                   padding: EdgeInsets.symmetric(horizontal: 16),
                                   height: fSize * 0.05,
@@ -1540,9 +1597,11 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         .contains(searchValue.toLowerCase());
                                   },
                                 ),
-                                onMenuStateChange: (isOpen) {
-                                  registerState.clearDropdownClass();
-                                },
+                                onMenuStateChange: _generalFieldsEnabled
+                                    ? (isOpen) {
+                                        registerState.clearDropdownClass();
+                                      }
+                                    : null,
                               ),
                             );
                           }),
@@ -1577,9 +1636,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                       ))
                                   .toList(),
                               value: registerState.selectClass,
-                              onChanged: (value) {
-                                registerState.selectclassDropdown(value!);
-                              },
+                              onChanged: _generalFieldsEnabled
+                                  ? (value) {
+                                      registerState
+                                          .selectclassDropdown(value!);
+                                    }
+                                  : null,
                               buttonStyleData: ButtonStyleData(
                                 padding: EdgeInsets.symmetric(horizontal: 16),
                                 height: fSize * 0.05,
