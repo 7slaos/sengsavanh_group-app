@@ -3,28 +3,32 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pathana_school_app/custom/app_color.dart';
 import 'package:pathana_school_app/custom/app_size.dart';
 import 'package:pathana_school_app/notifications/init_listen_noti.dart';
 import 'package:pathana_school_app/pages/change_language_page.dart';
 import 'package:pathana_school_app/pages/history_payment_page.dart';
 import 'package:pathana_school_app/pages/mark_student/subject_teacher_page.dart';
+import 'package:pathana_school_app/pages/parent_recordes/home_page.dart';
 import 'package:pathana_school_app/pages/parent_recordes/take_children_page.dart';
 import 'package:pathana_school_app/pages/score_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/follow_student_page.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/profile_teacher_recorde.dart';
+import 'package:pathana_school_app/pages/teacher_recordes/teacher_card_page.dart';
+import 'package:pathana_school_app/pages/teacher_recordes/chec_in_check_out_page.dart';
 import 'package:pathana_school_app/states/address_state.dart';
 import 'package:pathana_school_app/states/auth_login_register.dart';
 import 'package:pathana_school_app/states/check_role_permission_state.dart';
 import 'package:pathana_school_app/states/dashboard_teacher_state.dart';
 import 'package:pathana_school_app/states/follow_student_state.dart';
 import 'package:pathana_school_app/states/profile_teacher_state.dart';
+import 'package:pathana_school_app/states/register_state.dart';
 import 'package:pathana_school_app/widgets/custom_circle_load.dart';
 import 'package:pathana_school_app/widgets/custom_dialog.dart';
 import 'package:pathana_school_app/widgets/custom_text_widget.dart';
 import 'package:pathana_school_app/widgets/subject_card_widget.dart';
-
-import '../check-in-out/check_in_out_page.dart';
+import 'check_in_map_page.dart';
 
 class TeacherDashboardPage extends StatefulWidget {
   const TeacherDashboardPage({super.key});
@@ -43,26 +47,8 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
   FollowStudentState followStudentState = Get.put(FollowStudentState());
   ProfileTeacherState profileTeacherState = Get.put(ProfileTeacherState());
   AddressState addressState = Get.put(AddressState());
-  List<Map<String, dynamic>> subjects = [
-    {'title': 'score', 'icon': Icons.score, 'color': Colors.blue},
-    {'title': 'profile', 'icon': Icons.person_pin, 'color': Colors.orange},
-    {'title': 'Missing_school', 'icon': Icons.cancel, 'color': Colors.red},
-    {
-      'title': 'take_children',
-      'icon': Icons.campaign_outlined,
-      'color': Colors.purple
-    },
-    {
-      'title': 'scan-in-out',
-      'icon': Icons.qr_code_scanner,
-      'color': Colors.pink
-    },
-    {
-      'title': 'mark-student',
-      'icon': Icons.note_alt,
-      'color': Colors.red
-    }
-  ];
+  String version = '';
+  List<Map<String, dynamic>> subjects = [];
   void handleGridTap(String title) {
     final actions = {
       'score': () =>
@@ -76,8 +62,8 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
           Get.to(() => FollowStudentPage(), transition: Transition.fadeIn),
       'take_children': () =>
           Get.to(() => const TakeChildrenPage(), transition: Transition.fadeIn),
-      'scan-in-out': () =>
-          Get.to(() => CheckInOutPage(), transition: Transition.fadeIn),
+      'scan-in-out': () => Get.to(() => CheckInCheckOutPage(type: 't'),
+          transition: Transition.fadeIn),
       'mark-student': () =>
           Get.to(() => SubjectTeacherPage(), transition: Transition.fadeIn),
       'Tuition_fees': () => Get.to(
@@ -87,6 +73,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
           transition: Transition.fadeIn),
       'language': () => Get.to(() => const ChangeLanguagePage(),
           transition: Transition.fadeIn),
+      'parent': () => Get.to(() => HomePage()),
       'Delete_Account': () => deleteAccount(context),
       'logout': () => logots(),
     };
@@ -131,6 +118,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
 
   @override
   void initState() {
+    getAppVersion();
     getData();
     super.initState();
   }
@@ -147,66 +135,119 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
     addressState.geteducationLevel();
   }
 
+  getAppVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String v = packageInfo.version;
+    String buildNumber = packageInfo.buildNumber;
+    setState(() {
+      version = '$v+$buildNumber';
+    }); // Build number
+  }
+
   @override
   Widget build(BuildContext context) {
     AppColor appColor = AppColor();
     Size size = MediaQuery.of(context).size;
     double fSize = size.height + size.width;
+    final scale = (size.width / 390).clamp(0.9, 1.3);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(backgroundColor: appColor.mainColor, toolbarHeight: 0),
-      body: GetBuilder<CheckRolePermissionState>(builder: (checkRole) {
-        if (checkRole.check == false) {
-          return Column(
-            children: [Expanded(child: Center(child: CircleLoad()))],
-          );
-        }
-        if (checkRole.checkRole("access_Fees") == true &&
-            !subjects.any((e) => e['title'] == 'Tuition_fees')) {
-          subjects.add({
-            'title': 'Tuition_fees',
-            'icon': Icons.money,
-            'color': Colors.blue
-          });
-        }
-        if (!subjects.any((e) => e['title'] == 'language')) {
-          subjects.add({
-            'title': 'language',
-            'icon': Icons.language,
-            'color': Colors.green
-          });
-        }
-        if (!subjects.any((e) => e['title'] == 'Delete_Account')) {
-          subjects.add({
-            'title': 'Delete_Account',
-            'icon': Icons.delete,
-            'color': Colors.red
-          });
-        }
-        if (!subjects.any((e) => e['title'] == 'logout')) {
-          subjects.add(
-            {'title': 'logout', 'icon': Icons.logout, 'color': Colors.grey},
-          );
-        }
-        return SafeArea(
-          child: Column(
-            children: [
-              // Profile Card
-              Container(
-                decoration: BoxDecoration(
-                  color: appColor.mainColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(fSize * 0.03),
-                    bottomRight: Radius.circular(fSize * 0.03),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: fSize * 0.004,
-                  vertical: fSize * 0.004,
-                ),
-                child: GetBuilder<ProfileTeacherState>(
-                  builder: (getProfile) {
-                    return Padding(
+      body: GetBuilder<ProfileTeacherState>(builder: (getProfile) {
+          return GetBuilder<CheckRolePermissionState>(builder: (checkRole) {
+            if (checkRole.check == false) {
+              return Column(
+                children: [Expanded(child: Center(child: CircleLoad()))],
+              );
+            }
+            subjects.clear();
+            subjects.addAll([
+              {'title': 'score', 'icon': Icons.score, 'color': Colors.blue},
+              {
+                'title': 'profile',
+                'icon': Icons.person_pin,
+                'color': Colors.orange
+              },
+              {
+                'title': 'Missing_school',
+                'icon': Icons.cancel,
+                'color': Colors.red
+              },
+              {
+                'title': 'take_children',
+                'icon': Icons.campaign_outlined,
+                'color': Colors.purple
+              }
+            ]);
+            if (getProfile.teacherModels != null &&
+                getProfile.teacherModels!.student.isNotEmpty &&
+                !subjects.any((e) => e['title'] == 'parent')) {
+              subjects.add({
+                'title': 'parent',
+                'icon': Icons.diversity_1,
+                'color': Colors.blue
+              });
+            }
+            if (getProfile.teacherModels != null && getProfile.teacherModels!.appleStore == 1 &&
+                !subjects.any((e) => e['title'] == 'scan-in-out')) {
+              subjects.add({
+                'title': 'scan-in-out',
+                'icon': Icons.qr_code_scanner,
+                'color': Colors.pink
+              });
+            }
+            if (checkRole.checkRole("access_Fees") == true &&
+                !subjects.any((e) => e['title'] == 'Tuition_fees')) {
+              subjects.add({
+                'title': 'Tuition_fees',
+                'icon': Icons.money,
+                'color': Colors.blue
+              });
+            }
+            if (getProfile.teacherModels != null && getProfile.teacherModels!.appleStore == 1 &&
+                !subjects.any((e) => e['title'] == 'mark-student')) {
+              subjects.add({
+                'title': 'mark-student',
+                'icon': Icons.note_alt,
+                'color': Colors.red
+              });
+            }
+            if (!subjects.any((e) => e['title'] == 'language')) {
+              subjects.add({
+                'title': 'language',
+                'icon': Icons.language,
+                'color': Colors.green
+              });
+            }
+            if (!subjects.any((e) => e['title'] == 'Delete_Account')) {
+              subjects.add({
+                'title': 'Delete_Account',
+                'icon': Icons.delete,
+                'color': Colors.red
+              });
+            }
+            if (!subjects.any((e) => e['title'] == 'logout')) {
+              subjects.add(
+                {'title': 'logout', 'icon': Icons.logout, 'color': Colors.grey},
+              );
+            }
+            return SafeArea(
+              child: Column(
+                children: [
+                  // Profile Card
+                  Container(
+                    decoration: BoxDecoration(
+                      color: appColor.mainColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(fSize * 0.03),
+                        bottomRight: Radius.circular(fSize * 0.03),
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: fSize * 0.004,
+                      vertical: fSize * 0.004,
+                    ),
+                    child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8.0, vertical: 8.0),
                       child: Row(
@@ -275,45 +316,162 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                           ),
                         ],
                       ),
-                    );
-                  },
-                ),
-              ),
-              SizedBox(height: size.height * 0.02),
-              // Subjects Grid
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: GridView.builder(
-                    itemCount: subjects.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
                     ),
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        splashColor: Colors.transparent,
-                        onTap: () {
-                          handleGridTap(subjects[index]['title']);
-                        },
-                        child: SubjectCard(
-                          title: subjects[index]['title'],
-                          icon: subjects[index]['icon'],
-                          color: subjects[index]['color'],
-                        ),
-                      );
-                    },
                   ),
-                ),
+                  if (getProfile.teacherModels !=null && getProfile.teacherModels!.appleStore == 1) ...[
+                    SizedBox(height: size.height * 0.01),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10 * scale),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          QuickAction(
+                            scale: scale,
+                            icon: Icons.location_on,
+                            label: 'Check-In',
+                            onTap: () {
+                              Get.to(
+                                  () => CheckInMapPage(
+                                      type: 't', status: 'check_in'),
+                                  transition: Transition.fadeIn);
+                            },
+                          ),
+                          SizedBox(width: 20),
+                          QuickAction(
+                            scale: scale,
+                            icon: Icons.qr_code_2,
+                            label: 'My QR',
+                            onTap: () {
+                              Get.to(() => TeacherCardPage(),
+                                  transition: Transition.fadeIn);
+                            },
+                          ),
+                          SizedBox(width: 20),
+                          QuickAction(
+                            scale: scale,
+                            icon: Icons.location_on,
+                            label: 'Check-Out',
+                            color: appColor.red,
+                            onTap: () {
+                              Get.to(
+                                  () => CheckInMapPage(
+                                      type: 't',
+                                      status: 'check_out',
+                                      id: 'today'),
+                                  transition: Transition.fadeIn);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (getProfile.teacherModels != null &&
+                        getProfile.teacherModels!.student.isNotEmpty) ...[
+                      SizedBox(height: size.height * 0.01),
+                      Wrap(
+                        spacing: 20,
+                        children: [
+                          for (var st
+                              in profileTeacherState.teacherModels!.student)
+                            InkWell(
+                              onTap: () {
+                                Get.to(() => HomePage());
+                              },
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 24,
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          "${profileTeacherState.repository.urlApi}${st.profile}",
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          CircularProgressIndicator(
+                                        color: appColor.mainColor,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Container(
+                                              decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                              'assets/images/cute-cartoon-boy-student-character-on-transparent-background-generative-ai-png.png'),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )),
+                                    ),
+                                  ),
+                                  SizedBox(height: 6 * scale),
+                                  CustomText(
+                                    text: st.firstname ?? '',
+                                    fontSize: 10 * scale,
+                                  )
+                                ],
+                              ),
+                            ),
+                        ],
+                      )
+                    ]
+                  ],
+                  SizedBox(height: size.height * 0.01),
+                  // Subjects Grid
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: GridView.builder(
+                        itemCount: subjects.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                        ),
+                        shrinkWrap: true,
+                        physics: ScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            splashColor: Colors.transparent,
+                            onTap: () {
+                              handleGridTap(subjects[index]['title']);
+                            },
+                            child: SubjectCard(
+                              title: subjects[index]['title'],
+                              icon: subjects[index]['icon'],
+                              color: subjects[index]['color'],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      }),
+            );
+          });
+        }),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: Text(
+                'V $version',
+                style: TextStyle(
+                    color: appColor.grey, fontSize: fixSize(0.01, context)),
+              ),
+            ),
+          ],
+        )
     );
   }
 
@@ -324,5 +482,55 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
     if (res == true) {
       loginRegister.logouts();
     }
+  }
+}
+
+// ---------------- Quick Action ----------------
+class QuickAction extends StatelessWidget {
+  const QuickAction(
+      {required this.scale,
+      required this.icon,
+      required this.label,
+      required this.onTap,
+      this.color});
+
+  final double scale;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = 40.0 * scale;
+
+    return Column(
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(size),
+          onTap: onTap,
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: color ?? AppColor().mainColor,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                    color: Color(0x22000000),
+                    blurRadius: 8,
+                    offset: Offset(0, 3))
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 20 * scale),
+          ),
+        ),
+        SizedBox(height: 6 * scale),
+        CustomText(
+          text: label,
+          fontSize: 10 * scale,
+        )
+      ],
+    );
   }
 }

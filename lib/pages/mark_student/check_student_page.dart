@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pathana_school_app/custom/app_color.dart';
@@ -10,6 +13,7 @@ class CheckStudentPage extends StatefulWidget {
   final int scheduleItemsId;
   final String className;
   final String subjectName;
+
   const CheckStudentPage({
     super.key,
     required this.subjectTeacherId,
@@ -29,14 +33,20 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
   final TextEditingController cutScoreController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
 
+  /// Search controller + debounce
+  final TextEditingController searchController = TextEditingController();
+  Timer? _debounce;
+  String searchQuery = '';
+
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
 
-  List<Map<String, dynamic>> markStatusList = []; // ✅ เก็บค่าจาก API
-
+  List<Map<String, dynamic>> markStatusList = []; // from API
   int? selectedStatus;
-  List<Map<String, dynamic>> students = [];
-  final Set<int> selectedIndexes = {};
+
+  List<Map<String, dynamic>> students = []; // from API
+  final Set<int> selectedIds = {}; // selected by student id (stable)
+
   bool isLoading = true;
 
   @override
@@ -46,12 +56,20 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
     _fetchStudents();
   }
 
-  /// ดึงรายชื่อนักเรียนจาก API
-  /// /// ดึงข้อมูล mark_status จาก API
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    searchController.dispose();
+    noteController.dispose();
+    cutScoreController.dispose();
+    super.dispose();
+  }
+
+  /// -------------------- API --------------------
+
   Future<void> _fetchMarkStatus() async {
     try {
-      final data = await repo.getMarkStatusAPI(); // เรียก API ที่คุณเขียนไว้
-
+      final data = await repo.getMarkStatusAPI(); // your API
       if (data['success'] == true && data['data'] != null) {
         setState(() {
           markStatusList = List<Map<String, dynamic>>.from(data['data']);
@@ -67,14 +85,11 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
   Future<void> _fetchStudents() async {
     try {
       final data = await repo.getStudentBySubjectAPI(widget.subjectTeacherId);
-
-      print("📥 API Response: $data"); // ✅ debug ดูโครงสร้างจริงที่ได้
-
       if (data['success'] == true) {
-        // ลองเข้าถึง students หลายแบบเพื่อความชัวร์
+        // try multiple shapes
         final rawStudents = data['data']?['subject_teacher']?['subject']
-                ?['my_class']?['students'] ??
-            data['data']?['students']; // ✅ fallback ถ้าโครงสร้างต่าง
+        ?['my_class']?['students'] ??
+            data['data']?['students'];
 
         if (rawStudents != null && rawStudents is List) {
           setState(() {
@@ -95,33 +110,61 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
     }
   }
 
-  /// เมื่อกดปุ่มยืนยัน
+  /// -------------------- SEARCH --------------------
+
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      setState(() {
+        searchQuery = value.trim().toLowerCase();
+      });
+    });
+  }
+
+  List<Map<String, dynamic>> get filteredStudents {
+    if (searchQuery.isEmpty) return students;
+    return students.where((s) {
+      final first = (s['firstname'] ?? '').toString().toLowerCase();
+      final last = (s['lastname'] ?? '').toString().toLowerCase();
+      final nick = (s['nickname'] ?? '').toString().toLowerCase();
+      final code = (s['student_code'] ?? '').toString().toLowerCase();
+      return first.contains(searchQuery) ||
+          last.contains(searchQuery) ||
+          nick.contains(searchQuery) ||
+          code.contains(searchQuery);
+    }).toList();
+  }
+
+  /// prefer student_records_id (backend key), fallback to id
+  int _studentIdOf(Map<String, dynamic> s) {
+    final id = s['student_records_id'] ?? s['id'];
+    return (id is int) ? id : int.tryParse(id?.toString() ?? '') ?? -1;
+  }
+
+  /// -------------------- SUBMIT --------------------
+
   void _onConfirm() async {
-    if (students.isEmpty || selectedIndexes.isEmpty) {
+    if (students.isEmpty || selectedIds.isEmpty) {
       Get.snackbar("Warning", "ກະລຸນາເລືອກນັກຮຽນ");
       return;
     }
 
-    // ✅ Validate note
     if (noteController.text.isEmpty) {
       Get.snackbar("Warning", "Please input note");
       return;
     }
 
-    // ✅ Validate status
     if (selectedStatus == null) {
       Get.snackbar("Warning", "Please select status");
       return;
     }
 
-    // ✅ หาค่า score จาก markStatusList ตาม selectedStatus
     final selectedStatusItem = markStatusList.firstWhere(
-      (item) => item['id'] == selectedStatus,
+          (item) => item['id'] == selectedStatus,
       orElse: () => {},
     );
     final scoreValue = selectedStatusItem['score'] ?? 0;
 
-    // ✅ รวมวันที่ + เวลา เป็น DateTime เดียว
     final combinedDateTime = DateTime(
       selectedDate.year,
       selectedDate.month,
@@ -133,42 +176,46 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
     final formattedDateTime =
         "${combinedDateTime.toIso8601String().split('.')[0].replaceFirst('T', ' ')}";
 
+    final chosen = students
+        .where((s) => selectedIds.contains(_studentIdOf(s)))
+        .toList();
+
+    if (chosen.isEmpty) {
+      Get.snackbar("Warning", "No selected students found.");
+      return;
+    }
+
     final payload = {
       "schedule_items_id": widget.scheduleItemsId,
       "dated": formattedDateTime,
-      "students": selectedIndexes.map((i) {
-        final st = students[i];
+      "students": chosen.map((st) {
         return {
           "student_records_id": st['student_records_id'],
-          "score": scoreValue, // ✅ ใช้ score จาก API
+          "score": scoreValue,
           "note": noteController.text,
           "status": selectedStatus,
         };
       }).toList(),
     };
 
-    print("📤 ส่งข้อมูล: $payload");
-
     try {
       final result = await repo.saveCheckStudentAPI(payload);
 
       if (result['success'] == true) {
-        var res = await Repository().post(
+        // Optional: push notification
+        final idsForPush =
+        chosen.map((st) => st['student_records_id']).toList();
+
+        await Repository().post(
           url:
-              '${Repository().urlApi}api/check_in_check_out_push_notification_to_users',
+          '${Repository().urlApi}api/check_in_check_out_push_notification_to_users',
           body: {
             'type': 'missing_school',
-            'student_record_ids': jsonEncode(
-              selectedIndexes.map((i) {
-                final st = students[i];
-                return st['student_records_id']; // ส่งค่า id ตรงๆ
-              }).toList(),
-            ),
+            'student_record_ids': jsonEncode(idsForPush),
           },
           auth: true,
         );
 
-        print(res.body);
         Get.defaultDialog(
           title: "Success",
           middleText: "Saved success",
@@ -176,11 +223,11 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
           onConfirm: () {
             Get.back();
             Get.offAll(() => ListCheckStudentPage(
-                  subjectTeacherId: widget.subjectTeacherId,
-                  scheduleItemsId: widget.scheduleItemsId,
-                  className: widget.className,
-                  subjectName: widget.subjectName,
-                ));
+              subjectTeacherId: widget.subjectTeacherId,
+              scheduleItemsId: widget.scheduleItemsId,
+              className: widget.className,
+              subjectName: widget.subjectName,
+            ));
           },
         );
       } else {
@@ -191,10 +238,12 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
     }
   }
 
+  /// -------------------- UI --------------------
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    double fsize = size.width + size.height;
+    final size = MediaQuery.of(context).size;
+    final fsize = size.width + size.height;
 
     return Scaffold(
       backgroundColor: appColors.white,
@@ -213,198 +262,243 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
-              children: [
-                // 🔹 รายชื่อนักเรียน
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(size.width * 0.03),
-                    child: ListView.builder(
-                      itemCount: students.length,
-                      itemBuilder: (context, index) {
-                        final student = students[index];
-                        final isSelected = selectedIndexes.contains(index);
+        children: [
+          // SEARCH (type-to-search)
+          Padding(
+            padding:
+            const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+            child: TextField(
+              controller: searchController,
+              onChanged: _onSearchChanged,
+              decoration: InputDecoration(
+                hintText: 'search'.tr,
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: searchQuery.isNotEmpty
+                    ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    searchController.clear();
+                    _onSearchChanged('');
+                  },
+                )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ),
+          ),
 
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (isSelected) {
-                                selectedIndexes.remove(index);
-                              } else {
-                                selectedIndexes.add(index);
-                              }
-                            });
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? appColors.mainColor.withOpacity(0.1)
-                                  : appColors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: appColors.grey.withOpacity(0.3),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Checkbox(
-                                  value: isSelected,
-                                  activeColor: appColors.mainColor,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value == true) {
-                                        selectedIndexes.add(index);
-                                      } else {
-                                        selectedIndexes.remove(index);
-                                      }
-                                    });
-                                  },
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: CustomText(
-                                    text:
-                                        "${student['firstname']} ${student['lastname']} (${student['nickname'] ?? '-'})",
-                                    fontSize: fsize * 0.014,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+          // STUDENT LIST (filtered)
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(size.width * 0.03),
+              child: ListView.builder(
+                itemCount: filteredStudents.length,
+                itemBuilder: (context, index) {
+                  final student = filteredStudents[index];
+                  final sid = _studentIdOf(student);
+                  final isSelectable = sid != -1;
+                  final isSelected = selectedIds.contains(sid);
+
+                  return GestureDetector(
+                    onTap: isSelectable
+                        ? () {
+                      setState(() {
+                        if (isSelected) {
+                          selectedIds.remove(sid);
+                        } else {
+                          selectedIds.add(sid);
+                        }
+                      });
+                    }
+                        : null,
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? appColors.mainColor.withOpacity(0.1)
+                            : appColors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: appColors.grey.withOpacity(0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: isSelected,
+                            activeColor: appColors.mainColor,
+                            onChanged: isSelectable
+                                ? (value) {
+                              setState(() {
+                                if (value == true) {
+                                  selectedIds.add(sid);
+                                } else {
+                                  selectedIds.remove(sid);
+                                }
+                              });
+                            }
+                                : null,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: CustomText(
+                              text:
+                              "${index+1}. ${student['firstname']} ${student['lastname']} (${student['nickname'] ?? '-'})",
+                              fontSize: fsize * 0.014,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        );
-                      },
+                          if ((student['student_code'] ?? '')
+                              .toString()
+                              .isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "#${student['student_code']}",
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: fsize * 0.012,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+
+          // FOOTER INPUTS
+          Container(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: appColors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: appColors.grey.withOpacity(0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Status
+                DropdownButtonFormField<int>(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  hint: const Text('Status'),
+                  value: selectedStatus,
+                  items: markStatusList.map((item) {
+                    return DropdownMenuItem<int>(
+                      value: item['id'],
+                      child: Text(
+                          "${item['name']} (- ${item['score'] ?? 0} Score)"),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedStatus = value;
+                    });
+                  },
+                ),
+
+                const SizedBox(height: 8),
+
+                // Note
+                TextField(
+                  controller: noteController,
+                  decoration: InputDecoration(
+                    hintText: 'Note',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
                     ),
                   ),
                 ),
 
-                // 🔹 Input ด้านล่าง
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: appColors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: appColors.grey.withOpacity(0.3),
-                        blurRadius: 4,
-                        offset: const Offset(0, -2),
+                const SizedBox(height: 8),
+
+                // Date + Time (display-only)
+                Row(
+                  children: [
+                    Expanded(
+                      child: IgnorePointer(
+                        child: InputDecorator(
+                          decoration: InputDecoration(
+                            labelText: "Date",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            enabled: false,
+                          ),
+                          child: Text(
+                            "${selectedDate.toLocal()}".split(' ')[0],
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ),
                       ),
-                    ],
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: IgnorePointer(
+                        child: InputDecorator(
+                          decoration: InputDecoration(
+                            labelText: "Time",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            enabled: false,
+                          ),
+                          child: Text(
+                            selectedTime.format(context),
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                // Confirm
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedIds.isEmpty
+                          ? Colors.grey
+                          : Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: selectedIds.isEmpty ? null : _onConfirm,
+                    child: const Text('Confirm'),
                   ),
-                  child: Column(
-                    children: [
-                      // Row 1: Status (เต็มแถว)
-                      DropdownButtonFormField<int>(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                        hint: const Text('Status'),
-                        value: selectedStatus,
-                        items: markStatusList.map((item) {
-                          return DropdownMenuItem<int>(
-                            value: item['id'],
-                            child: Text(
-                                "${item['name']} (- ${item['score'] ?? 0} Score)"),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedStatus = value;
-                          });
-                        },
-                      ),
-
-                      const SizedBox(height: 8),
-                      // Row 4: Note (เต็มแถว)
-                      TextField(
-                        controller: noteController,
-                        decoration: InputDecoration(
-                          hintText: 'Note',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // Row 2: Date + Time (disabled)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: IgnorePointer(
-                              child: InputDecorator(
-                                decoration: InputDecoration(
-                                  labelText: "Date",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  enabled: false,
-                                ),
-                                child: Text(
-                                  "${selectedDate.toLocal()}".split(' ')[0],
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: IgnorePointer(
-                              child: InputDecorator(
-                                decoration: InputDecoration(
-                                  labelText: "Time",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  enabled: false,
-                                ),
-                                child: Text(
-                                  selectedTime.format(context),
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // Row 3: Confirm Button (เต็มแถว)
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: selectedIndexes.isEmpty
-                                ? Colors.grey
-                                : Colors.blue,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed:
-                              selectedIndexes.isEmpty ? null : _onConfirm,
-                          child: const Text('Confirm'),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+                ),
               ],
             ),
+          )
+        ],
+      ),
     );
   }
 }

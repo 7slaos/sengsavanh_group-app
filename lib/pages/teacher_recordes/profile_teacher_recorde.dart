@@ -56,6 +56,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
   bool obscureTextPasseord = true;
   bool obscureTextConfirmPasseord = true;
   String gender = "2";
+  bool get _generalFieldsEnabled => false;
 
   @override
   void initState() {
@@ -181,9 +182,11 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                         },
                       ),
                       InkWell(
-                        onTap: () {
-                          pickImageState.showPickImage(context);
-                        },
+                        onTap: _generalFieldsEnabled
+                            ? () {
+                                pickImageState.showPickImage(context);
+                              }
+                            : null,
                         child: CircleAvatar(
                           backgroundColor: pickImageState.appColor.mainColor,
                           child: Icon(
@@ -209,7 +212,9 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                             value: '2',
                             groupValue: gender,
                             activeColor: appColor.mainColor,
-                            onChanged: (v) => {updateGender(v.toString())},
+                            onChanged: _generalFieldsEnabled
+                                ? (v) => updateGender(v.toString())
+                                : null,
                           ),
                           CustomText(text: 'male')
                         ],
@@ -220,7 +225,9 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                             value: '1',
                             groupValue: gender,
                             activeColor: appColor.mainColor,
-                            onChanged: (v) => {updateGender(v.toString())},
+                            onChanged: _generalFieldsEnabled
+                                ? (v) => updateGender(v.toString())
+                                : null,
                           ),
                           CustomText(text: 'female')
                         ],
@@ -231,7 +238,9 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                             value: '3',
                             groupValue: gender,
                             activeColor: appColor.mainColor,
-                            onChanged: (v) => {updateGender(v.toString())},
+                            onChanged: _generalFieldsEnabled
+                                ? (v) => updateGender(v.toString())
+                                : null,
                           ),
                           CustomText(text: 'other')
                         ],
@@ -250,6 +259,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                 TextFormField(
                   // obscureText: obscureText,
                   controller: firstname,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'firstname'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -272,6 +282,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                 TextFormField(
                   // obscureText: obscureText,
                   controller: lastname,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'lastname'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -294,6 +305,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                 TextFormField(
                   // obscureText: obscureText,
                   controller: nickname,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'nick_name'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -358,12 +370,14 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                             e.id.toString() ==
                             addressState.selectProvince?.id.toString()) ??
                         addressState.selectProvince,
-                    onChanged: (value) {
-                      addressState.updateDropDownProvince(value!);
-                      if (value.id != null) {
-                        addressState.getDistrict(value.id!, null);
-                      }
-                    },
+                    onChanged: _generalFieldsEnabled
+                        ? (value) {
+                            addressState.updateDropDownProvince(value!);
+                            if (value.id != null) {
+                              addressState.getDistrict(value.id!, null);
+                            }
+                          }
+                        : null,
                     buttonStyleData: ButtonStyleData(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       height: 60,
@@ -421,10 +435,12 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                             nameEn.contains(searchValue.toLowerCase());
                       },
                     ),
-                    onMenuStateChange: (isOpen) {
-                      addressState.clearDistrict();
-                      addressState.clearVillage();
-                    },
+                    onMenuStateChange: _generalFieldsEnabled
+                        ? (isOpen) {
+                            addressState.clearDistrict();
+                            addressState.clearVillage();
+                          }
+                        : null,
                   ),
                 ),
                 SizedBox(
@@ -460,12 +476,14 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                               e.id.toString() ==
                               addressState.selectDistrict?.id.toString()) ??
                           addressState.selectDistrict,
-                      onChanged: (value) {
-                        addressState.updateDropDownDistrict(value!);
-                        if (value.id != null) {
-                          addressState.getVillage(value.id!, null);
-                        }
-                      },
+                      onChanged: _generalFieldsEnabled
+                          ? (value) {
+                              addressState.updateDropDownDistrict(value!);
+                              if (value.id != null) {
+                                addressState.getVillage(value.id!, null);
+                              }
+                            }
+                          : null,
                       buttonStyleData: ButtonStyleData(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         height: 60,
@@ -525,9 +543,11 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                               nameEn.contains(searchValue.toLowerCase());
                         },
                       ),
-                      onMenuStateChange: (isOpen) {
-                        addressState.clearVillage();
-                      },
+                      onMenuStateChange: _generalFieldsEnabled
+                          ? (isOpen) {
+                              addressState.clearVillage();
+                            }
+                          : null,
                     ),
                   )
                 ],
@@ -564,9 +584,11 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                               e.id.toString() ==
                               addressState.selectVillage?.id.toString()) ??
                           addressState.selectVillage,
-                      onChanged: (value) {
-                        addressState.updateDropDownVillage(value!);
-                      },
+                      onChanged: _generalFieldsEnabled
+                          ? (value) {
+                              addressState.updateDropDownVillage(value!);
+                            }
+                          : null,
                       buttonStyleData: ButtonStyleData(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         height: 60,
@@ -642,6 +664,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                 TextFormField(
                   // obscureText: obscureText,
                   controller: email,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'example@gmail.com',
                     hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -665,9 +688,11 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                     // obscureText: obscureText,
                     controller: registerState.birthdayDate,
                     readOnly: true,
-                    onTap: () {
-                      registerState.selectDate(context);
-                    },
+                    onTap: _generalFieldsEnabled
+                        ? () {
+                            registerState.selectDate(context);
+                          }
+                        : null,
                     decoration: InputDecoration(
                       hintText: 'birtdaydate'.tr,
                       hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -715,9 +740,11 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                             e.id.toString() ==
                             addressState.selectBloodGroup?.id.toString()) ??
                         addressState.selectBloodGroup,
-                    onChanged: (value) {
-                      addressState.updateDropDownBloodGroup(value!);
-                    },
+                    onChanged: _generalFieldsEnabled
+                        ? (value) {
+                            addressState.updateDropDownBloodGroup(value!);
+                          }
+                        : null,
                     buttonStyleData: ButtonStyleData(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       height: 60,
@@ -809,9 +836,11 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                             e.id.toString() ==
                             addressState.selectReligion?.id.toString()) ??
                         addressState.selectReligion,
-                    onChanged: (value) {
-                      addressState.updateDropdownReligion(value!);
-                    },
+                    onChanged: _generalFieldsEnabled
+                        ? (value) {
+                            addressState.updateDropdownReligion(value!);
+                          }
+                        : null,
                     buttonStyleData: ButtonStyleData(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       height: 60,
@@ -902,9 +931,11 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                             e.id.toString() ==
                             addressState.selectNationality?.id.toString()) ??
                         addressState.selectNationality,
-                    onChanged: (value) {
-                      addressState.updateDropDownNationality(value!);
-                    },
+                    onChanged: _generalFieldsEnabled
+                        ? (value) {
+                            addressState.updateDropDownNationality(value!);
+                          }
+                        : null,
                     buttonStyleData: ButtonStyleData(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       height: 60,
@@ -974,6 +1005,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                 TextFormField(
                   // obscureText: obscureText,
                   controller: educationSystem,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'Education_system'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -1016,9 +1048,11 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                             e.id.toString() ==
                             addressState.selectEducationLevel?.id.toString()) ??
                         addressState.selectEducationLevel,
-                    onChanged: (value) {
-                      addressState.updateDropDownEducationLevel(value!);
-                    },
+                    onChanged: _generalFieldsEnabled
+                        ? (value) {
+                            addressState.updateDropDownEducationLevel(value!);
+                          }
+                        : null,
                     buttonStyleData: ButtonStyleData(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       height: 60,
@@ -1088,6 +1122,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                 TextFormField(
                   // obscureText: obscureText,
                   controller: specialSubject,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'Specialization'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -1109,6 +1144,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                 TextFormField(
                   // obscureText: obscureText,
                   controller: finishSchool,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'Graduated_from_school'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -1130,6 +1166,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                 TextFormField(
                   // obscureText: obscureText,
                   controller: yearSystemLearn,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'School year system'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -1152,6 +1189,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                   // obscureText: obscureText,
                   controller: yearFinished,
                   keyboardType: TextInputType.number,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'End_of_the_year'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -1217,6 +1255,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                 TextFormField(
                   // obscureText: obscureText,
                   controller: note,
+                  readOnly: !_generalFieldsEnabled,
                   decoration: InputDecoration(
                     hintText: 'note'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400),

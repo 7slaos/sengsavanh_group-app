@@ -33,8 +33,8 @@ class CheckRolePermissionState extends GetxController {
             .map((e) => CheckRolePermissionModel.fromJson(e))
             .toList(growable: false);
 
-        print(
-            "Permissions loaded: ${data.map((e) => (e.name ?? '').trim()).toList()}");
+        // print(
+        //     "Permissions loaded: ${data.map((e) => (e.name ?? '').trim()).toList()}");
       } else {
         print("check_role_permission HTTP ${res.statusCode}");
         data = [];
@@ -53,13 +53,13 @@ class CheckRolePermissionState extends GetxController {
     final needle = name.trim().toLowerCase();
     for (final item in data) {
       final n = (item.name ?? '').trim().toLowerCase();
-      print(n);
+      //print(n);
       if (n.toString() == needle.toString()) {
-        print('$name = true');
+        // print('$name = true');
         return true;
       }
     }
-    print('$name = false');
+    // print('$name = false');
     return false;
   }
 

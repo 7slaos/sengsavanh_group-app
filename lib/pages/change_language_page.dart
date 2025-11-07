@@ -27,11 +27,13 @@ class _ChangeLanguagePageState extends State<ChangeLanguagePage> {
           icon: Icon(
             Icons.arrow_back,
             color: appColor.white,
+            size: fSize * 0.02,
           ),
         ),
         orientation: orientation,
         height: size.height,
         color: appColor.white,
+        centerTitle: true,
         title: "change_language",
       ),
       body: Column(
@@ -66,11 +68,17 @@ class _ChangeLanguagePageState extends State<ChangeLanguagePage> {
                 )
               ],
             ),
-             trailing: Get.locale == const Locale('la', 'LA')
-                ? Icon(Icons.radio_button_checked,
-                    color: appColor.green)
-                : Icon(Icons.radio_button_unchecked,
-                    color: appColor.grey),
+            trailing: Get.locale == const Locale('la', 'LA')
+                ? Icon(
+                    Icons.radio_button_checked,
+                    color: appColor.green,
+                    size: fSize * 0.02,
+                  )
+                : Icon(
+                    Icons.radio_button_unchecked,
+                    color: appColor.grey,
+                    size: fSize * 0.02,
+                  ),
           ),
           ListTile(
             onTap: () {
@@ -103,10 +111,16 @@ class _ChangeLanguagePageState extends State<ChangeLanguagePage> {
               ],
             ),
             trailing: Get.locale == const Locale('en', 'US')
-                ? Icon(Icons.radio_button_checked,
-                    color: appColor.green)
-                : Icon(Icons.radio_button_unchecked,
-                    color: appColor.grey),
+                ? Icon(
+                    Icons.radio_button_checked,
+                    color: appColor.green,
+                    size: fSize * 0.02,
+                  )
+                : Icon(
+                    Icons.radio_button_unchecked,
+                    color: appColor.grey,
+                    size: fSize * 0.02,
+                  ),
           ),
           ListTile(
             onTap: () {
@@ -140,9 +154,12 @@ class _ChangeLanguagePageState extends State<ChangeLanguagePage> {
             ),
             trailing: Get.locale == const Locale('la', 'CN')
                 ? Icon(Icons.radio_button_checked,
-                    color: appColor.green)
-                : Icon(Icons.radio_button_unchecked,
-                    color: appColor.grey),
+                    size: fSize * 0.02, color: appColor.green)
+                : Icon(
+                    Icons.radio_button_unchecked,
+                    color: appColor.grey,
+                    size: fSize * 0.02,
+                  ),
           ),
         ],
       ),

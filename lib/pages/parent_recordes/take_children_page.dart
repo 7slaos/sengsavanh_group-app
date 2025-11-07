@@ -7,6 +7,7 @@ import 'package:pathana_school_app/custom/app_size.dart';
 import 'package:pathana_school_app/pages/parent_recordes/call_children_page.dart';
 import 'package:pathana_school_app/states/appverification.dart';
 import 'package:pathana_school_app/states/call_student_state.dart';
+import 'package:pathana_school_app/states/profile_teacher_state.dart';
 import 'package:pathana_school_app/widgets/custom_app_bar.dart';
 import 'package:pathana_school_app/widgets/custom_circle_load.dart';
 import 'package:pathana_school_app/widgets/custom_text_widget.dart';
@@ -189,37 +190,272 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                   .where(
                       (e) => e.pCarnumber!.toLowerCase().contains(searchT.text))
                   .toList();
-              return Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    tabController.index != 2
-                        ? Padding(
-                            padding: const EdgeInsets.only(left: 8.0, right: 8),
-                            child: CustomText(
-                              text:
-                                  '${"all".tr}: ${getCall.data.length} ${"items".tr}',
-                              color: appColor.grey,
-                            ),
-                          )
-                        : const SizedBox(),
-                    Expanded(
-                      child: RefreshIndicator(
-                        color: appColor.mainColor,
-                        onRefresh: () async {
-                          if (tabController.index != 2) {
-                            getData();
-                          }
-                        },
-                        child: ListView.builder(
-                          controller: scrollController,
-                          padding: EdgeInsets.only(bottom: size.height * 0.15),
-                          itemCount: tabController.index == 2
-                              ? value.length + 1
-                              : value.length,
-                          itemBuilder: (context, index) {
-                            if (tabController.index == 2) {
-                              if (index < value.length) {
+              return GetBuilder<ProfileTeacherState>(builder: (tProfile) {
+                return Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      tabController.index != 2
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 8.0, right: 8),
+                              child: CustomText(
+                                text:
+                                    '${"all".tr}: ${getCall.data.length} ${"items".tr}',
+                                color: appColor.grey,
+                              ),
+                            )
+                          : const SizedBox(),
+                      Expanded(
+                        child: RefreshIndicator(
+                          color: appColor.mainColor,
+                          onRefresh: () async {
+                            if (tabController.index != 2) {
+                              getData();
+                            }
+                          },
+                          child: ListView.builder(
+                            controller: scrollController,
+                            padding:
+                                EdgeInsets.only(bottom: size.height * 0.15),
+                            itemCount: tabController.index == 2
+                                ? value.length + 1
+                                : value.length,
+                            itemBuilder: (context, index) {
+                              if (tabController.index == 2) {
+                                if (index < value.length) {
+                                  return GetBuilder<AppVerification>(
+                                      builder: (getRole) {
+                                    return InkWell(
+                                      splashColor: Colors.transparent,
+                                      onTap: () => {
+                                        if (value[index].status != 3)
+                                          {
+                                            AwesomeDialog(
+                                              // ignore: use_build_context_synchronously
+                                              context: context,
+                                              dialogType: DialogType.warning,
+                                              animType: AnimType.scale,
+                                              title: value[index].status == 2
+                                                  ? 'send_students'.tr
+                                                  : 'confirm'.tr,
+                                              desc: 'do_you_want_to_confirm'.tr,
+                                              dismissOnTouchOutside: false,
+                                              btnOkText: 'Ok',
+                                              dismissOnBackKeyPress: false,
+                                              btnCancelOnPress: () {},
+                                              btnOkOnPress: () {
+                                                callStudentState
+                                                    .tearchconfirmcallStudent(
+                                                        context: context,
+                                                        id: value[index]
+                                                            .id
+                                                            .toString(),
+                                                        status: getRole.role ==
+                                                                'p'
+                                                            ? '3'
+                                                            : ((value[index]
+                                                                        .status! +
+                                                                    1)
+                                                                .toString()));
+                                              },
+                                            ).show()
+                                          }
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        margin: EdgeInsets.only(
+                                            top: fixSize(0.008, context)),
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              width: size.width,
+                                              padding: EdgeInsets.all(5),
+                                              decoration: BoxDecoration(
+                                                color: appColor.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    blurRadius: fixSize(
+                                                        0.0025, context),
+                                                    offset: const Offset(0, 1),
+                                                    color: appColor.grey,
+                                                  ),
+                                                ],
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  value[index].pCarnumber != ''
+                                                      ? CustomText(
+                                                          text:
+                                                              "${'car_number'.tr}: ${value[index].pCarnumber ?? ''}",
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: appColor
+                                                              .mainColor,
+                                                          fontSize: fixSize(
+                                                              0.0165, context),
+                                                        )
+                                                      : const SizedBox(),
+                                                  if (value[index].items !=
+                                                          null &&
+                                                      value[index]
+                                                          .items!
+                                                          .isNotEmpty)
+                                                    ...value[index]
+                                                        .items!
+                                                        .map((item) => Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(3.0),
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  CircleAvatar(
+                                                                    backgroundColor: getCall.data[index].status ==
+                                                                            1
+                                                                        ? appColor
+                                                                            .grey
+                                                                            // ignore: deprecated_member_use
+                                                                            .withOpacity(
+                                                                                0.6)
+                                                                        : getCall.data[index].status ==
+                                                                                2
+                                                                            ? appColor.mainColor
+                                                                                // ignore: deprecated_member_use
+                                                                                .withOpacity(0.6)
+                                                                            : appColor.green
+                                                                                // ignore: deprecated_member_use
+                                                                                .withOpacity(0.6),
+                                                                    child:
+                                                                        CustomText(
+                                                                      text: (item.firstname.toString() != '' &&
+                                                                              item.firstname.toString() !=
+                                                                                  'null')
+                                                                          ? item
+                                                                              .firstname
+                                                                              .toString()
+                                                                              .substring(0, 1)
+                                                                          : '',
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: appColor
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: 8,
+                                                                  ),
+                                                                  Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      CustomText(
+                                                                        text:
+                                                                            '${item.firstname ?? ""} ${item.lastname ?? ""}',
+                                                                        fontSize: fixSize(
+                                                                            0.0145,
+                                                                            context),
+                                                                      ),
+                                                                      CustomText(
+                                                                          text:
+                                                                              '${'class_room'.tr}: ${item.myClass}',
+                                                                          fontSize: fixSize(
+                                                                              0.0145,
+                                                                              context),
+                                                                          color: value[index].status == 1
+                                                                              ? appColor.red
+                                                                                  // ignore: deprecated_member_use
+                                                                                  .withOpacity(0.65)
+                                                                              : appColor.green
+                                                                                  // ignore: deprecated_member_use
+                                                                                  .withOpacity(0.65)),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            )),
+                                                  (getRole.role == 't' &&
+                                                          value[index].note !=
+                                                              null)
+                                                      ? CustomText(
+                                                          text: value[index]
+                                                                  .note ??
+                                                              '',
+                                                          color: appColor
+                                                              .mainColor
+                                                              // ignore: deprecated_member_use
+                                                              .withOpacity(0.8),
+                                                          fontSize: fixSize(
+                                                              0.0145, context),
+                                                        )
+                                                      : const SizedBox(),
+                                                ],
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                value[index].status == 3
+                                                    ? CustomText(
+                                                        text: getCall
+                                                                .data[index]
+                                                                .date ??
+                                                            '',
+                                                        color: appColor.grey,
+                                                        fontSize:
+                                                            fixSizes * 0.0135,
+                                                      )
+                                                    : Container(
+                                                        width:
+                                                            size.width * 0.15,
+                                                        height: fixSize(
+                                                            0.0195, context),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: appColor
+                                                              .mainColor,
+                                                          borderRadius: BorderRadius.only(
+                                                              topRight: Radius
+                                                                  .circular(fixSize(
+                                                                      0.004,
+                                                                      context))),
+                                                        ),
+                                                        child: Center(
+                                                          child: CustomText(
+                                                            text:
+                                                                '${index + 1}',
+                                                            color:
+                                                                appColor.white,
+                                                            fontSize: fixSizes *
+                                                                0.0145,
+                                                          ),
+                                                        ),
+                                                      ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
+                                } else {
+                                  return Center(
+                                    child: getCall.isLoading
+                                        ? CircleLoad()
+                                        : const SizedBox(),
+                                  );
+                                }
+                              } else {
                                 return GetBuilder<AppVerification>(
                                     builder: (getRole) {
                                   return InkWell(
@@ -237,7 +473,8 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                                                 : 'confirm'.tr,
                                             desc: 'do_you_want_to_confirm'.tr,
                                             dismissOnTouchOutside: false,
-                                            btnOkText: 'Ok',
+                                            btnOkText: 'ok'.tr,
+                                            btnCancelText: 'cancel'.tr,
                                             dismissOnBackKeyPress: false,
                                             btnCancelOnPress: () {},
                                             btnOkOnPress: () {
@@ -285,18 +522,32 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                value[index].pCarnumber != ''
+                                                (getRole.role == 'p' || (tProfile.teacherModels != null && tProfile.teacherModels!.student.isNotEmpty))
                                                     ? CustomText(
                                                         text:
-                                                            "${'car_number'.tr}: ${value[index].pCarnumber ?? ''}",
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color:
-                                                            appColor.mainColor,
+                                                            value[index].date ??
+                                                                '',
+                                                        color: appColor
+                                                            .mainColor
+                                                            // ignore: deprecated_member_use
+                                                            .withOpacity(0.8),
                                                         fontSize: fixSize(
-                                                            0.0165, context),
+                                                            0.0145, context),
                                                       )
-                                                    : const SizedBox(),
+                                                    : value[index].pCarnumber !=
+                                                            ''
+                                                        ? CustomText(
+                                                            text:
+                                                                "${'car_number'.tr}: ${value[index].pCarnumber ?? ''}",
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: appColor
+                                                                .mainColor,
+                                                            fontSize: fixSize(
+                                                                0.0165,
+                                                                context),
+                                                          )
+                                                        : const SizedBox(),
                                                 if (value[index].items !=
                                                         null &&
                                                     value[index]
@@ -335,12 +586,16 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                                                                               .withOpacity(0.6),
                                                                   child:
                                                                       CustomText(
-                                                                    text: item
-                                                                        .firstname
-                                                                        .toString()
-                                                                        .substring(
-                                                                            0,
-                                                                            1),
+                                                                    text: (item.firstname.toString() !=
+                                                                                '' &&
+                                                                            item.firstname.toString() !=
+                                                                                'null')
+                                                                        ? item
+                                                                            .firstname
+                                                                            .toString()
+                                                                            .substring(0,
+                                                                                1)
+                                                                        : '',
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .bold,
@@ -374,9 +629,13 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                                                                             ? appColor.red
                                                                                 // ignore: deprecated_member_use
                                                                                 .withOpacity(0.65)
-                                                                            : appColor.green
-                                                                                // ignore: deprecated_member_use
-                                                                                .withOpacity(0.65)),
+                                                                            : value[index].status == 2
+                                                                                ? appColor.mainColor
+                                                                                    // ignore: deprecated_member_use
+                                                                                    .withOpacity(0.65)
+                                                                                : appColor.green
+                                                                                    // ignore: deprecated_member_use
+                                                                                    .withOpacity(0.65)),
                                                                   ],
                                                                 ),
                                                               ],
@@ -443,288 +702,51 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                                     ),
                                   );
                                 });
-                              } else {
-                                return Center(
-                                  child: getCall.isLoading
-                                      ? CircleLoad()
-                                      : const SizedBox(),
-                                );
                               }
-                            } else {
-                              return GetBuilder<AppVerification>(
-                                  builder: (getRole) {
-                                return InkWell(
-                                  splashColor: Colors.transparent,
-                                  onTap: () => {
-                                    if (value[index].status != 3)
-                                      {
-                                        AwesomeDialog(
-                                          // ignore: use_build_context_synchronously
-                                          context: context,
-                                          dialogType: DialogType.warning,
-                                          animType: AnimType.scale,
-                                          title: value[index].status == 2
-                                              ? 'send_students'.tr
-                                              : 'confirm'.tr,
-                                          desc: 'do_you_want_to_confirm'.tr,
-                                          dismissOnTouchOutside: false,
-                                          btnOkText: 'ok'.tr,
-                                          btnCancelText: 'cancel'.tr,
-                                          dismissOnBackKeyPress: false,
-                                          btnCancelOnPress: () {},
-                                          btnOkOnPress: () {
-                                            callStudentState
-                                                  .tearchconfirmcallStudent(
-                                                      context: context,
-                                                      id: value[index]
-                                                          .id
-                                                          .toString(),
-                                                      status: getRole.role ==
-                                                              'p'
-                                                          ? '3'
-                                                          : ((value[index]
-                                                                      .status! +
-                                                                  1)
-                                                              .toString()));
-                                          },
-                                        ).show()
-                                      }
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    margin: EdgeInsets.only(
-                                        top: fixSize(0.008, context)),
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          width: size.width,
-                                          padding: EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                            color: appColor.white,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                blurRadius:
-                                                    fixSize(0.0025, context),
-                                                offset: const Offset(0, 1),
-                                                color: appColor.grey,
-                                              ),
-                                            ],
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              getRole.role == 'p'
-                                                  ? CustomText(
-                                                      text: value[index].date ??
-                                                          '',
-                                                      color: appColor.mainColor
-                                                          // ignore: deprecated_member_use
-                                                          .withOpacity(0.8),
-                                                      fontSize: fixSize(
-                                                          0.0145, context),
-                                                    )
-                                                  : value[index].pCarnumber !=
-                                                          ''
-                                                      ? CustomText(
-                                                          text:
-                                                              "${'car_number'.tr}: ${value[index].pCarnumber ?? ''}",
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: appColor
-                                                              .mainColor,
-                                                          fontSize: fixSize(
-                                                              0.0165, context),
-                                                        )
-                                                      : const SizedBox(),
-                                              if (value[index].items != null &&
-                                                  value[index]
-                                                      .items!
-                                                      .isNotEmpty)
-                                                ...value[index]
-                                                    .items!
-                                                    .map((item) => Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(3.0),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              CircleAvatar(
-                                                                backgroundColor: getCall
-                                                                            .data[
-                                                                                index]
-                                                                            .status ==
-                                                                        1
-                                                                    ? appColor
-                                                                        .grey
-                                                                        // ignore: deprecated_member_use
-                                                                        .withOpacity(
-                                                                            0.6)
-                                                                    : getCall.data[index].status ==
-                                                                            2
-                                                                        ? appColor
-                                                                            .mainColor
-                                                                            // ignore: deprecated_member_use
-                                                                            .withOpacity(
-                                                                                0.6)
-                                                                        : appColor
-                                                                            .green
-                                                                            // ignore: deprecated_member_use
-                                                                            .withOpacity(0.6),
-                                                                child:
-                                                                    CustomText(
-                                                                  text: item
-                                                                      .firstname
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0, 1),
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: appColor
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 8,
-                                                              ),
-                                                              Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  CustomText(
-                                                                    text:
-                                                                        '${item.firstname ?? ""} ${item.lastname ?? ""}',
-                                                                    fontSize: fixSize(
-                                                                        0.0145,
-                                                                        context),
-                                                                  ),
-                                                                  CustomText(
-                                                                      text:
-                                                                          '${'class_room'.tr}: ${item.myClass}',
-                                                                      fontSize: fixSize(
-                                                                          0.0145,
-                                                                          context),
-                                                                      color: value[index].status ==
-                                                                              1
-                                                                          ? appColor
-                                                                              .red
-                                                                              // ignore: deprecated_member_use
-                                                                              .withOpacity(0.65)
-                                                                          : value[index].status == 2
-                                                                              ? appColor.mainColor
-                                                                                  // ignore: deprecated_member_use
-                                                                                  .withOpacity(0.65)
-                                                                              : appColor.green
-                                                                                  // ignore: deprecated_member_use
-                                                                                  .withOpacity(0.65)),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        )),
-                                              (getRole.role == 't' &&
-                                                      value[index].note != null)
-                                                  ? CustomText(
-                                                      text: value[index].note ??
-                                                          '',
-                                                      color: appColor.mainColor
-                                                          // ignore: deprecated_member_use
-                                                          .withOpacity(0.8),
-                                                      fontSize: fixSize(
-                                                          0.0145, context),
-                                                    )
-                                                  : const SizedBox(),
-                                            ],
-                                          ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            value[index].status == 3
-                                                ? CustomText(
-                                                    text: getCall
-                                                            .data[index].date ??
-                                                        '',
-                                                    color: appColor.grey,
-                                                    fontSize: fixSizes * 0.0135,
-                                                  )
-                                                : Container(
-                                                    width: size.width * 0.15,
-                                                    height: fixSize(
-                                                        0.0195, context),
-                                                    decoration: BoxDecoration(
-                                                      color: appColor.mainColor,
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                              topRight: Radius
-                                                                  .circular(fixSize(
-                                                                      0.004,
-                                                                      context))),
-                                                    ),
-                                                    child: Center(
-                                                      child: CustomText(
-                                                        text: '${index + 1}',
-                                                        color: appColor.white,
-                                                        fontSize:
-                                                            fixSizes * 0.0145,
-                                                      ),
-                                                    ),
-                                                  ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              });
-                            }
-                          },
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              );
+                    ],
+                  ),
+                );
+              });
             }),
           ],
         ),
-        floatingActionButton: GetBuilder<AppVerification>(builder: (getRole) {
-          if (getRole.role == 'p') {
-            return InkWell(
-              onTap: () {
-                callStudentState.clearcallStudent();
-                Get.to(() => CallChildrenPage(), transition: Transition.zoom);
-              },
-              child: Container(
-                width: fixSizes * 0.065,
-                height: fixSizes * 0.065,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(999),
-                    color: appColor.mainColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: fixSizes * 0.01,
-                      )
-                    ]),
-                child: Icon(
-                  Icons.add,
-                  color: appColor.white,
-                  size: fixSizes * 0.025,
+        floatingActionButton:
+            GetBuilder<ProfileTeacherState>(builder: (teacherPro) {
+          return GetBuilder<AppVerification>(builder: (getRole) {
+            if (getRole.role == 'p' ||
+                (teacherPro.teacherModels != null &&
+                    teacherPro.teacherModels!.student.isNotEmpty)) {
+              return InkWell(
+                onTap: () {
+                  callStudentState.clearcallStudent();
+                  Get.to(() => CallChildrenPage(), transition: Transition.zoom);
+                },
+                child: Container(
+                  width: fixSizes * 0.065,
+                  height: fixSizes * 0.065,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      color: appColor.mainColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black54,
+                          blurRadius: fixSizes * 0.01,
+                        )
+                      ]),
+                  child: Icon(
+                    Icons.add,
+                    color: appColor.white,
+                    size: fixSizes * 0.025,
+                  ),
                 ),
-              ),
-            );
-          }
-          return const SizedBox();
+              );
+            }
+            return const SizedBox();
+          });
         }));
   }
 }

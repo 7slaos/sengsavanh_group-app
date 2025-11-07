@@ -2,6 +2,7 @@ import 'package:pathana_school_app/models/province_model.dart';
 
 class ProfileStudentRecordModel {
   int? id;
+  String? code;
   String? branchId;
   String? admissionNumber;
   String? firstname;
@@ -31,9 +32,13 @@ class ProfileStudentRecordModel {
   String? parentData;
   String? parentContact;
   String? studentRecordsId;
+  double? lat;
+  double? lng;
+  double? km;
 
   ProfileStudentRecordModel(
       {this.id,
+        this.code,
       this.branchId,
       this.admissionNumber,
       this.firstname,
@@ -61,10 +66,12 @@ class ProfileStudentRecordModel {
       this.bloodGroup,
       this.admissionDate,
       this.parentData,
-      this.parentContact, this.studentRecordsId});
+      this.parentContact, this.studentRecordsId, this.lat
+        ,this.lng,this.km});
 
   ProfileStudentRecordModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    code = json['code'];
     branchId = json['branch_id']!=null ? json['branch_id'].toString() : '0';
     admissionNumber = json['admission_number'];
     firstname = json['firstname'];
@@ -108,6 +115,9 @@ class ProfileStudentRecordModel {
     parentData = json['parent_data'];
     parentContact = json['parent_contact'];
     studentRecordsId = json['student_records_id'].toString();
+    lat = double.parse(json['lat'].toString());
+    lng = double.parse(json['lng'].toString());
+    km = double.parse(json['km'].toString());
   }
   // Map<String, dynamic> toJson() {
   //   final Map<String, dynamic> data = new Map<String, dynamic>();

@@ -25,6 +25,7 @@ class ProfileTeacherState extends GetxController {
 
   getProfiledTeacher() async {
     try {
+      teacherModels = null;
       var res = await repository.get(
         url: repository.urlApi + repository.teacherRecordePofiled,
         auth: true,
@@ -35,6 +36,7 @@ class ProfileTeacherState extends GetxController {
             TeacherRcordeModels.fromJson(jsonDecode(res.body)['data']);
       }
     } catch (e) {
+      // print(e);
       CustomDialogs().showToast(
         // ignore: deprecated_member_use
         backgroundColor: AppColor().black.withOpacity(0.8),
@@ -94,7 +96,8 @@ class ProfileTeacherState extends GetxController {
         'finish_school': finishSchool ?? '',
         'year_system_learn': yearSystemLearn ?? '',
         'year_finished': yearFinished ?? '',
-        'note': note ?? ''
+        'note': note ?? '',
+        'password': password ?? ''
       });
       if (fileImage != null) {
         var picture =

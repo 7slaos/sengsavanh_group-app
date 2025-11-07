@@ -7,6 +7,7 @@ import 'package:pathana_school_app/custom/app_color.dart';
 import 'package:pathana_school_app/custom/app_size.dart';
 import 'package:pathana_school_app/pages/change_language_page.dart';
 import 'package:pathana_school_app/pages/select_school.dart';
+import 'package:pathana_school_app/states/appverification.dart';
 import 'package:pathana_school_app/states/auth_login_register.dart';
 import 'package:pathana_school_app/states/register_state.dart';
 import 'package:pathana_school_app/widgets/button_widget.dart';
@@ -27,6 +28,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   AuthLoginRegister loginRegister = Get.put(AuthLoginRegister());
+  AppVerification appVerification = Get.put(AppVerification());
   AppColor appColors = AppColor();
   TextEditingController telephone = TextEditingController();
   TextEditingController password = TextEditingController();
@@ -154,13 +156,15 @@ if (item == null) {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CachedNetworkImage(
-                              imageUrl:
-                                  "${Repository().urlApi}${item.logo}",
-                              placeholder: (context, url) =>
-                                  CircularProgressIndicator(),
+                              imageUrl: "${Repository().urlApi}${item.logo}",
+                              width: fsize * 0.16,
+                              placeholder: (context, url) => SizedBox(
+                                  height: 150,
+                                  child: CircularProgressIndicator(
+                                      color: appColors.mainColor)),
                               errorWidget: (context, url, error) => Image.asset(
                                 "assets/images/logo.png",
-                                width: fsize * 0.18,
+                                width: fsize * 0.16,
                               ),
                             ),
                             CustomText(
@@ -210,7 +214,7 @@ if (item == null) {
                               ],
                             ),
                             SizedBox(
-                              height: fsize * 0.025,
+                              height: fsize * 0.02,
                             ),
                             TextFielWidget(
                               width: size.width,
@@ -247,6 +251,32 @@ if (item == null) {
                                 },
                               ),
                             ),
+                            // GetBuilder<AppVerification>(
+                            //     builder: (getRe) {
+                            //       return Row(
+                            //         children: [
+                            //           Checkbox(
+                            //             value: appVerification.rememberMe,
+                            //             activeColor: appColors.mainColor,
+                            //             onChanged: (v) => {
+                            //               appVerification.updateRemember(!appVerification.rememberMe)
+                            //             },
+                            //           ),
+                            //           Expanded(
+                            //             child: GestureDetector(
+                            //               onTap: () => {
+                            //                 appVerification.updateRemember(!appVerification.rememberMe)
+                            //               },
+                            //               child: Text(
+                            //                 'Remember me',
+                            //                 style: TextStyle(fontSize: fsize * 0.0145, color: Colors.grey),
+                            //               ),
+                            //             ),
+                            //           ),
+                            //         ],
+                            //       );
+                            //     }
+                            // ),
                             SizedBox(
                               height: fsize * 0.025,
                             ),
@@ -259,7 +289,7 @@ if (item == null) {
                                     appColors.mainColor.withOpacity(0.8),
                                 fontSize: fsize * 0.0185,
                                 fontWeight: FontWeight.bold,
-                                borderRadius: 5,
+                                borderRadius: 50,
                                 onPressed: () async {
                                   if (telephone.text.trim().isEmpty ||
                                       password.text.trim().isEmpty) {
@@ -278,6 +308,7 @@ if (item == null) {
                                     context: context,
                                     phone: '20${telephone.text}',
                                     password: password.text,
+                                    rememberMe: true
                                   );
                                 },
                                 text: 'login'),
@@ -370,11 +401,13 @@ if (item == null) {
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0),
               child: Text(
-                'Version: $version',
-                style: TextStyle(color: appColors.grey),
+                'V $version',
+                style: TextStyle(
+                    color: appColors.grey, fontSize: fixSize(0.01, context)),
               ),
             ),
           ],
-        ));
+        )
+      );
   }
 }

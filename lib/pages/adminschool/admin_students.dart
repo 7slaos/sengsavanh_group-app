@@ -31,7 +31,7 @@ class _AdminStudentsState extends State<AdminStudents> {
   }
 
   getData() {
-    Future.delayed(Duration(seconds: 5));
+    // Future.delayed(Duration(seconds: 5));
     adminStudentsState.getData('', '', branchId: widget.branchId);
   }
 
@@ -291,10 +291,10 @@ class _AdminStudentsState extends State<AdminStudents> {
                     return InkWell(
                       splashColor: Colors.transparent,
                       onTap: (){
-                         if(widget.checkInOut == true){
-                           Get.back();
-                           cameraScanPageState.scanOut(context: context, code: value[index].admissionNumber);
-                         }
+                         // if(widget.checkInOut == true){
+                         //   Get.back();
+                         //   cameraScanPageState.scanOut(context: context, code: value[index].admissionNumber);
+                         // }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),

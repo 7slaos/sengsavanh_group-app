@@ -20,6 +20,11 @@ import 'package:pathana_school_app/widgets/custom_text_widget.dart';
 import 'package:pathana_school_app/widgets/drop_down_widget.dart';
 import 'package:pathana_school_app/widgets/shimmer_listview.dart';
 
+import '../teacher_recordes/chec_in_check_out_page.dart';
+import '../teacher_recordes/check_in_map_page.dart';
+import '../teacher_recordes/dashboard_page.dart';
+import '../teacher_recordes/teacher_card_page.dart';
+
 class AdminSchoolDashboard extends StatefulWidget {
   const AdminSchoolDashboard({super.key});
 
@@ -32,9 +37,13 @@ class _AdminSchoolDashboardState extends State<AdminSchoolDashboard> {
   AdminDashboardState adminDashboardState = Get.put(AdminDashboardState());
   @override
   void initState() {
-    profileState.checkToken();
-    adminDashboardState.getSchools();
-    getData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (profileState.profiledModels == null) {
+        profileState.checkToken();
+      }
+      adminDashboardState.getSchools();
+      getData();
+    });
     super.initState();
   }
 
@@ -52,6 +61,7 @@ class _AdminSchoolDashboardState extends State<AdminSchoolDashboard> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     AppColor appColor = AppColor();
+    final scale = (size.width / 390).clamp(0.9, 1.3);
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -181,6 +191,21 @@ class _AdminSchoolDashboardState extends State<AdminSchoolDashboard> {
                 },
               ),
               ListTile(
+                leading: Icon(Icons.qr_code_scanner),
+                title: CustomText(
+                  text: 'scan-in-out',
+                  fontSize: fixSize(0.0185, context),
+                ),
+                trailing: Icon(
+                  Icons.arrow_forward_ios,
+                  size: fixSize(0.0115, context),
+                ),
+                onTap: () {
+                  Get.back();
+                  Get.to(() => CheckInCheckOutPage(type: 'a'), transition: Transition.fadeIn);
+                },
+              ),
+              ListTile(
                 leading: Icon(Icons.person),
                 title: CustomText(
                   text: 'profile',
@@ -237,6 +262,50 @@ class _AdminSchoolDashboardState extends State<AdminSchoolDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10 * scale),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            QuickAction(
+                              scale: scale,
+                              icon: Icons.location_on,
+                              label: 'Check-In',
+                              onTap: () {
+                                Get.to(() => CheckInMapPage(type: 'a',status: 'check_in'), transition: Transition.fadeIn);
+                              },
+                            ),
+                            SizedBox(width: 20),
+                            QuickAction(
+                              scale: scale,
+                              icon: Icons.qr_code_scanner,
+                              label: 'Scan List',
+                              onTap: () {
+                                Get.to(() => CheckInCheckOutPage(type: 'a'), transition: Transition.fadeIn);
+                              },
+                            ),
+                            SizedBox(width: 20),
+                            QuickAction(
+                              scale: scale,
+                              icon: Icons.qr_code_2,
+                              label: 'My QR',
+                              onTap: () {
+                                Get.to(() => TeacherCardPage(), transition: Transition.fadeIn);
+                              },
+                            ),
+                            SizedBox(width: 20),
+                            QuickAction(
+                              scale: scale,
+                              icon: Icons.location_on,
+                              label: 'Check-Out',
+                              color: appColor.red,
+                              onTap: () {
+                                Get.to(() => CheckInMapPage(type: 'a',status: 'check_out', id: 'today'), transition: Transition.fadeIn);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                       if (adminDashboardState.selectSchool != null &&
                           adminDashboardState.selectSchool?.nameLa != 'all')
                         CustomText(
