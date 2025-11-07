@@ -208,221 +208,221 @@ class _HistoryMissingSchoolPageState extends State<HistoryMissingSchoolPage> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _history.isEmpty
-                ? Center(
-              child: CustomText(
-                text: 'No history in selected range',
-                color: appColor.grey,
-              ),
-            )
-                : RefreshIndicator(
-              color: appColor.mainColor,
-              onRefresh: () async => _fetchHistory(),
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
-                itemCount: _history.length,
-                itemBuilder: (_, i) {
-                  final row = _history[i];
+                    ? Center(
+                        child: CustomText(
+                          text: 'No history in selected range',
+                          color: appColor.grey,
+                        ),
+                      )
+                    : RefreshIndicator(
+                        color: appColor.mainColor,
+                        onRefresh: () async => _fetchHistory(),
+                        child: ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
+                          itemCount: _history.length,
+                          itemBuilder: (_, i) {
+                            final row = _history[i];
 
-                  // ===== เตรียมข้อมูล =====
-                  final first =
-                  _safeStr(row['firstname'], fallback: '');
-                  final last =
-                  _safeStr(row['lastname'], fallback: '');
-                  final nick =
-                  _safeStr(row['nickname'], fallback: '');
-                  final cls =
-                  _safeStr(row['class_name'], fallback: '-');
+                            // ===== เตรียมข้อมูล =====
+                            final first =
+                                _safeStr(row['firstname'], fallback: '');
+                            final last =
+                                _safeStr(row['lastname'], fallback: '');
+                            final nick =
+                                _safeStr(row['nickname'], fallback: '');
+                            final cls =
+                                _safeStr(row['class_name'], fallback: '-');
 
-                  final code = _safeStr(
-                      row['admission_number'] ?? row['code'],
-                      fallback: '');
-                  final nameLine = (first.isEmpty && last.isEmpty)
-                      ? '-'
-                      : '$first $last${nick.isEmpty ? '' : ' ($nick)'}';
+                            final code = _safeStr(
+                                row['admission_number'] ?? row['code'],
+                                fallback: '');
+                            final nameLine = (first.isEmpty && last.isEmpty)
+                                ? '-'
+                                : '$first $last${nick.isEmpty ? '' : ' ($nick)'}';
 
-                  final dateDMY = _dateDMYFromItem(row);
-                  final inTime = _onlyTime(
-                      row['checkin_time'] ?? row['checkin_date']);
-                  final outTime = _onlyTime(
-                      row['checkout_time'] ?? row['checkout_date']);
-                  final note = _safeStr(row['note'], fallback: '');
-                  final status =
-                  row['status']; // 1 waiting, 2 success
+                            final dateDMY = _dateDMYFromItem(row);
+                            final inTime = _onlyTime(
+                                row['checkin_time'] ?? row['checkin_date']);
+                            final outTime = _onlyTime(
+                                row['checkout_time'] ?? row['checkout_date']);
+                            final note = _safeStr(row['note'], fallback: '');
+                            final status =
+                                row['status']; // 1 waiting, 2 success
 
-                  // สี badge ตามสถานะ
-                  final badgeColor = (status == 2)
-                      ? Colors.green.withOpacity(.12)
-                      : Colors.orange.withOpacity(.12);
-                  final badgeTextColor =
-                  (status == 2) ? Colors.green : Colors.orange;
-                  final statusText =
-                  (status == 2) ? 'success' : 'waiting';
+                            // สี badge ตามสถานะ
+                            final badgeColor = (status == 2)
+                                ? Colors.green.withOpacity(.12)
+                                : Colors.orange.withOpacity(.12);
+                            final badgeTextColor =
+                                (status == 2) ? Colors.green : Colors.orange;
+                            final statusText =
+                                (status == 2) ? 'success' : 'waiting';
 
-                  // รูป (รองรับทั้ง avatarUrl และ imageStudent)
-                  final rawImg = _safeStr(
-                      row['avatarUrl'] ?? row['imageStudent'],
-                      fallback: '');
-                  final imgUrl = rawImg.isEmpty
-                      ? ''
-                      : rawImg.startsWith('http')
-                      ? rawImg
-                      : '${Repository().urlApi}$rawImg';
+                            // รูป (รองรับทั้ง avatarUrl และ imageStudent)
+                            final rawImg = _safeStr(
+                                row['avatarUrl'] ?? row['imageStudent'],
+                                fallback: '');
+                            final imgUrl = rawImg.isEmpty
+                                ? ''
+                                : rawImg.startsWith('http')
+                                    ? rawImg
+                                    : '${Repository().urlApi}$rawImg';
 
-                  // ขนาดตัวอักษรแบบเดียวกับหน้าบน
-                  double fSize(double r) => fixSize(r, context);
+                            // ขนาดตัวอักษรแบบเดียวกับหน้าบน
+                            double fSize(double r) => fixSize(r, context);
 
-                  return Stack(
-                    alignment: Alignment.topRight,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(fSize(0.005)),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: appColor.white,
-                            boxShadow: [
-                              BoxShadow(
-                                blurRadius: fixSize(0.0025, context),
-                                offset: const Offset(0, 1),
-                                color: appColor.grey,
-                              ),
-                            ],
-                            borderRadius:
-                            BorderRadius.circular(fSize(0.01)),
-                          ),
-                          child: Row(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.center,
-                            children: [
-                              // ===== รูปเหมือนการ์ดด้านบน =====
-                              Container(
-                                width: size.width * 0.25,
-                                height: size.width * 0.25,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 3,
-                                      color: appColor.mainColor),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.zero,
-                                  child: imgUrl.isEmpty
-                                      ? Image.asset(
-                                      'assets/images/logo.png',
-                                      fit: BoxFit.cover)
-                                      : CachedNetworkImage(
-                                    imageUrl: imgUrl,
-                                    fit: BoxFit.cover,
-                                    placeholder:
-                                        (context, url) =>
-                                        Center(
-                                          child:
-                                          CircularProgressIndicator(
-                                              color: appColor
-                                                  .white),
+                            return Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(fSize(0.005)),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: appColor.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          blurRadius: fixSize(0.0025, context),
+                                          offset: const Offset(0, 1),
+                                          color: appColor.grey,
                                         ),
-                                    errorWidget: (context, url,
-                                        error) =>
-                                        Image.asset(
-                                            'assets/images/logo.png',
-                                            fit: BoxFit.cover),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-
-                              // ===== ข้อมูลด้านขวา =====
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    // รหัสนักเรียน
-                                    // CustomText(
-                                    //   text: '${'label_code'.tr}: ${code.isEmpty ? 'XXXXXX' : code}',
-                                    //   color: appColor.mainColor,
-                                    //   fontSize: fSize(0.0145),
-                                    // ),
-
-                                    // ชื่อ-สกุล (+ชื่อเล่น)
-                                    SizedBox(
-                                      width: size.width * 0.65,
-                                      child: Row(
-                                        children: [
-                                          Flexible(
-                                            child: CustomText(
-                                              text: nameLine,
-                                              color:
-                                              appColor.mainColor,
-                                              fontSize: fSize(0.0145),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                      ],
+                                      borderRadius:
+                                          BorderRadius.circular(fSize(0.01)),
                                     ),
-
-                                    // ✅ แทนที่ "วันเกิด" → เวลาเข้า/ออก
-                                    CustomText(
-                                      text:
-                                      '${'class_room'.tr}: ${cls == '-' ? '' : cls} ${cls == '-' ? '' : '• '} $dateDMY',
-                                      fontSize: fSize(0.0145),
-                                      color: appColor.black
-                                          .withOpacity(0.5),
-                                    ),
-                                    // แสดงสอง pill เล็กๆ ให้ดูชัด
-                                    const SizedBox(height: 2),
-                                    Row(
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        _pill(
-                                            'IN',
-                                            (inTime == 'null' ||
-                                                inTime.isEmpty)
-                                                ? '-'
-                                                : inTime),
-                                        const SizedBox(width: 8),
-                                        _pill(
-                                            'OUT',
-                                            (outTime == 'null' ||
-                                                outTime.isEmpty)
-                                                ? '-'
-                                                : outTime),
+                                        // ===== รูปเหมือนการ์ดด้านบน =====
+                                        Container(
+                                          width: size.width * 0.25,
+                                          height: size.width * 0.25,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                width: 3,
+                                                color: appColor.mainColor),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.zero,
+                                            child: imgUrl.isEmpty
+                                                ? Image.asset(
+                                                    'assets/images/logo.png',
+                                                    fit: BoxFit.cover)
+                                                : CachedNetworkImage(
+                                                    imageUrl: imgUrl,
+                                                    fit: BoxFit.cover,
+                                                    placeholder:
+                                                        (context, url) =>
+                                                            Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                              color: appColor
+                                                                  .white),
+                                                    ),
+                                                    errorWidget: (context, url,
+                                                            error) =>
+                                                        Image.asset(
+                                                            'assets/images/logo.png',
+                                                            fit: BoxFit.cover),
+                                                  ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+
+                                        // ===== ข้อมูลด้านขวา =====
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              // รหัสนักเรียน
+                                              // CustomText(
+                                              //   text: '${'label_code'.tr}: ${code.isEmpty ? 'XXXXXX' : code}',
+                                              //   color: appColor.mainColor,
+                                              //   fontSize: fSize(0.0145),
+                                              // ),
+
+                                              // ชื่อ-สกุล (+ชื่อเล่น)
+                                              SizedBox(
+                                                width: size.width * 0.65,
+                                                child: Row(
+                                                  children: [
+                                                    Flexible(
+                                                      child: CustomText(
+                                                        text: nameLine,
+                                                        color:
+                                                            appColor.mainColor,
+                                                        fontSize: fSize(0.0145),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                              // ✅ แทนที่ "วันเกิด" → เวลาเข้า/ออก
+                                              CustomText(
+                                                text:
+                                                    '${'class_room'.tr}: ${cls == '-' ? '' : cls} ${cls == '-' ? '' : '• '} $dateDMY',
+                                                fontSize: fSize(0.0145),
+                                                color: appColor.black
+                                                    .withOpacity(0.5),
+                                              ),
+                                              // แสดงสอง pill เล็กๆ ให้ดูชัด
+                                              const SizedBox(height: 2),
+                                              Row(
+                                                children: [
+                                                  _pill(
+                                                      'IN',
+                                                      (inTime == 'null' ||
+                                                              inTime.isEmpty)
+                                                          ? '-'
+                                                          : inTime),
+                                                  const SizedBox(width: 8),
+                                                  _pill(
+                                                      'OUT',
+                                                      (outTime == 'null' ||
+                                                              outTime.isEmpty)
+                                                          ? '-'
+                                                          : outTime),
+                                                ],
+                                              ),
+
+                                              // ชั้นเรียน + วันที่
+                                              const SizedBox(height: 2),
+
+                                              if (note.isNotEmpty) ...[
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  note,
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                       
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ),
-
-                                    // ชั้นเรียน + วันที่
-                                    const SizedBox(height: 2),
-
-                                    if (note.isNotEmpty) ...[
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        note,
-                                        maxLines: 3,
-                                        overflow:
-                                        TextOverflow.ellipsis,
-                                      ),
-                                    ],
-
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
 
-                      // วงกลมเลขลำดับมุมขวาบน เหมือนการ์ดบนนั้น
-                      CircleAvatar(
-                        backgroundColor: appColor.mainColor,
-                        child: CustomText(
-                          text: '${i + 1}',
-                          color: appColor.white,
-                          fontWeight: FontWeight.bold,
+                                // วงกลมเลขลำดับมุมขวาบน เหมือนการ์ดบนนั้น
+                                CircleAvatar(
+                                  backgroundColor: appColor.mainColor,
+                                  child: CustomText(
+                                    text: '${i + 1}',
+                                    color: appColor.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
-                    ],
-                  );
-                },
-              ),
-            ),
           ),
         ],
       ),

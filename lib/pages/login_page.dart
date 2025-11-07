@@ -131,32 +131,17 @@ class _LoginPageState extends State<LoginPage> {
                 minHeight: size.height,
               ),
               child: GetBuilder<RegisterState>(builder: (getS) {
-                if (getS.schoolList.isEmpty && getS.checkSchool == false) {
-                  return CircleLoad();
-                }
+final item = getS.schoolList.firstWhereOrNull((_) => true);
+if (item == null) {
+  return Center(
+    child: ElevatedButton(
+      onPressed: () => Get.to(() => const SelectSchool(), transition: Transition.fadeIn),
+      child: Text('select_school'.tr),
+    ),
+  );
+}
+// use `item` safely here
 
-                if (getS.schoolList.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: fsize * 0.02,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CustomText(
-                            text: 'Server Internet 503'.tr,
-                            fontSize: fixSize(0.0185, context),
-                            color: appColors.grey,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-
-                var item = getS.schoolList.first;
                 return Center(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,

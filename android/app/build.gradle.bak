@@ -1,6 +1,7 @@
 plugins {
     id "com.android.application"
     id "org.jetbrains.kotlin.android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
     id "com.google.gms.google-services"
 }
@@ -18,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId "com.pathana.school.app"
-        minSdkVersion 23
+        minSdkVersion flutter.minSdkVersion
         targetSdk flutter.targetSdkVersion
         versionCode flutter.versionCode
         versionName flutter.versionName
@@ -31,7 +32,9 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions { jvmTarget = '17' }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
 
     signingConfigs {
         release {
@@ -49,18 +52,22 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            // โหมดปลอดภัยเวลาเทส: ปิดการย่อและตัด resource กันแอปเด้ง
+            // safe-first: no shrinking while debugging crashes
             minifyEnabled false
             shrinkResources false
-            // ถ้าพร้อมค่อยเปิด proguard:
+            // when you’re ready to optimize, enable the lines below and add rules:
             // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
-flutter { source "../.." }
+flutter {
+    source "../.."
+}
 
 dependencies {
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
     implementation platform("com.google.firebase:firebase-bom:33.8.0")
+    // add your firebase libs here if you use them, e.g.:
+    // implementation "com.google.firebase:firebase-analytics-ktx"
 }

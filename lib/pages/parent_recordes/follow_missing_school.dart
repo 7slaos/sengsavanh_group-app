@@ -121,86 +121,86 @@ class _FollowMissingSchoolState extends State<FollowMissingSchool> {
   }
 
   // ===== โหลดข้อมูลตัดคะแนน + คะแนนสรุปจาก API =====
-  Future<void> _fetchData() async {
-    if (startDate == null || endDate == null) return;
+ Future<void> _fetchData() async {
+  if (startDate == null || endDate == null) return;
 
-    setState(() {
-      isLoading = true;
-      errorText = null;
-    });
+  setState(() {
+    isLoading = true;
+    errorText = null;
+  });
 
-    try {
-      final q = searchCtrl.text.trim();
+  try {
+    final q = searchCtrl.text.trim();
 
-      final resp = await repo.getStudentMissingSchoolAPI( // หรือ getStudentMissingSchoolAPI ถ้าคุณใช้เมธอดเดิม
-        startDate: startDate!,
-        endDate: endDate!,
-        q: q,
-      );
+    final resp = await repo.getStudentMissingSchoolAPI( // หรือ getStudentMissingSchoolAPI ถ้าคุณใช้เมธอดเดิม
+      startDate: startDate!,
+      endDate: endDate!,
+      q: q,
+    );
 
-      if (resp['success'] == true) {
-        // ----- 1) แปลง data_list -----
-        final dl = resp['data_list'];
-        List<Map<String, dynamic>> out = [];
-        if (dl is List) {
-          out = dl.map<Map<String, dynamic>>((e) {
-            if (e is Map<String, dynamic>) return e;
-            if (e is Map) return Map<String, dynamic>.from(e);
-            return <String, dynamic>{};
-          }).toList();
-        }
-
-        // ----- 2) totalScore จาก academy_year.score -----
-        int academyScore = 0;
-        final meta = resp['meta'];
-        if (meta is Map) {
-          final activeAY = meta['active_academy_year'];
-          if (activeAY is Map) {
-            final s = activeAY['score'];
-            if (s is int) academyScore = s;
-            if (s is String) academyScore = int.tryParse(s) ?? 0;
-          }
-        }
-
-        // ----- 3) cutScore = SUM(score) จาก data_list -----
-        int sumCut = 0;
-        for (final row in out) {
-          final v = row['score'];
-          if (v is int) sumCut += v;
-          if (v is String) sumCut += int.tryParse(v) ?? 0;
-        }
-
-        // ----- 4) remainScore -----
-        final remain = (academyScore - sumCut);
-        final remainSafe = remain < 0 ? 0 : remain;
-
-        setState(() {
-          items = out;
-          totalScore = academyScore; // จาก academy_year
-          cutScore = sumCut;         // รวมที่ถูกตัด
-          remainScore = remainSafe;  // เหลือ
-        });
-      } else {
-        setState(() {
-          errorText = (resp['message'] ?? 'Error').toString();
-          items = [];
-          totalScore = 0;
-          cutScore = 0;
-          remainScore = 0;
-        });
+    if (resp['success'] == true) {
+      // ----- 1) แปลง data_list -----
+      final dl = resp['data_list'];
+      List<Map<String, dynamic>> out = [];
+      if (dl is List) {
+        out = dl.map<Map<String, dynamic>>((e) {
+          if (e is Map<String, dynamic>) return e;
+          if (e is Map) return Map<String, dynamic>.from(e);
+          return <String, dynamic>{};
+        }).toList();
       }
-    } catch (e) {
+
+      // ----- 2) totalScore จาก academy_year.score -----
+      int academyScore = 0;
+      final meta = resp['meta'];
+      if (meta is Map) {
+        final activeAY = meta['active_academy_year'];
+        if (activeAY is Map) {
+          final s = activeAY['score'];
+          if (s is int) academyScore = s;
+          if (s is String) academyScore = int.tryParse(s) ?? 0;
+        }
+      }
+
+      // ----- 3) cutScore = SUM(score) จาก data_list -----
+      int sumCut = 0;
+      for (final row in out) {
+        final v = row['score'];
+        if (v is int) sumCut += v;
+        if (v is String) sumCut += int.tryParse(v) ?? 0;
+      }
+
+      // ----- 4) remainScore -----
+      final remain = (academyScore - sumCut);
+      final remainSafe = remain < 0 ? 0 : remain;
+
       setState(() {
-        errorText = e.toString();
+        items = out;
+        totalScore = academyScore; // จาก academy_year
+        cutScore = sumCut;         // รวมที่ถูกตัด
+        remainScore = remainSafe;  // เหลือ
+      });
+    } else {
+      setState(() {
+        errorText = (resp['message'] ?? 'Error').toString();
         items = [];
         totalScore = 0;
         cutScore = 0;
         remainScore = 0;
       });
-    } finally {
-      if (mounted) setState(() => isLoading = false);
     }
+  } catch (e) {
+    setState(() {
+      errorText = e.toString();
+      items = [];
+      totalScore = 0;
+      cutScore = 0;
+      remainScore = 0;
+    });
+  } finally {
+    if (mounted) setState(() => isLoading = false);
   }
+}
 
 
   int get sumTotalFromList {
@@ -266,12 +266,12 @@ class _FollowMissingSchoolState extends State<FollowMissingSchool> {
                 suffixIcon: (searchCtrl.text.isEmpty)
                     ? null
                     : IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    searchCtrl.clear();
-                    _fetchData();
-                  },
-                ),
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          searchCtrl.clear();
+                          _fetchData();
+                        },
+                      ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -300,101 +300,101 @@ class _FollowMissingSchoolState extends State<FollowMissingSchool> {
                 onRefresh: () async => _fetchData(),
                 child: items.isEmpty
                     ? ListView(
-                  children: const [
-                    SizedBox(height: 80),
-                    Center(child: CustomText(text: 'ບໍ່ພົບຂໍ້ມູນ')),
-                  ],
-                )
-                    : ListView.separated(
-                  itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (context, i) {
-                    final item = items[i];
-                    final firstname = (item['firstname'] ?? '').toString();
-                    final lastname = (item['lastname'] ?? '').toString();
-                    final nickname = (item['nickname'] ?? '-').toString();
-                    final code = (item['user_code'] ?? item['code'] ?? '').toString();
-                    final dated = (item['dated'] ?? '').toString();
-                    final subject = (item['subject_name'] ?? '-').toString();
-                    final scoreAny = item['score'];
-                    final note = (item['note'] ?? '').toString();
-                    final className = (item['class_name'] ?? '-').toString();
-
-                    final scoreText = (scoreAny is int)
-                        ? scoreAny.toString()
-                        : (scoreAny is String ? scoreAny : '');
-
-                    return Container(
-                      padding: EdgeInsets.all(fSize * 0.01),
-                      decoration: BoxDecoration(
-                        color: appColor.white,
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: fixSize(0.0025, context),
-                            offset: const Offset(0, 1),
-                            color: appColor.grey,
-                          ),
+                        children: const [
+                          SizedBox(height: 80),
+                          Center(child: CustomText(text: 'ບໍ່ພົບຂໍ້ມູນ')),
                         ],
-                        borderRadius: BorderRadius.circular(fSize * 0.01),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // ວິຊາ + ວັນເວລາ
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomText(
-                                  text: 'ວິຊາ: $subject',
+                      )
+                    : ListView.separated(
+                        itemCount: items.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (context, i) {
+                          final item = items[i];
+                          final firstname = (item['firstname'] ?? '').toString();
+                          final lastname = (item['lastname'] ?? '').toString();
+                          final nickname = (item['nickname'] ?? '-').toString();
+                          final code = (item['user_code'] ?? item['code'] ?? '').toString();
+                          final dated = (item['dated'] ?? '').toString();
+                          final subject = (item['subject_name'] ?? '-').toString();
+                          final scoreAny = item['score'];
+                          final note = (item['note'] ?? '').toString();
+                          final className = (item['class_name'] ?? '-').toString();
+
+                          final scoreText = (scoreAny is int)
+                              ? scoreAny.toString()
+                              : (scoreAny is String ? scoreAny : '');
+
+                          return Container(
+                            padding: EdgeInsets.all(fSize * 0.01),
+                            decoration: BoxDecoration(
+                              color: appColor.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: fixSize(0.0025, context),
+                                  offset: const Offset(0, 1),
+                                  color: appColor.grey,
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(fSize * 0.01),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // ວິຊາ + ວັນເວລາ
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: CustomText(
+                                        text: 'ວິຊາ: $subject',
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16,
+                                        color: appColor.mainColor,
+                                      ),
+                                    ),
+                                    CustomText(
+                                      text: 'ວັນເວລາ: ${formatDateTime(dated)}',
+                                      fontSize: 16,
+                                      color: appColor.grey,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+
+                                // ຊື່ + code + ຫ້ອງ
+                                CustomText(
+                                  text: '$firstname $lastname ($nickname)  •  ID: $code',
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16,
-                                  color: appColor.mainColor,
                                 ),
-                              ),
-                              CustomText(
-                                text: 'ວັນເວລາ: ${formatDateTime(dated)}',
-                                fontSize: 16,
-                                color: appColor.grey,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
+                                const SizedBox(height: 4),
+                                CustomText(
+                                  text: 'ຫ້ອງ: $className',
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                ),
+                                const SizedBox(height: 4),
 
-                          // ຊື່ + code + ຫ້ອງ
-                          CustomText(
-                            text: '$firstname $lastname ($nickname)  •  ID: $code',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                          ),
-                          const SizedBox(height: 4),
-                          CustomText(
-                            text: 'ຫ້ອງ: $className',
-                            fontSize: 16,
-                            color: Colors.black87,
-                          ),
-                          const SizedBox(height: 4),
+                                // ຄະແນນຖືກຕັດ
+                                CustomText(
+                                  text: 'ຕັດຄະແນນ: - $scoreText',
+                                  fontSize: 16,
+                                  color: appColor.red.withOpacity(0.9),
+                                ),
 
-                          // ຄະແນນຖືກຕັດ
-                          CustomText(
-                            text: 'ຕັດຄະແນນ: - $scoreText',
-                            fontSize: 16,
-                            color: appColor.red.withOpacity(0.9),
-                          ),
-
-                          // ໝາຍເຫດ
-                          if (note.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: CustomText(
-                                text: 'ເຫດຜົນ: $note',
-                                fontSize: 16,
-                              ),
+                                // ໝາຍເຫດ
+                                if (note.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: CustomText(
+                                      text: 'ເຫດຜົນ: $note',
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                              ],
                             ),
-                        ],
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ),
           ],
@@ -402,43 +402,43 @@ class _FollowMissingSchoolState extends State<FollowMissingSchool> {
       ),
 
       // === ສະຫຼຸບຄະແນນຄຸນສົມບັດ ===
-      // === ສະຫຼຸບຄະແນນຄຸນສົມບັດ ===
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(width: 2, color: Colors.black45)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            // จาก academy_year.score
-            CustomText(
-              text: 'ຄະແນນຄຸນສົມບັດທັງໝົດ: $totalScore',
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-            ),
-            const SizedBox(height: 4),
-
-            // รวมจาก data_list
-            CustomText(
-              text: 'ລວມຄະແນນຖືກຕັດ: -$cutScore',
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: appColor.red,
-            ),
-            const SizedBox(height: 4),
-
-            // เหลือ = total - cut (ไม่ติดลบ)
-            CustomText(
-              text: 'ຄະແນນຄຸນສົມບັດຄົງເຫຼືອ: $remainScore',
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: appColor.mainColor,
-            ),
-          ],
-        ),
+     // === ສະຫຼຸບຄະແນນຄຸນສົມບັດ ===
+bottomNavigationBar: Container(
+  padding: const EdgeInsets.all(12),
+  decoration: const BoxDecoration(
+    border: Border(top: BorderSide(width: 2, color: Colors.black45)),
+  ),
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+      // จาก academy_year.score
+      CustomText(
+        text: 'ຄະແນນຄຸນສົມບັດທັງໝົດ: $totalScore',
+        fontWeight: FontWeight.w700,
+        fontSize: 16,
       ),
+      const SizedBox(height: 4),
+
+      // รวมจาก data_list
+      CustomText(
+        text: 'ລວມຄະແນນຖືກຕັດ: -$cutScore',
+        fontWeight: FontWeight.w700,
+        fontSize: 16,
+        color: appColor.red,
+      ),
+      const SizedBox(height: 4),
+
+      // เหลือ = total - cut (ไม่ติดลบ)
+      CustomText(
+        text: 'ຄະແນນຄຸນສົມບັດຄົງເຫຼືອ: $remainScore',
+        fontWeight: FontWeight.w700,
+        fontSize: 16,
+        color: appColor.mainColor,
+      ),
+    ],
+  ),
+),
 
     );
   }
