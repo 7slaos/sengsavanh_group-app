@@ -178,7 +178,7 @@ void handleGridTap(int index) {
                                   radius: 35,
                                   child: CachedNetworkImage(
                                     imageUrl:
-                                        "${Repository().urlApi}${get.profiledModels?.profileImage}",
+                                        "${Repository().nuXtJsUrlApi}${get.profiledModels?.profileImage}",
                                     imageBuilder: (context, imageProvider) =>
                                         Container(
                                       decoration: BoxDecoration(
@@ -212,8 +212,16 @@ void handleGridTap(int index) {
                                     SizedBox(
                                       width: size.width * 0.5,
                                       child: CustomText(
-                                        text:
-                                            '${get.profiledModels?.firstname ?? ''} ${get.profiledModels?.lastname ?? ''}',
+                                        text: (() {
+                                          final g = get.profiledModels?.gender?.toString();
+                                          final prefix = g == '1'
+                                              ? 'ນາງ '
+                                              : g == '2'
+                                                  ? 'ທ້າວ '
+                                                  : '';
+                                          return prefix +
+                                              '${get.profiledModels?.firstname ?? ''} ${get.profiledModels?.lastname ?? ''}';
+                                        })(),
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
                                         fontSize: fSize * 0.0165,

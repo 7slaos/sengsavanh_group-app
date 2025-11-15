@@ -13,13 +13,14 @@ class ParentFollowStudentState extends GetxController {
         ? month.replaceAll('ເດືອນ-', '')
         : '';
     var res = await rep.post(
-        url: rep.urlApi + rep.parentFollowStudent,
+        url: rep.nuXtJsUrlApi + rep.parentFollowStudent,
         auth: true,
         body: {'month': formattedMonth, 'year': year});
     // print('1111111111111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         data.add(FollowStudentDetailModels.fromJson(item));
       }
     }

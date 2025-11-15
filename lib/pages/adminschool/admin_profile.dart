@@ -108,7 +108,7 @@ class _AdminProfileState extends State<AdminProfile> {
                                                   .profileImage !=
                                               '')
                                       ? NetworkImage(
-                                          "${Repository().urlApi}${profile.profiledModels!.profileImage}",
+                                          "${Repository().nuXtJsUrlApi}${profile.profiledModels!.profileImage}",
                                         )
                                       : AssetImage('assets/images/logo.png'),
                               fit: BoxFit.cover,

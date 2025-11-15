@@ -257,7 +257,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                             radius: 35,
                             child: CachedNetworkImage(
                               imageUrl:
-                                  "${getProfile.repository.urlApi}${getProfile.teacherModels?.imagesProfile}",
+                                  "${getProfile.repository.nuXtJsUrlApi}${getProfile.teacherModels?.imagesProfile}",
                               imageBuilder: (context, imageProvider) =>
                                   Container(
                                 decoration: BoxDecoration(
@@ -382,7 +382,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                                     radius: 24,
                                     child: CachedNetworkImage(
                                       imageUrl:
-                                          "${profileTeacherState.repository.urlApi}${st.profile}",
+                                          "${profileTeacherState.repository.nuXtJsUrlApi}${st.profile}",
                                       imageBuilder: (context, imageProvider) =>
                                           Container(
                                         decoration: BoxDecoration(

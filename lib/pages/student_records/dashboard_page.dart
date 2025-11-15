@@ -126,7 +126,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                                 child: CachedNetworkImage(
                                   imageUrl:
-                                      "${Repository().urlApi}${get.dataModels?.imagesProfile}",
+                                      "${Repository().nuXtJsUrlApi}${get.dataModels?.imagesProfile}",
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) => Center(
                                     child: CircularProgressIndicator(

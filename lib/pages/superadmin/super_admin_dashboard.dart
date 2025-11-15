@@ -55,8 +55,16 @@ class _SuperAdminDashboardState extends State<SuperAdminDashboard> {
               Get.to(() => AdminProfile(), transition: Transition.fadeIn);
             },
             child: CustomText(
-                text:
-                    '${getPro.profiledModels?.firstname ?? ""} ${getPro.profiledModels?.lastname ?? ""}',
+                text: (() {
+                  final g = getPro.profiledModels?.gender?.toString();
+                  final prefix = g == '1'
+                      ? 'ນາງ '
+                      : g == '2'
+                          ? 'ທ້າວ '
+                          : '';
+                  return prefix +
+                      '${getPro.profiledModels?.firstname ?? ""} ${getPro.profiledModels?.lastname ?? ""}';
+                })(),
                 color: AppColor().black,
                 fontWeight: FontWeight.bold),
           );
@@ -414,7 +422,7 @@ class _IncomeExpenseCardState extends State<IncomeExpenseCard> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.2,
                 child: CachedNetworkImage(
-                  imageUrl: "${Repository().urlApi}${widget.data.logo}",
+                  imageUrl: "${Repository().nuXtJsUrlApi}${widget.data.logo}",
                   fit: BoxFit.cover,
                   errorWidget: (context, url, error) => Image.asset(
                     "assets/images/logo.png",

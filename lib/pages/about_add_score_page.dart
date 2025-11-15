@@ -193,7 +193,7 @@ class _AboutAddScorePageState extends State<AboutAddScorePage> {
                                     backgroundImage: student.profileImage !=
                                             null
                                         ? NetworkImage(
-                                            '${Repository().urlApi}${student.profileImage}')
+                                            '${Repository().nuXtJsUrlApi}${student.profileImage}')
                                         : const AssetImage(
                                                 'assets/images/istockphoto-587805078-612x612.jpg')
                                             as ImageProvider,

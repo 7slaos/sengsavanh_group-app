@@ -47,10 +47,11 @@ class AboutScoreState extends GetxController {
       classeList = [];
 
       var response = await repository.get(
-          url: repository.urlApi + repository.getMyClasse, auth: true);
+          url: repository.nuXtJsUrlApi + repository.getMyClasse, auth: true);
 
       if (response.statusCode == 200) {
-        for (var items in jsonDecode(response.body)['data']) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        for (var items in decoded['data']) {
           classeList.add(MyClasseModels.fromJson(items));
         }
       } else {
@@ -73,10 +74,11 @@ class AboutScoreState extends GetxController {
       allCLasseList = [];
 
       var response = await repository.get(
-          url: '${repository.urlApi}api/getAllMyClass', auth: true);
+          url: '${repository.nuXtJsUrlApi}api/Application/AboutScoreController/getAllMyClass', auth: true);
 
       if (response.statusCode == 200) {
-        for (var items in jsonDecode(response.body)['data']) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        for (var items in decoded['data']) {
           allCLasseList.add(MyClasseModels.fromJson(items));
         }
       } else {
@@ -96,12 +98,13 @@ class AboutScoreState extends GetxController {
   getSubjectDropdown({String? id}) async {
     submodelsList = [];
     var res = await repository.post(
-        url: repository.urlApi + repository.getSubjects,
+        url: repository.nuXtJsUrlApi + repository.getSubjects,
         auth: true,
         body: {'id': id ?? ''});
 
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+      for (var item in decoded['data']) {
         submodelsList.add(SubjectModels.fromMap(item));
       }
     }
@@ -128,7 +131,7 @@ class AboutScoreState extends GetxController {
       studentQtyData = []; // Reset the studentQtyData list
 
       var resp = await repository.post(
-        url: repository.urlApi + repository.studentScore,
+        url: repository.nuXtJsUrlApi + repository.studentScore,
         auth: true,
         body: {
           'id': id ?? '',
@@ -138,7 +141,7 @@ class AboutScoreState extends GetxController {
       );
 
       if (resp.statusCode == 200) {
-        var responseData = jsonDecode(resp.body);
+        var responseData = jsonDecode(utf8.decode(resp.bodyBytes));
 
         if (responseData['data'] != null) {
           for (var item in responseData['data']) {
@@ -167,8 +170,8 @@ class AboutScoreState extends GetxController {
         }
       } else {
         // Log the error and show a user-friendly message
-        var errorMessage =
-            jsonDecode(resp.body)['message'] ?? 'Unknown error occurred';
+        var errorMessage = jsonDecode(utf8.decode(resp.bodyBytes))['message'] ??
+            'Unknown error occurred';
         // print('Error: $errorMessage');
         throw Exception(errorMessage);
       }
@@ -197,7 +200,7 @@ class AboutScoreState extends GetxController {
     CustomDialogs().dialogLoading();
     try {
       var response = await repository.post(
-        url: '${repository.urlApi}${repository.saveScoreStudent}',
+        url: '${repository.nuXtJsUrlApi}${repository.saveScoreStudent}',
         auth: true,
         body: {
           'subjectId': subjectId,
@@ -246,7 +249,7 @@ class AboutScoreState extends GetxController {
       scoreListModel = [];
 
       var resUpdate = await repository.post(
-        url: repository.urlApi + repository.totalScore,
+        url: repository.nuXtJsUrlApi + repository.totalScore,
         auth: true,
         body: {
           'classId': classId.toString(),
@@ -255,7 +258,8 @@ class AboutScoreState extends GetxController {
       );
       // print(resUpdate.body);
       if (resUpdate.statusCode == 200) {
-        for (var item in jsonDecode(resUpdate.body)['data']) {
+        final decoded = jsonDecode(utf8.decode(resUpdate.bodyBytes));
+        for (var item in decoded['data']) {
           scoreListModel.add(ScoreListModels.fromJson(item));
         }
         scoreListModel
@@ -279,7 +283,7 @@ class AboutScoreState extends GetxController {
       scoreChildrenModels = [];
       update();
       var res = await repository.post(
-          url: repository.urlApi + repository.scoreChildren,
+          url: repository.nuXtJsUrlApi + repository.scoreChildren,
           auth: true,
           body: {
             'monthly': monthly ?? '',
@@ -287,7 +291,8 @@ class AboutScoreState extends GetxController {
       // print(jsonDecode(res.body));
       // print('00000000000000000000000000000000000000000000000000000');
       if (res.statusCode == 200) {
-        for (var item in jsonDecode(res.body)['data']) {
+        final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+        for (var item in decoded['data']) {
           scoreChildrenModels.add(ScoreChildrenModels.fromJson(item));
         }
         checkscoreChildren = true;
@@ -311,7 +316,7 @@ class AboutScoreState extends GetxController {
       scoreStudentModels = [];
       update();
       final response = await repository.post(
-          url: repository.urlApi + repository.scoreStudent,
+          url: repository.nuXtJsUrlApi + repository.scoreStudent,
           auth: true,
           body: {
             'monthly': monthly ?? '',
@@ -319,7 +324,8 @@ class AboutScoreState extends GetxController {
       // print('Response: ${response.body}');
       // print('Fetching student scores completed.');
       if (response.statusCode == 200) {
-        for (var item in jsonDecode(response.body)['data']) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        for (var item in decoded['data']) {
           scoreStudentModels.add(ScoreStudentModels.fromJson(item));
         }
       }

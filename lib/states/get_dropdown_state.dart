@@ -7,7 +7,7 @@ class GetDropdownState extends GetxController {
 
   // getClassGroup() async {
   //   var resProvince =
-  //       await http.get(Uri.parse('${repository.urlApi}api/province'));
+  //       await http.get(Uri.parse('${repository.nuXtJsUrlApi}api/province'));
   //   print(resProvince.body);
   //   print('111111111111111111111111111111111111111');
   //   // for (var item in jsonDecode(resProvince.body)['data']) {

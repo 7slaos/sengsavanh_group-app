@@ -29,12 +29,12 @@ class ProfileStudentState extends GetxController {
   getProfileStudent() async {
     try {
       var res = await repository.get(
-          url: repository.urlApi + repository.getProfileStudentRecord,
+          url: repository.nuXtJsUrlApi + repository.getProfileStudentRecord,
           auth: true);
       //  print(res.body);
       if (res.statusCode == 200) {
-        dataModels =
-            ProfileStudentRecordModel.fromJson(jsonDecode(res.body)['data']);
+        dataModels = ProfileStudentRecordModel.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes))['data']);
         check = true;
       } else {
         appVerification.removeToken();
@@ -61,7 +61,7 @@ class ProfileStudentState extends GetxController {
     try {
       // Update profile data
       var res = await repository.post(
-        url: repository.urlApi + repository.updateProfileStudentRecord,
+        url: repository.nuXtJsUrlApi + repository.updateProfileStudentRecord,
         auth: true,
         body: {
           'firstname': firstname,

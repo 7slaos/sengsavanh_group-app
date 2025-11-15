@@ -27,13 +27,14 @@ class AdminSchoolProfileState extends GetxController {
     try {
       // Send the GET request
       var res = await repository.get(
-          url: repository.urlApi + repository.getProfiled, auth: true);
+          url: repository.nuXtJsUrlApi + repository.getProfiled, auth: true);
       // print(res.body);
       // print('1111111111111111111111111111111111111111111');
       if (res.statusCode == 200) {
         // Parse JSON response and assign it to the model
         check = true;
-        profiledModels = ProfiledModels.fromJson(jsonDecode(res.body)['data']);
+        profiledModels = ProfiledModels.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes))['data']);
       } else {
         appVerification.removeToken();
         Get.offAll(() => const LoginPage(), transition: Transition.fadeIn);
@@ -63,7 +64,7 @@ class AdminSchoolProfileState extends GetxController {
     CustomDialogs().dialogLoading();
     try {
       var res = await repository.post(
-        url: repository.urlApi + repository.updateProfiled,
+        url: repository.nuXtJsUrlApi + repository.updateProfiled,
         body: {
           'fullname': fullname.toString(),
           'lastname': lastname.toString(),

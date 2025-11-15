@@ -266,7 +266,7 @@ class _HistoryMissingSchoolPageState extends State<HistoryMissingSchoolPage> {
                                 ? ''
                                 : rawImg.startsWith('http')
                                     ? rawImg
-                                    : '${Repository().urlApi}$rawImg';
+                                    : '${Repository().nuXtJsUrlApi}$rawImg';
 
                             // ขนาดตัวอักษรแบบเดียวกับหน้าบน
                             double fSize(double r) => fixSize(r, context);

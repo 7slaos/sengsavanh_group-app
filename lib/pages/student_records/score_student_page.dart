@@ -186,7 +186,7 @@ class _ScoreStudentPageState extends State<ScoreStudentPage> {
                             leading: CircleAvatar(
                               backgroundImage: student.profileImage != null
                                   ? NetworkImage(
-                                      "${Repository().urlApi.trim()}${student.profileImage}")
+                                      "${Repository().nuXtJsUrlApi.trim()}${student.profileImage}")
                                   : const AssetImage(
                                           'assets/images/istockphoto-587805078-612x612.jpg')
                                       as ImageProvider,

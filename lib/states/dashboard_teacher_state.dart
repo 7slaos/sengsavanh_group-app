@@ -17,12 +17,12 @@ class DashboardTeacherState extends GetxController {
   getDashboardTeacher() async {
     try {
       var response = await repository.get(
-          url: repository.urlApi + repository.dashboardTeacherRecorde,
+          url: repository.nuXtJsUrlApi + repository.dashboardTeacherRecorde,
           auth: true);
 
       if (response.statusCode == 200) {
-        data =
-            DashboardTeacherModels.fromJson(jsonDecode(response.body)['data']);
+        data = DashboardTeacherModels.fromJson(
+            jsonDecode(utf8.decode(response.bodyBytes))['data']);
         check = true;
         if (data != null) {
           updateAge();

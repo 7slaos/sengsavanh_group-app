@@ -54,8 +54,10 @@ class AdminDashboardState extends GetxController {
 
   getSchools() async {
     schoolList = [];
-    var res =
-        await rep.get(url: '${rep.urlApi}api/get_admin_schools', auth: true);
+    var res = await rep.get(
+        url:
+            '${rep.nuXtJsUrlApi}api/Application/AdminSchoolController/get_admin_schools',
+        auth: true);
     // print('11111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
@@ -65,7 +67,8 @@ class AdminDashboardState extends GetxController {
         'name_en': 'select',
         'name_cn': 'select',
       }));
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         schoolList.add(AdminSchoolsModel.fromMap(item));
       }
       update();
@@ -76,14 +79,15 @@ class AdminDashboardState extends GetxController {
     adminDashboardModel = null;
     checkDashboard = false;
     var res = await rep.post(
-        url: '${rep.urlApi}api/get_admin_schools_dashboard',
+        url:
+            '${rep.nuXtJsUrlApi}api/Application/AdminSchoolController/get_admin_schools_dashboard',
         body: {'id': id, 'start_date': stDate, 'end_date': eDate},
         auth: true);
     // print('11111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      adminDashboardModel =
-          AdminDashboardModel.fromJson(jsonDecode(res.body)['data']);
+      adminDashboardModel = AdminDashboardModel.fromJson(
+          jsonDecode(utf8.decode(res.bodyBytes))['data']);
     }
     checkDashboard = true;
     update();

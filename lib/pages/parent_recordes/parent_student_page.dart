@@ -117,7 +117,7 @@ class _ParentStudentPageState extends State<ParentStudentPage> {
                                       ),
                                       child: CachedNetworkImage(
                                         imageUrl:
-                                            "${Repository().urlApi}${getData.data[i].imageStudent}",
+                                            "${Repository().nuXtJsUrlApi}${getData.data[i].imageStudent}",
                                         fit: BoxFit.cover,
                                         placeholder: (context, url) => Center(
                                           child: CircularProgressIndicator(

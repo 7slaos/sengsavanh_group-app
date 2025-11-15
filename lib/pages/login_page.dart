@@ -125,23 +125,33 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
         backgroundColor: appColors.white,
         body: GetBuilder<LocaleState>(builder: (getLang) {
-          return SingleChildScrollView(
+          return Stack(
+            children: [
+              Container(
+                height: size.height * 0.35,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      appColors.mainColor,
+                      appColors.blueLight,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(fsize * 0.03),
+                    bottomRight: Radius.circular(fsize * 0.03),
+                  ),
+                ),
+              ),
+              SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: size.height,
               ),
               child: GetBuilder<RegisterState>(builder: (getS) {
-final item = getS.schoolList.firstWhereOrNull((_) => true);
-if (item == null) {
-  return Center(
-    child: ElevatedButton(
-      onPressed: () => Get.to(() => const SelectSchool(), transition: Transition.fadeIn),
-      child: Text('select_school'.tr),
-    ),
-  );
-}
-// use `item` safely here
-
+final item = getS.schoolList.isNotEmpty ? getS.schoolList.first : null;
                 return Center(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -151,20 +161,40 @@ if (item == null) {
                         padding: EdgeInsets.only(
                           left: fsize * 0.02,
                           right: fsize * 0.02,
+                          top: size.height * 0.18,
+                          bottom: fsize * 0.02,
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CachedNetworkImage(
-                              imageUrl: "${Repository().urlApi}${item.logo}",
-                              width: fsize * 0.16,
-                              placeholder: (context, url) => SizedBox(
-                                  height: 150,
-                                  child: CircularProgressIndicator(
-                                      color: appColors.mainColor)),
-                              errorWidget: (context, url, error) => Image.asset(
-                                "assets/images/logo.png",
-                                width: fsize * 0.16,
+                            CircleAvatar(
+                              radius: fsize * 0.08, // half of previous width
+                              backgroundColor: appColors.white,
+                              child: ClipOval(
+                                child: (item != null && (item.logo != null && item.logo!.isNotEmpty))
+                                    ? CachedNetworkImage(
+                                        imageUrl: "${Repository().nuXtJsUrlApi}${item.logo}",
+                                        width: fsize * 0.16,
+                                        height: fsize * 0.16,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => SizedBox(
+                                          width: fsize * 0.16,
+                                          height: fsize * 0.16,
+                                          child: CircularProgressIndicator(color: appColors.mainColor, strokeWidth: 2),
+                                        ),
+                                        errorWidget: (context, url, error) => Image.asset(
+                                          "assets/images/logo.png",
+                                          width: fsize * 0.16,
+                                          height: fsize * 0.16,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Image.asset(
+                                        "assets/images/logo.png",
+                                        width: fsize * 0.16,
+                                        height: fsize * 0.16,
+                                        fit: BoxFit.cover,
+                                      ),
                               ),
                             ),
                             CustomText(
@@ -175,31 +205,46 @@ if (item == null) {
                             SizedBox(
                               height: fsize * 0.01,
                             ),
+                            // Form card
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(fsize * 0.015),
+                              decoration: BoxDecoration(
+                                color: appColors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.06),
+                                    blurRadius: 18,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
                             Row(
                               children: [
                                 Container(
                                   height: fsize * 0.05,
                                   alignment: Alignment.center,
-                                  padding: EdgeInsets.all(5.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      color: appColors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            blurRadius: fsize * 0.0025,
-                                            offset: const Offset(0, 1),
-                                            color: appColors.grey)
-                                      ]),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(5.0),
+                                      bottomLeft: Radius.circular(5.0),
+                                    ),
+                                    color: appColors.grey.withOpacity(0.2),
+                                  ),
                                   child: CustomText(
-                                      text: '+856 20',
-                                      fontSize: fsize * 0.0165),
+                                    text: '+856 20',
+                                    fontSize: fsize * 0.0165,
+                                  ),
                                 ),
-                                SizedBox(width: 5),
                                 Expanded(
                                   child: TextFielWidget(
                                     height: fsize * 0.05,
                                     icon: Icons.person,
-                                    hintText: 'XXXXXXXX'.tr,
+                                    hintText: 'ໃສ່ເບີໂທ 8 ໂຕເລກ',
                                     fixSize: fsize,
                                     appColor: appColors,
                                     controller: telephone,
@@ -207,7 +252,7 @@ if (item == null) {
                                     maxLength: 8,
                                     margin: 0,
                                     fontSize: fsize * 0.0165,
-                                    contentPadding: EdgeInsets.only(left: 5),
+                                    contentPadding: const EdgeInsets.only(left: 5),
                                     textInputType: TextInputType.phone,
                                   ),
                                 ),
@@ -251,32 +296,27 @@ if (item == null) {
                                 },
                               ),
                             ),
-                            // GetBuilder<AppVerification>(
-                            //     builder: (getRe) {
-                            //       return Row(
-                            //         children: [
-                            //           Checkbox(
-                            //             value: appVerification.rememberMe,
-                            //             activeColor: appColors.mainColor,
-                            //             onChanged: (v) => {
-                            //               appVerification.updateRemember(!appVerification.rememberMe)
-                            //             },
-                            //           ),
-                            //           Expanded(
-                            //             child: GestureDetector(
-                            //               onTap: () => {
-                            //                 appVerification.updateRemember(!appVerification.rememberMe)
-                            //               },
-                            //               child: Text(
-                            //                 'Remember me',
-                            //                 style: TextStyle(fontSize: fsize * 0.0145, color: Colors.grey),
-                            //               ),
-                            //             ),
-                            //           ),
-                            //         ],
-                            //       );
-                            //     }
-                            // ),
+                            // Remember me
+                            GetBuilder<AppVerification>(builder: (getRe) {
+                              return Row(
+                                children: [
+                                  Checkbox(
+                                    value: appVerification.rememberMe,
+                                    activeColor: appColors.mainColor,
+                                    onChanged: (v) => appVerification.updateRemember(v),
+                                  ),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () => appVerification.updateRemember(null),
+                                      child: Text(
+                                        'Remember me',
+                                        style: TextStyle(fontSize: fsize * 0.0145, color: Colors.grey),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
                             SizedBox(
                               height: fsize * 0.025,
                             ),
@@ -308,7 +348,7 @@ if (item == null) {
                                     context: context,
                                     phone: '20${telephone.text}',
                                     password: password.text,
-                                    rememberMe: true
+                                    rememberMe: appVerification.rememberMe,
                                   );
                                 },
                                 text: 'login'),
@@ -347,6 +387,9 @@ if (item == null) {
                                 ),
                               ),
                             ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -355,6 +398,8 @@ if (item == null) {
                 );
               }),
             ),
+              ),
+            ],
           );
         }),
         floatingActionButton: GetBuilder<LocaleState>(builder: (lang) {

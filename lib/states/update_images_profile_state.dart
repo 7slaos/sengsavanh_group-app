@@ -85,7 +85,7 @@ class PickImageState extends GetxController {
   // updateProfile({required XFile fileImage}) async {
   //   CustomDialogs().dialogLoading();
   //   try {
-  //     var uri = Uri.parse('${rep.urlApi}api/update_images_profile_student');
+  //     var uri = Uri.parse('${rep.nuXtJsUrlApi}api/update_images_profile_student');
   //     var request = http.MultipartRequest('POST', uri);
 
   //     request.headers.addAll({

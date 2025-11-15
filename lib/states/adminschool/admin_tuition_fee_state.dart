@@ -17,7 +17,7 @@ class AdminTuitionFeeState extends GetxController {
     data = null;
     update();
     var res = await rep.post(
-        url: '${rep.urlApi}api/admin_tuition_fee',
+        url: '${rep.nuXtJsUrlApi}api/Application/AdminSchoolController/admin_tuition_fee',
         body: {
           'start_date': startDate ?? '',
           'end_date': endDate ?? '',
@@ -28,7 +28,7 @@ class AdminTuitionFeeState extends GetxController {
     // print('11111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      final decodedBody = jsonDecode(res.body);
+      final decodedBody = jsonDecode(utf8.decode(res.bodyBytes));
       if (decodedBody['data'] != null &&
           decodedBody['data']['items'] is List &&
           decodedBody['data']['items'].isNotEmpty) {

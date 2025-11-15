@@ -122,7 +122,7 @@ class _CallChildrenPageState extends State<CallChildrenPage> {
                                       image: DecorationImage(
                                         image: NetworkImage(
                                           getData.data[i].imageStudent != null
-                                              ? "${getData.rep.urlApi}${getData.data[i].imageStudent}"
+                                              ? "${getData.rep.nuXtJsUrlApi}${getData.data[i].imageStudent}"
                                               : 'https://static.vecteezy.com/system/resources/previews/025/003/261/non_2x/cute-cartoon-boy-student-character-on-transparent-background-generative-ai-png.png',
                                         ),
                                         fit: BoxFit.cover,

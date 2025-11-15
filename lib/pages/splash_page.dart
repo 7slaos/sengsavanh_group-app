@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 import 'package:pathana_school_app/custom/app_color.dart';
@@ -23,6 +24,8 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  // Dev toggle: when true (and in debug), always show LoginPage to inspect UI
+  static const bool kAlwaysShowLoginDuringDev = true;
   final AppVerification appVerification = Get.put(AppVerification());
   final RegisterState registerState = Get.put(RegisterState());
   final ProfileState profileState = Get.put(ProfileState());
@@ -101,6 +104,10 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _routeByRole() {
+    if (kAlwaysShowLoginDuringDev && kDebugMode) {
+      Get.off(() => const LoginPage(), duration: const Duration(milliseconds: 500));
+      return;
+    }
     final token = appVerification.token;
     final role = appVerification.role;
 

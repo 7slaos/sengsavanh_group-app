@@ -121,7 +121,8 @@ class PaymentState extends GetxController {
         "merchantName": "STB"
       });
       if (res.statusCode == 200) {
-        laoQrModel = LaoQrModel.fromJson(jsonDecode(res.body));
+        laoQrModel =
+            LaoQrModel.fromJson(jsonDecode(utf8.decode(res.bodyBytes)));
       }
       update();
       if (laoQrModel != null) {
@@ -152,7 +153,7 @@ class PaymentState extends GetxController {
       var res;
       if (type == 'one') {
         res = await rep.post(
-            url: '${rep.urlApi}api/update_transactionId_payment',
+            url: '${rep.nuXtJsUrlApi}api/Application/PaymentApiController/update_transactionId_payment',
             body: {
               "id": id,
               'transactionId_payment': transactionIdPayment,
@@ -163,7 +164,7 @@ class PaymentState extends GetxController {
             auth: true);
       } else {
         res = await rep.post(
-            url: '${rep.urlApi}api/update_transactionId_payment',
+            url: '${rep.nuXtJsUrlApi}api/Application/PaymentApiController/update_transactionId_payment',
             body: {
               "id": id,
               'transactionId_payment': transactionIdPayment,
@@ -198,7 +199,8 @@ class PaymentState extends GetxController {
       var res = await rep.post(
           url: serviceApi.checkPayment, body: {"transactionId": transactionId});
       if (res.statusCode == 200) {
-        checkPaymentModel = CheckPaymentModel.fromJson(jsonDecode(res.body));
+        checkPaymentModel = CheckPaymentModel.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes)));
         update();
         if (checkPaymentModel != null) {
           pyamentInfo(
@@ -230,7 +232,7 @@ class PaymentState extends GetxController {
       var res;
       if (type == 'one') {
         res = await rep.post(
-            url: rep.urlApi + rep.updatePayment,
+            url: rep.nuXtJsUrlApi + rep.updatePayment,
             body: {
               "id": id,
               "amount": amount,
@@ -242,7 +244,7 @@ class PaymentState extends GetxController {
             auth: true);
       } else {
         res = await rep.post(
-            url: rep.urlApi + rep.updatePayment,
+            url: rep.nuXtJsUrlApi + rep.updatePayment,
             body: {
               "id": id,
               "amount": amount,
@@ -288,9 +290,10 @@ class PaymentState extends GetxController {
       var res = await rep
           .post(url: serviceApi.paymentInfo, body: {"paymentId": paymentId});
       if (res.statusCode == 200) {
-        paymentInfoModel = PaymentInfoModel.fromJson(jsonDecode(res.body));
+        paymentInfoModel = PaymentInfoModel.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes)));
         update();
-        final decodedBody = jsonDecode(res.body);
+        final decodedBody = jsonDecode(utf8.decode(res.bodyBytes));
         if (paymentInfoModel != null && decodedBody['res_desc'] == 'success') {
           laoQrModel = null;
           update();
@@ -318,7 +321,7 @@ class PaymentState extends GetxController {
     try {
       CustomDialogs().dialogLoading();
       var res = await rep.post(
-          url: '${rep.urlApi}api/updatePaymentCash',
+          url: '${rep.nuXtJsUrlApi}api/Application/PaymentApiController/updatePaymentCash',
           body: {"id": id, "amount": amount, "note": note ?? '','pay_type': payType, 'pay_date': payDate},
           auth: true);
       Get.back();
@@ -348,7 +351,7 @@ class PaymentState extends GetxController {
       CustomDialogs().dialogLoading();
       var res = await rep.post(
           url: serviceApi.checkPayment, body: {"transactionId": transactionId});
-      if (jsonDecode(res.body)['res_code'] == "91") {
+      if (jsonDecode(utf8.decode(res.bodyBytes))['res_code'] == "91") {
         checkPaymentTransaction(
             id: id,
             transactionIdPayment: transactionId,
@@ -356,7 +359,8 @@ class PaymentState extends GetxController {
             type: 'cancel',
             status: status);
       } else if (res.statusCode == 200) {
-        checkPaymentModel = CheckPaymentModel.fromJson(jsonDecode(res.body));
+        checkPaymentModel = CheckPaymentModel.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes)));
         update();
         if (checkPaymentModel != null) {
           checkpyamentInfoSTB(
@@ -392,9 +396,10 @@ class PaymentState extends GetxController {
       var res = await rep
           .post(url: serviceApi.paymentInfo, body: {"paymentId": paymentId});
       if (res.statusCode == 200) {
-        paymentInfoModel = PaymentInfoModel.fromJson(jsonDecode(res.body));
+        paymentInfoModel = PaymentInfoModel.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes)));
         update();
-        final decodedBody = jsonDecode(res.body);
+        final decodedBody = jsonDecode(utf8.decode(res.bodyBytes));
         if (paymentInfoModel != null && decodedBody['res_desc'] == 'success') {
           checkPaymentTransaction(
               id: id,
@@ -428,7 +433,7 @@ class PaymentState extends GetxController {
   }) async {
     try {
       var res = await rep.post(
-          url: '${rep.urlApi}api/checkPaymentTransaction',
+          url: '${rep.nuXtJsUrlApi}api/Application/PaymentApiController/checkPaymentTransaction',
           body: {
             "id": id,
             "transactionId_payment": transactionIdPayment,

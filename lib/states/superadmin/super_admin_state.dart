@@ -71,12 +71,14 @@ class SuperAdminState extends GetxController {
   getDashboard() async {
     checkDashboard = false;
     branchList = [];
-    var res =
-        await rep.get(url: '${rep.urlApi}api/get_all_schools', auth: true);
+    var res = await rep.get(
+        url: '${rep.nuXtJsUrlApi}api/Application/AdminSchoolController/get_all_schools',
+        auth: true);
     // print('11111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         branchList.add(BranchModel.fromJson(item));
       }
     }
@@ -87,13 +89,14 @@ class SuperAdminState extends GetxController {
   getPaymentPackage({required String id}) async {
     paymentPackageList = [];
     var res = await rep.post(
-        url: '${rep.urlApi}api/get_school_pay_packages',
+        url: '${rep.nuXtJsUrlApi}api/Application/SuperAdminApiController/get_school_pay_packages',
         auth: true,
         body: {'id': id});
     // print('11111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         paymentPackageList.add(PaymentPackageLogModel.fromJson(item));
       }
     }
@@ -120,7 +123,7 @@ class SuperAdminState extends GetxController {
     CustomDialogs().dialogLoading();
     try {
       var res = await rep.post(
-        url: '${rep.urlApi}api/update_branch_by_admin',
+        url: '${rep.nuXtJsUrlApi}api/Application/AdminSchoolController/update_branch_by_admin',
         body: {
           'id': id,
           'status': status,

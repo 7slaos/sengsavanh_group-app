@@ -19,7 +19,7 @@ class AdminStudentsState extends GetxController {
     loading = true;
     final existingIds = data.map((e) => e.id).toSet();
     var res = await rep.post(
-        url: '${rep.urlApi}api/admin_students',
+        url: '${rep.nuXtJsUrlApi}api/Application/AdminSchoolController/admin_students',
         body: {
           'start_date': startDate ?? '',
           'end_date': endDate ?? '',
@@ -29,7 +29,7 @@ class AdminStudentsState extends GetxController {
     // print('11111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      final jsonData = jsonDecode(res.body)['data'] as List;
+      final jsonData = jsonDecode(utf8.decode(res.bodyBytes))['data'] as List;
 
       for (var item in jsonData) {
         final model = AdminStudentModel.fromJson(item);
@@ -52,13 +52,14 @@ class AdminStudentsState extends GetxController {
     registerList = [];
     loading = true;
     var res = await rep.post(
-        url: '${rep.urlApi}api/get_registers',
+        url: '${rep.nuXtJsUrlApi}api/Application/LoginApiController/get_registers',
         body: {'start_date': startDate ?? '', 'end_date': endDate ?? ''},
         auth: true);
     // print('11111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         registerList.add(ConfirmRegisterModel.fromJson(item));
       }
     }
@@ -70,7 +71,7 @@ class AdminStudentsState extends GetxController {
     try {
       CustomDialogs().dialogLoading();
       var res = await rep.post(
-          url: '${rep.urlApi}api/confirm_register_student',
+          url: '${rep.nuXtJsUrlApi}api/Application/LoginApiController/confirm_register_student',
           body: {'id': id},
           auth: true);
       Get.back();

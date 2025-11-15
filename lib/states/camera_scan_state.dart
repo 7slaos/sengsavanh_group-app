@@ -120,7 +120,7 @@ class CameraScanPageState extends GetxController {
 
   sendNotificationToParent({required String id, required type}) async {
     await rep.post(
-      url: '${rep.urlApi}api/check_in_check_out_push_notification_to_users',
+      url: '${rep.nuXtJsUrlApi}api/Application/SuperAdminApiController/check_in_check_out_push_notification_to_users',
       body: {'id': id, 'type': type},
       auth: true,
     );

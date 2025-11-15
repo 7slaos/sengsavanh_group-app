@@ -83,7 +83,7 @@ class _RegisterStudentSuccessState extends State<RegisterStudentSuccess> {
                           border: Border.all(width: 5, color: appColor.mainColor),
                           image: DecorationImage(
                             image: CachedNetworkImageProvider(
-                                '${Repository().urlApi}${widget.data.profileImage}'),
+                                '${Repository().nuXtJsUrlApi}${widget.data.profileImage}'),
                             fit: BoxFit.cover,
                           ),
                         ),

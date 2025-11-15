@@ -80,7 +80,7 @@ class StudentCardPage extends StatelessWidget {
                                         ),
                                         padding: const EdgeInsets.all(8),
                                         child: CachedNetworkImage(
-                                          imageUrl: '${Repository().urlApi}${getPro.dataModels?.imagesProfile}',
+                                          imageUrl: '${Repository().nuXtJsUrlApi}${getPro.dataModels?.imagesProfile}',
                                           width: size.height*0.3,
                                           height: size.height*0.25,
                                           fit: BoxFit.cover,

@@ -34,7 +34,7 @@ class CallStudentState extends GetxController {
         cleargetData();
       }
       final res = await rep.post(
-          url: '${rep.urlApi}api/all_call_students',
+          url: '${rep.nuXtJsUrlApi}api/Application/PaymentApiController/all_call_students',
           auth: true,
           body: {
             'limit': limit.toString(),
@@ -43,7 +43,8 @@ class CallStudentState extends GetxController {
           });
       if (res.statusCode == 200) {
         if (status == '3') {
-          final List<dynamic> responseData = jsonDecode(res.body)['data'];
+          final List<dynamic> responseData =
+              jsonDecode(utf8.decode(res.bodyBytes))['data'];
           final List<CallStudentModel> newData =
               responseData.map<CallStudentModel>((item) {
             return CallStudentModel.fromJson(item);
@@ -55,7 +56,8 @@ class CallStudentState extends GetxController {
         } else {
           data = [];
           update();
-          for (var item in jsonDecode(res.body)['data']) {
+          for (var item
+              in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
             data.add(CallStudentModel.fromJson(item));
           }
         }
@@ -116,7 +118,7 @@ class CallStudentState extends GetxController {
     CustomDialogs().dialogLoading();
     try {
       var response = await http.post(
-        Uri.parse(rep.urlApi + rep.callStudents),
+        Uri.parse(rep.nuXtJsUrlApi + rep.callStudents),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -157,7 +159,7 @@ class CallStudentState extends GetxController {
           dialogType: DialogType.error,
           animType: AnimType.scale,
           title: 'sorry'.tr,
-          desc: jsonDecode(response.body)['message'],
+          desc: jsonDecode(utf8.decode(response.bodyBytes))['message'],
           showCloseIcon: false,
           dismissOnTouchOutside: false,
           btnCancelText: 'cancel'.tr,
@@ -182,7 +184,7 @@ class CallStudentState extends GetxController {
     CustomDialogs().dialogLoading();
     try {
       var res = await rep.post(
-          url: rep.urlApi + rep.tearchconfirmcallStudent,
+          url: rep.nuXtJsUrlApi + rep.tearchconfirmcallStudent,
           body: {'id': id, 'status': status},
           auth: true);
       Get.back();

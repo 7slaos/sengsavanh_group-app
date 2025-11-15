@@ -177,7 +177,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                                 .imagesProfile !=
                                                             '')
                                                     ? NetworkImage(
-                                                        "${Repository().urlApi}${get.dataModels!.imagesProfile}",
+                                                        "${Repository().nuXtJsUrlApi}${get.dataModels!.imagesProfile}",
                                                       )
                                                     : AssetImage(
                                                         'assets/images/logo.png')
@@ -187,7 +187,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                                 ?.imageStudent !=
                                                             '')
                                                     ? NetworkImage(
-                                                        "${Repository().urlApi}${widget.data?.imageStudent}",
+                                                        "${Repository().nuXtJsUrlApi}${widget.data?.imageStudent}",
                                                       )
                                                     : AssetImage(
                                                         'assets/images/logo.png'),

@@ -47,11 +47,11 @@ class FollowStudentState extends GetMaterialController {
   /// Fetch dropdown data from the API
   fetchStudentDropdown({String? id}) async {
     var res = await http.post(
-      Uri.parse('${repository.urlApi}api/get_student_records'),
+      Uri.parse('${repository.nuXtJsUrlApi}api/Application/GetDropdownController/get_student_record'),
       body: {'id': id ?? ''},
     );
 
-    for (var item in jsonDecode(res.body)['data']) {
+    for (var item in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
       allStudentRecords.add(StudentRecordDropdownModel.fromMap(item));
     }
     update();
@@ -82,7 +82,7 @@ class FollowStudentState extends GetMaterialController {
     CustomDialogs().dialogLoading();
     try {
       var respon = await repository.post(
-        url: repository.urlApi + repository.followStudents,
+        url: repository.nuXtJsUrlApi + repository.followStudents,
         auth: true,
         body: {
           'student_id': studentId.toString(),
@@ -128,7 +128,7 @@ class FollowStudentState extends GetMaterialController {
       detailModels = [];
       // Make API request
       var resp = await repository.post(
-          url: '${repository.urlApi}${repository.followStudentDetail}',
+          url: '${repository.nuXtJsUrlApi}${repository.followStudentDetail}',
           auth: true,
           body: {
             'id': id ?? '',
@@ -137,7 +137,8 @@ class FollowStudentState extends GetMaterialController {
           });
 
       if (resp.statusCode == 200) {
-        for (var items in jsonDecode(resp.body)['data']) {
+        for (var items
+            in jsonDecode(utf8.decode(resp.bodyBytes))['data']) {
           detailModels.add(FollowStudentDetailModels.fromJson(items));
         }
         checkDetail = true;
@@ -184,7 +185,7 @@ class FollowStudentState extends GetMaterialController {
     try {
       // Make the API call
       final response = await repository.post(
-        url: '${repository.urlApi}${repository.deleteFollowStudents}',
+        url: '${repository.nuXtJsUrlApi}${repository.deleteFollowStudents}',
         auth: true,
         body: {'id': id.toString()},
       );
@@ -226,7 +227,7 @@ class FollowStudentState extends GetMaterialController {
     try {
       // Send the update request
       var response = await repository.post(
-        url: repository.urlApi + repository.updateFollowStudents,
+        url: repository.nuXtJsUrlApi + repository.updateFollowStudents,
         auth: true,
         body: {
           'id': id.toString(), // Include the ID in the request body

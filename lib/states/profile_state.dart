@@ -29,12 +29,13 @@ class ProfileState extends GetxController {
   getProfiled() async {
     try {
       var res = await repository.get(
-          url: repository.urlApi + repository.getProfiled, auth: true);
+          url: repository.nuXtJsUrlApi + repository.getProfiled, auth: true);
       // print(res.body);
       // print('1111111111111111111111111111111111111111111');
       if (res.statusCode == 200) {
-        check = true;   
-        profiledModels = ProfiledModels.fromJson(jsonDecode(res.body)['data']);
+        check = true;
+        final text = (() { try { return utf8.decode(res.bodyBytes); } catch (_) { return res.body; } })();
+        profiledModels = ProfiledModels.fromJson(jsonDecode(text)['data']);
         update();
       } else {
         appVerification.removeToken();
@@ -72,7 +73,7 @@ class ProfileState extends GetxController {
   }) async {
     CustomDialogs().dialogLoading();
     try {
-      var uri = Uri.parse('${repository.urlApi}api/update_Profiled_Parents');
+      var uri = Uri.parse('${repository.nuXtJsUrlApi}api/Application/LoginApiController/update_Profiled_Parents');
       var request = http.MultipartRequest('POST', uri);
       request.headers.addAll({
         'Accept': 'application/json',
@@ -124,7 +125,7 @@ class ProfileState extends GetxController {
   logouts() async {
     try {
       var reslogout = await repository.post(
-          url: repository.urlApi + repository.logoutUser, auth: true);
+          url: repository.nuXtJsUrlApi + repository.logoutUser, auth: true);
 
       if (reslogout.statusCode == 200) {
         appVerification.removeToken();
@@ -163,7 +164,7 @@ class ProfileState extends GetxController {
       required String type}) async {
     CustomDialogs().dialogLoading();
     try {
-      var uri = Uri.parse('${repository.urlApi}api/update_admin_profile');
+      var uri = Uri.parse('${repository.nuXtJsUrlApi}api/Application/LoginApiController/update_admin_profile');
       var request = http.MultipartRequest('POST', uri);
       request.headers.addAll({
         'Accept': 'application/json',

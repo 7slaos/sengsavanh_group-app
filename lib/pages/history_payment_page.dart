@@ -1147,7 +1147,7 @@ class _HistoryPaymentPageState extends State<HistoryPaymentPage> {
                                                       radius: size.width * 0.1,
                                                       child: CachedNetworkImage(
                                                         imageUrl:
-                                                            "${Repository().urlApi}${bankPayment.bankPaymentList[index].logo}",
+                                                            "${Repository().nuXtJsUrlApi}${bankPayment.bankPaymentList[index].logo}",
                                                         imageBuilder: (context,
                                                                 imageProvider) =>
                                                             Container(

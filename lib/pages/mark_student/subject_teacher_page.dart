@@ -34,6 +34,18 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
   List<dynamic> subjectData = []; // ✅ ใช้ Map ตรง ๆ
   bool isLoading = true;
 
+  void _scrollToSelectedDay() {
+    final idx = days.indexOf(selectedDay ?? '');
+    if (idx != -1 && _dayScrollController.hasClients) {
+      _dayScrollController.animateTo(
+        idx * 90.0,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -43,16 +55,7 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
 
     fetchSubjects();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final index = days.indexOf(selectedDay!);
-      if (index != -1) {
-        _dayScrollController.animateTo(
-          index * 90,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelectedDay());
   }
 
   Future<void> fetchSubjects() async {
@@ -71,12 +74,15 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
           subjectData = data["schedules"];
           isLoading = false;
         });
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelectedDay());
       } else {
         setState(() => isLoading = false);
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelectedDay());
       }
     } catch (e) {
       print("❌ Error fetchSubjects: $e");
       setState(() => isLoading = false);
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelectedDay());
     }
   }
 
@@ -278,4 +284,11 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
             ),
     );
   }
+
+  @override
+  void dispose() {
+    _dayScrollController.dispose();
+    super.dispose();
+  }
+
 }

@@ -56,7 +56,7 @@ class _CheckStudentSuccessState extends State<CheckStudentSuccess> {
                       radius: fixSize(0.065, context),
                       backgroundImage: 
                           NetworkImage(
-                              '${Repository().urlApi}${widget.data.profileImage}',
+                              '${Repository().nuXtJsUrlApi}${widget.data.profileImage}',
                             ),
                     ),
                   ) : const SizedBox(),

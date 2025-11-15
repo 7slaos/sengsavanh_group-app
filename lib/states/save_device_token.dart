@@ -3,7 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:pathana_school_app/repositorys/repository.dart';
 import 'package:pathana_school_app/states/appverification.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 class SaveDeviceTokenState extends GetxController {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   Repository rep = Repository();
@@ -11,20 +12,35 @@ class SaveDeviceTokenState extends GetxController {
 
   postSaveDeviceToken() async {
     await _firebaseMessaging.getToken().then((token) async {
-      var res = await rep.post(
-          url: rep.urlApi + rep.saveDeviceToken,
-          auth: true,
-          body: {'device_token': token ?? ''});
-      // print('1111111111111111111111111111111111111111111111111111111111111111');
-      // print(res.body);
-      // print(token);
-      if (kDebugMode) {
-        if (res.statusCode == 200) {
-          print('save token success');
-        } else {
-          print('save token failed');
+      try {
+        final uri = Uri.parse(rep.nuXtJsUrlApi + rep.saveDeviceToken);
+        final headers = <String, String>{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          if ((appVerification.nUxtToken).isNotEmpty)
+            'Authorization': 'Bearer ${appVerification.nUxtToken}',
+        };
+        final body = jsonEncode({
+          'device_token': token ?? '',
+          'platform': GetPlatform.isAndroid
+              ? 'android'
+              : GetPlatform.isIOS
+                  ? 'ios'
+                  : 'flutter'
+        });
+
+        final res = await http.post(uri, headers: headers, body: body);
+
+        if (kDebugMode) {
+          print('saveDeviceToken status: ${res.statusCode} body: ${res.body}');
+        }
+        // Do not force logout on failures here; just log
+      } catch (e) {
+        if (kDebugMode) {
+          print('saveDeviceToken error: $e');
         }
       }
     });
   }
 }
+

@@ -71,6 +71,12 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
   }
 
   getData() async {
+    // Ensure data is loaded
+    if (profileTeacherState.teacherModels == null) {
+      await profileTeacherState.getProfiledTeacher();
+      if (profileTeacherState.teacherModels == null) return;
+    }
+
     setState(() {
       firstname.text = profileTeacherState.teacherModels?.firstname ?? '';
       lastname.text = profileTeacherState.teacherModels?.lastname ?? '';
@@ -90,32 +96,32 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
       note.text = profileTeacherState.teacherModels?.note ?? '';
       salary.text = profileTeacherState.teacherModels?.salary ?? '';
       duty.text = profileTeacherState.teacherModels?.duty ?? '';
-
       gender = profileTeacherState.teacherModels?.gender ?? '';
     });
-    addressState.getProvinceById(
-        profileTeacherState.teacherModels?.proId?.id.toString() ?? '0');
-    addressState.getDistrict(
-        int.parse(
-            profileTeacherState.teacherModels?.proId?.id.toString() ?? '0'),
-        profileTeacherState.teacherModels!.disId);
-    addressState.getVillage(
-        int.parse(
-            profileTeacherState.teacherModels?.disId?.id.toString() ?? '0'),
-        profileTeacherState.teacherModels!.villId);
-    if (profileTeacherState.teacherModels!.bloodGroup != null) {
+
+    final proId = profileTeacherState.teacherModels?.proId?.id;
+    final disId = profileTeacherState.teacherModels?.disId?.id;
+
+    if (proId != null) {
+      await addressState.getProvinceById(proId.toString());
+      await addressState.getDistrict(proId, profileTeacherState.teacherModels?.disId);
+    }
+    if (disId != null) {
+      await addressState.getVillage(disId, profileTeacherState.teacherModels?.villId);
+    }
+    if (profileTeacherState.teacherModels?.bloodGroup != null) {
       addressState.updateDropDownBloodGroup(
           profileTeacherState.teacherModels!.bloodGroup!);
     }
-    if (profileTeacherState.teacherModels!.religion != null) {
+    if (profileTeacherState.teacherModels?.religion != null) {
       addressState
           .updateDropdownReligion(profileTeacherState.teacherModels!.religion!);
     }
-    if (profileTeacherState.teacherModels!.nationality != null) {
+    if (profileTeacherState.teacherModels?.nationality != null) {
       addressState.updateDropDownNationality(
           profileTeacherState.teacherModels!.nationality!);
     }
-    if (profileTeacherState.teacherModels!.educationLevel != null) {
+    if (profileTeacherState.teacherModels?.educationLevel != null) {
       addressState.updateDropDownEducationLevel(
           profileTeacherState.teacherModels!.educationLevel!);
     }
@@ -170,7 +176,7 @@ class _ProfileTeacherRecordePageState extends State<ProfileTeacherRecordePage> {
                                                     .imagesProfile !=
                                                 '')
                                         ? NetworkImage(
-                                            "${Repository().urlApi}${profile.teacherModels!.imagesProfile}",
+                                            "${Repository().nuXtJsUrlApi}${profile.teacherModels!.imagesProfile}",
                                           )
                                         : AssetImage('assets/images/logo.png'),
                                 fit: BoxFit.cover,

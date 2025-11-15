@@ -67,8 +67,15 @@ class _AdminSchoolDashboardState extends State<AdminSchoolDashboard> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: GetBuilder<ProfileState>(builder: (getPro) {
+          final g = getPro.profiledModels?.gender?.toString();
+          final prefix = g == '1'
+              ? 'ນາງ '
+              : g == '2'
+                  ? 'ທ້າວ '
+                  : '';
           return Text(
-            '${getPro.profiledModels?.firstname ?? ""} ${getPro.profiledModels?.lastname ?? ""}',
+            prefix +
+                '${getPro.profiledModels?.firstname ?? ""} ${getPro.profiledModels?.lastname ?? ""}',
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           );
         }),

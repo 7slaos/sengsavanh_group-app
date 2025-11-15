@@ -65,8 +65,24 @@ class ProfiledModels {
     disId = json['dis_id'].toString();
     proId = json['pro_id'].toString();
     birtdayDate = json['birtday_date'];
-    lat = double.parse(json['lat'].toString());
-    lng = double.parse(json['lng'].toString());
-    km = double.parse(json['km'].toString());
+    // The Nuxt get_Profileds endpoint may not provide these; parse defensively
+    try {
+      final latRaw = json['lat'];
+      lat = latRaw == null || latRaw.toString().isEmpty || latRaw.toString() == 'null'
+          ? null
+          : double.tryParse(latRaw.toString());
+    } catch (_) { lat = null; }
+    try {
+      final lngRaw = json['lng'];
+      lng = lngRaw == null || lngRaw.toString().isEmpty || lngRaw.toString() == 'null'
+          ? null
+          : double.tryParse(lngRaw.toString());
+    } catch (_) { lng = null; }
+    try {
+      final kmRaw = json['km'];
+      km = kmRaw == null || kmRaw.toString().isEmpty || kmRaw.toString() == 'null'
+          ? null
+          : double.tryParse(kmRaw.toString());
+    } catch (_) { km = null; }
   }
 }

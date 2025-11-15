@@ -1,4 +1,5 @@
 import 'package:pathana_school_app/custom/app_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pathana_school_app/models/dashboard_parent_model.dart';
 import 'package:pathana_school_app/models/home_model.dart';
 import 'package:pathana_school_app/models/name_school_model.dart';
@@ -33,21 +34,33 @@ class HomeState extends GetxController {
 
   getNameSchool() async {
     try {
-      var response =
-          await rep.get(url: rep.urlApi + rep.authNameSchool, auth: true);
+      final url = rep.nuXtJsUrlApi + rep.authNameSchool;
+      if (kDebugMode) print('AuthNameSchool → GET ' + url);
+      var response = await rep.get(url: url, auth: true);
+
+      if (kDebugMode) {
+        final text = (() { try { return utf8.decode(response.bodyBytes); } catch (_) { return response.body; } })();
+        print('AuthNameSchool ← ${response.statusCode}: ' + text);
+      }
 
       if (response.statusCode == 200) {
-        nameSchoolModel =
-            AuthNameSchoolModel.fromJson(jsonDecode(response.body)['data']);
+        nameSchoolModel = AuthNameSchoolModel.fromJson(
+            jsonDecode(utf8.decode(response.bodyBytes))['data']);
         update(); // Update GetX listeners
       } else {
-        // Handle errors (optional)
-        throw Exception('Failed to load school name');
+        // Show server message if present
+        try {
+          final err = jsonDecode(utf8.decode(response.bodyBytes));
+          final msg = (err['message'] ?? err['statusMessage'] ?? 'something_went_wrong').toString();
+          throw Exception(msg);
+        } catch (_) {
+          throw Exception('Failed to load school name');
+        }
       }
     } catch (e) {
       CustomDialogs().showToast(
         backgroundColor: AppColor().black.withOpacity(0.8),
-        text: 'something_went_wrong'.tr,
+        text: e.toString(),
       );
     }
     update();
@@ -66,9 +79,16 @@ class HomeState extends GetxController {
   getHomeParentAndStudentList() async {
     check = false;
     data = [];
-    var res = await rep.get(url: rep.urlApi + rep.parentHomeStudentList, auth: true);
+    final url = rep.nuXtJsUrlApi + rep.parentHomeStudentList;
+    if (kDebugMode) print('HomeParent_and_StudentList → GET ' + url);
+    var res = await rep.get(url: url, auth: true);
+    if (kDebugMode) {
+      final text = (() { try { return utf8.decode(res.bodyBytes); } catch (_) { return res.body; } })();
+      print('HomeParent_and_StudentList ← ${res.statusCode}: ' + text);
+    }
     if (res.statusCode == 200) {
-      for (var items in jsonDecode(res.body)['data']) {
+      for (var items
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         data.add(HomeModel.fromJson(items));
       }
     }
@@ -79,13 +99,13 @@ class HomeState extends GetxController {
   parentDashboard() async {
     try {
       var resdashboard = await rep.get(
-        url: rep.urlApi + rep.parentDashboard,
+        url: rep.nuXtJsUrlApi + rep.parentDashboard,
         auth: true,
       );
 
       if (resdashboard.statusCode == 200) {
-        parentModels =
-            ParentRecordeModels.fromJson(jsonDecode(resdashboard.body)['data']);
+        parentModels = ParentRecordeModels.fromJson(
+            jsonDecode(utf8.decode(resdashboard.bodyBytes))['data']);
         if (parentModels != null) {
           calAge();
         }
@@ -111,15 +131,28 @@ class HomeState extends GetxController {
   }
 
   getCounts() async {
-    var res = await rep.get(url: rep.urlApi + rep.countId, auth: true);
+    final url = rep.nuXtJsUrlApi + rep.countId;
+    if (kDebugMode) print('Counts → GET ' + url);
+    var res = await rep.get(url: url, auth: true);
+    if (kDebugMode) {
+      final text = (() { try { return utf8.decode(res.bodyBytes); } catch (_) { return res.body; } })();
+      print('Counts ← ${res.statusCode}: ' + text);
+    }
 
     if (res.statusCode == 200) {
-      var responseBody = json.decode(res.body);
+      var responseBody = json.decode(utf8.decode(res.bodyBytes));
 
       notificationCount =
           responseBody['data']; // Update the count from API response
-    } else {
-      throw res;
+      } else {
+      // ignore: only used for debug toasts
+      try {
+        final err = jsonDecode(utf8.decode(res.bodyBytes));
+        final msg = (err['message'] ?? err['statusMessage'] ?? 'something_went_wrong').toString();
+        throw Exception(msg);
+      } catch (_) {
+        throw res;
+      }
     }
     update();
   }

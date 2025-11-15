@@ -106,7 +106,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                           .profileImage !=
                                                       '')
                                               ? CachedNetworkImageProvider(
-                                                  "${Repository().urlApi}${get.profiledModels!.profileImage}",
+                                                  "${Repository().nuXtJsUrlApi}${get.profiledModels!.profileImage}",
                                                   errorListener: (p0) => {
                                                     Image.asset(
                                                         'assets/images/logo.png')

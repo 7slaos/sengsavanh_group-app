@@ -185,7 +185,7 @@ class _ViewScoreChildrenPageState extends State<ViewScoreChildrenPage> {
                                                   ),
                                                   child: CachedNetworkImage(
                                                     imageUrl:
-                                                        "${Repository().urlApi}${listData.profileImage}",
+                                                        "${Repository().nuXtJsUrlApi}${listData.profileImage}",
                                                     fit: BoxFit.cover,
                                                     placeholder:
                                                         (context, url) =>

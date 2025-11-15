@@ -208,7 +208,7 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
 
         await Repository().post(
           url:
-          '${Repository().urlApi}api/check_in_check_out_push_notification_to_users',
+          '${Repository().nuXtJsUrlApi}api/Application/SuperAdminApiController/check_in_check_out_push_notification_to_users',
           body: {
             'type': 'missing_school',
             'student_record_ids': jsonEncode(idsForPush),

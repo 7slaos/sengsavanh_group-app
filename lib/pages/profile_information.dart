@@ -75,7 +75,7 @@ class _ProfileInformationPageState extends State<ProfileInformationPage> {
               //     image: DecorationImage(
               //       image: NetworkImage(
               //         get.profiledModels?.profileImage != null
-              //             ? "${get.repository.urlApi}${get.profiledModels!.profileImage}"
+              //             ? "${get.repository.nuXtJsUrlApi}${get.profiledModels!.profileImage}"
               //             : 'https://thumbs.dreamstime.com/b/parents-hugging-child-mom-dad-their-son-happy-loving-family-cute-cartoon-characters-vector-illustration-130101727.jpg',
               //       ),
               //       fit: BoxFit
@@ -121,7 +121,7 @@ class _ProfileInformationPageState extends State<ProfileInformationPage> {
                                           get.profiledModels!.profileImage !=
                                               '')
                                       ? NetworkImage(
-                                          "${Repository().urlApi}${get.profiledModels!.profileImage}",
+                                          "${Repository().nuXtJsUrlApi}${get.profiledModels!.profileImage}",
                                         )
                                       : AssetImage('assets/images/logo.png'),
                               fit: BoxFit.cover,

@@ -51,12 +51,14 @@ class AdminPaymentPackageState extends GetxController {
     loading = true;
     data = null;
     var res = await rep.post(
-        url: '${rep.urlApi}api/get_setting_payment',
+        url:
+            '${rep.nuXtJsUrlApi}api/Application/AdminSchoolController/get_setting_payment',
         body: {'id': branchId},
         auth: true);
     // print(res.body);
     if (res.statusCode == 200) {
-      data = SettingPaymentPackageModel.fromJson(jsonDecode(res.body)['data']);
+      data = SettingPaymentPackageModel.fromJson(
+          jsonDecode(utf8.decode(res.bodyBytes))['data']);
     }
     loading = false;
     update();
@@ -93,7 +95,8 @@ class AdminPaymentPackageState extends GetxController {
       // print(ref1);
       // print(res.body);
       if (res.statusCode == 200) {
-        laoQrModel = LaoQrModel.fromJson(jsonDecode(res.body));
+        laoQrModel = LaoQrModel.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes)));
       }
       checkLaoQr = true;
       update();
@@ -120,7 +123,8 @@ class AdminPaymentPackageState extends GetxController {
       var res = await rep.post(
           url: serviceApi.checkPayment, body: {"transactionId": transactionId});
       if (res.statusCode == 200) {
-        checkPaymentModel = CheckPaymentModel.fromJson(jsonDecode(res.body));
+        checkPaymentModel = CheckPaymentModel.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes)));
         update();
         if (checkPaymentModel != null) {
           pyamentInfo(
@@ -155,7 +159,7 @@ class AdminPaymentPackageState extends GetxController {
       String? note}) async {
     try {
       var res = await rep.post(
-          url: '${rep.urlApi}api/admin_payment_package',
+          url: '${rep.nuXtJsUrlApi}api/Application/AdminSchoolController/admin_payment_package',
           body: {
             "id": id,
             "total": total,
@@ -203,9 +207,10 @@ class AdminPaymentPackageState extends GetxController {
       var res = await rep
           .post(url: serviceApi.paymentInfo, body: {"paymentId": paymentId});
       if (res.statusCode == 200) {
-        paymentInfoModel = PaymentInfoModel.fromJson(jsonDecode(res.body));
+        paymentInfoModel = PaymentInfoModel.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes)));
         update();
-        final decodedBody = jsonDecode(res.body);
+        final decodedBody = jsonDecode(utf8.decode(res.bodyBytes));
         if (paymentInfoModel != null && decodedBody['res_desc'] == 'success') {
           laoQrModel = null;
           update();
@@ -257,7 +262,8 @@ class AdminPaymentPackageState extends GetxController {
         },
       );
       if (response.statusCode == 200) {
-        accessTokens = jsonDecode(response.body)['access_token'];
+        accessTokens =
+            jsonDecode(utf8.decode(response.bodyBytes))['access_token'];
         initiateQRPayment(
             amount: amount,
             merchantId: merchantId,
@@ -392,8 +398,8 @@ class AdminPaymentPackageState extends GetxController {
       // print('taken :$accessToken');
       // print(response.body);
       if (response.statusCode == 200) {
-        laoQrModel =
-            LaoQrModel.fromJson(jsonDecode(response.body)['dataResponse']);
+        laoQrModel = LaoQrModel.fromJson(
+            jsonDecode(utf8.decode(response.bodyBytes))['dataResponse']);
       }
       checkLaoQr = true;
       update();
@@ -435,7 +441,7 @@ class AdminPaymentPackageState extends GetxController {
     // print('check payment 111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      var decodedJson = jsonDecode(res.body);
+      var decodedJson = jsonDecode(utf8.decode(res.bodyBytes));
       String paymentRef = decodedJson['dataResponse']['txnItem'][0]
               ['paymentReference']
           .toString();

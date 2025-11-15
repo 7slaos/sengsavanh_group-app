@@ -21,12 +21,12 @@ class CheckRolePermissionState extends GetxController {
 
     try {
       final res = await rep.get(
-        url: "${rep.urlApi}api/check_role_permission",
+        url: "${rep.nuXtJsUrlApi}api/Application/PaymentApiController/check_role_permission",
         auth: true,
       );
 
       if (res.statusCode == 200) {
-        final decoded = jsonDecode(res.body);
+        final decoded = jsonDecode(utf8.decode(res.bodyBytes));
         final list = (decoded['data'] ?? []) as List;
 
         data = list

@@ -44,7 +44,7 @@ class TeacherCardPage extends StatelessWidget {
                                   _Avatar(
                                       name:
                                           '${getPro.teacherModels?.firstname ?? getAdminProfile.profiledModels?.firstname ?? ""} ${getPro.teacherModels?.lastname ?? getAdminProfile.profiledModels?.lastname ?? ""}',
-                                      url: '${Repository().urlApi}${getPro.teacherModels?.imagesProfile}'),
+                                      url: '${Repository().nuXtJsUrlApi}${getPro.teacherModels?.imagesProfile}'),
                                   const SizedBox(height: 14),
                                   CustomText(
                                     text:

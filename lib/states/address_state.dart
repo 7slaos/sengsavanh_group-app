@@ -117,9 +117,10 @@ class AddressState extends GetxController {
 
   getProvince() async {
     provinceList = [];
-    var res = await rep.get(url: '${rep.urlApi}api/provinces');
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/provinces');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         provinceList.add(ProvinceDropdownModel.fromMap(item));
       }
     }
@@ -129,9 +130,10 @@ class AddressState extends GetxController {
   getBloodGroup() async {
     bloodgroupList = [];
     var res =
-        await rep.get(url: '${rep.urlApi}api/get_blood_group', auth: true);
+        await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_blood_group', auth: true);
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         bloodgroupList.add(BloodGroupDropdownModel.fromMap(item));
       }
     }
@@ -140,9 +142,10 @@ class AddressState extends GetxController {
 
   getReligion() async {
     religiongroupList = [];
-    var res = await rep.get(url: '${rep.urlApi}api/get_religion', auth: true);
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_religion');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         religiongroupList.add(ReligionDropdownModel.fromMap(item));
       }
     }
@@ -151,10 +154,10 @@ class AddressState extends GetxController {
 
   getNationality() async {
     nationalityList = [];
-    var res =
-        await rep.get(url: '${rep.urlApi}api/get_nationality', auth: true);
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_nationality');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         nationalityList.add(NationalityDropdownModel.fromMap(item));
       }
     }
@@ -163,10 +166,10 @@ class AddressState extends GetxController {
 
   geteducationLevel() async {
     educationlevelList = [];
-    var res =
-        await rep.get(url: '${rep.urlApi}api/get_education_level', auth: true);
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_education_level');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         educationlevelList.add(EducationLevelDropdownModel.fromMap(item));
       }
     }
@@ -175,10 +178,10 @@ class AddressState extends GetxController {
 
   getlanguageGroup() async {
     languageGroupList = [];
-    var res =
-        await rep.get(url: '${rep.urlApi}api/get_language_group', auth: true);
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_language_group');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         languageGroupList.add(LanguageGroupDropdownModel.fromMap(item));
       }
     }
@@ -187,9 +190,10 @@ class AddressState extends GetxController {
 
   getEthinicity() async {
     ethnicityList = [];
-    var res = await rep.get(url: '${rep.urlApi}api/get_ethnicity', auth: true);
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_ethnicity');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         ethnicityList.add(EthnicGroupDropdownModel.fromMap(item));
       }
     }
@@ -198,10 +202,10 @@ class AddressState extends GetxController {
 
   getSpecialHealth() async {
     specialHealthList = [];
-    var res =
-        await rep.get(url: '${rep.urlApi}api/get_special_health', auth: true);
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_special_health');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         specialHealthList.add(SpecialHealthdownModel.fromMap(item));
       }
     }
@@ -210,9 +214,10 @@ class AddressState extends GetxController {
 
   getResidence() async {
     residenList = [];
-    var res = await rep.get(url: '${rep.urlApi}api/get_residence', auth: true);
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_residence');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         residenList.add(ResidencedownModel.fromMap(item));
       }
     }
@@ -221,9 +226,10 @@ class AddressState extends GetxController {
 
   getJob() async {
     jobList = [];
-    var res = await rep.get(url: '${rep.urlApi}api/get_jobs', auth: true);
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_jobs');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         jobList.add(JobDropdownModel.fromMap(item));
       }
     }
@@ -256,9 +262,10 @@ class AddressState extends GetxController {
 
   getDistrict(int id, DistrictDropdownModel? v) async {
     districtList = [];
-    var res = await rep.get(url: '${rep.urlApi}api/district_by_province/$id');
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/district_by_province/$id');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         districtList.add(DistrictDropdownModel.fromMap(item));
       }
     }
@@ -268,9 +275,10 @@ class AddressState extends GetxController {
 
   getVillage(int id, VillageDropdownModel? v) async {
     villageList = [];
-    var res = await rep.get(url: '${rep.urlApi}api/village_by_districts/$id');
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/village_by_districts/$id');
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         villageList.add(VillageDropdownModel.fromMap(item));
       }
     }
@@ -280,10 +288,11 @@ class AddressState extends GetxController {
 
   getclassGroup(int id) async {
     classgroupList = [];
-    var res = await rep.get(url: '${rep.urlApi}api/class_group/$id');
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/class_group/$id');
     // print(jsonDecode(res.body));
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         classgroupList.add(ClassGroupDropdownModel.fromMap(item));
       }
     }
@@ -293,10 +302,11 @@ class AddressState extends GetxController {
   getClassList({required String id, required String branchId}) async {
     classList = [];
     var res = await rep.post(
-        url: '${rep.urlApi}api/class_list',
+        url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/class_list',
         body: {'id': id, 'branch_id': branchId});
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         classList.add(ClassListDropdownModel.fromMap(item));
       }
     }

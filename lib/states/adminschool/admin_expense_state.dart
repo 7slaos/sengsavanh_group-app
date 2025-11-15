@@ -33,7 +33,7 @@ class AdminExpenseState extends GetxController {
     data = null;
     loading = true;
     var res = await rep.post(
-        url: '${rep.urlApi}api/admin_expenses',
+        url: '${rep.nuXtJsUrlApi}api/Application/AdminSchoolController/admin_expenses',
         body: {
           'start_date': startDate ?? '',
           'end_date': endDate ?? '',
@@ -43,7 +43,7 @@ class AdminExpenseState extends GetxController {
     // print('11111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      final decodedBody = jsonDecode(res.body);
+      final decodedBody = jsonDecode(utf8.decode(res.bodyBytes));
       if (decodedBody['data'] != null &&
           decodedBody['data']['items'] is List &&
           decodedBody['data']['items'].isNotEmpty) {
@@ -56,12 +56,15 @@ class AdminExpenseState extends GetxController {
 
   getexpeseCategory() async {
     expenseCategoryList = [];
-    var res =
-        await rep.get(url: '${rep.urlApi}api/epxense_category', auth: true);
+    var res = await rep.get(
+        url:
+            '${rep.nuXtJsUrlApi}api/Application/ExpenseApiController/epxense_category',
+        auth: true);
     // print('11111111111111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         expenseCategoryList.add(ExpenseCategoryModel.fromMap(item));
       }
       update();
@@ -89,7 +92,7 @@ class AdminExpenseState extends GetxController {
     update();
     CustomDialogs().dialogLoading();
     try {
-      var uri = Uri.parse('${rep.urlApi}api/store_expense');
+      var uri = Uri.parse('${rep.nuXtJsUrlApi}api/Application/ExpenseApiController/store_expense');
       var request = http.MultipartRequest('POST', uri);
       request.headers.addAll({
         'Accept': 'application/json',

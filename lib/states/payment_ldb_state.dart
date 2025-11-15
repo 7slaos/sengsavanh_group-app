@@ -43,16 +43,18 @@ class PaymentLdbState extends GetxController {
   }) async {
     bankPaymentList = [];
     var res = await repository
-        .post(url: '${repository.urlApi}api/bankPayments', auth: true, body: {
+        .post(url: '${repository.nuXtJsUrlApi}api/Application/PaymentApiController/bankPayments', auth: true, body: {
       "id": id,
       'payment_line': jsonEncode(cartList),
       "type": type,
     });
+    print(res.body);
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         bankPaymentList.add(BankPaymentModel.fromJson(item));
       }
-      totalDebt = num.parse(jsonDecode(res.body)['total_debt'].toString());
+      totalDebt = num.parse(
+          jsonDecode(utf8.decode(res.bodyBytes))['total_debt'].toString());
       update();
       return res;
     } else {
@@ -93,7 +95,8 @@ class PaymentLdbState extends GetxController {
         },
       );
       if (response.statusCode == 200) {
-        accessTokens = jsonDecode(response.body)['access_token'];
+        accessTokens =
+            jsonDecode(utf8.decode(response.bodyBytes))['access_token'];
         initiateQRPayment(
             billCode: billCode,
             amount: amount,
@@ -240,8 +243,8 @@ class PaymentLdbState extends GetxController {
       // print('taken :$accessToken');
       // print(response.body);
       if (response.statusCode == 200) {
-        qrcodeLDBModel =
-            QrcodeLDBModel.fromJson(jsonDecode(response.body)['dataResponse']);
+        qrcodeLDBModel = QrcodeLDBModel.fromJson(
+            jsonDecode(utf8.decode(response.bodyBytes))['dataResponse']);
         postUpdateTransactionIdPayment(
             id: id,
             type: type,
@@ -283,7 +286,7 @@ class PaymentLdbState extends GetxController {
       var res;
       if (type == 'one') {
         res = await repository.post(
-            url: '${repository.urlApi}api/update_transactionId_payment',
+            url: '${repository.nuXtJsUrlApi}api/Application/PaymentApiController/update_transactionId_payment',
             body: {
               "id": id,
               'transactionId_payment': transactionIdPayment,
@@ -302,7 +305,7 @@ class PaymentLdbState extends GetxController {
             auth: true);
       } else {
         res = await repository.post(
-            url: '${repository.urlApi}api/update_transactionId_payment',
+            url: '${repository.nuXtJsUrlApi}api/Application/PaymentApiController/update_transactionId_payment',
             body: {
               "id": id,
               'transactionId_payment': transactionIdPayment,
@@ -365,7 +368,7 @@ class PaymentLdbState extends GetxController {
     // print('check payment 111111111');
     // print(res.body);
     if (res.statusCode == 200) {
-      var decodedJson = jsonDecode(res.body);
+      var decodedJson = jsonDecode(utf8.decode(res.bodyBytes));
       String paymentRef = decodedJson['dataResponse']['txnItem'][0]
               ['paymentReference']
           .toString();
@@ -392,7 +395,7 @@ class PaymentLdbState extends GetxController {
       var res;
       if (type == 'one') {
         res = await repository.post(
-            url: repository.urlApi + repository.updatePayment,
+            url: repository.nuXtJsUrlApi + repository.updatePayment,
             body: {
               "id": id,
               "amount": amount,
@@ -403,7 +406,7 @@ class PaymentLdbState extends GetxController {
             auth: true);
       } else {
         res = await repository.post(
-            url: repository.urlApi + repository.updatePayment,
+            url: repository.nuXtJsUrlApi + repository.updatePayment,
             body: {
               "id": id,
               "amount": amount,
@@ -480,7 +483,8 @@ class PaymentLdbState extends GetxController {
       // print('6666666666666');
       // print(res.body);
       Get.back();
-      if (res.statusCode == 401 || jsonDecode(res.body)['status'] == "05") {
+      if (res.statusCode == 401 ||
+          jsonDecode(utf8.decode(res.bodyBytes))['status'] == "05") {
         checkPaymentTransaction(
             id: id,
             transactionIdPayment: transactionId,
@@ -488,7 +492,7 @@ class PaymentLdbState extends GetxController {
             type: 'cancel',
             status: status);
       } else if (res.statusCode == 200) {
-        var decodedJson = jsonDecode(res.body);
+        var decodedJson = jsonDecode(utf8.decode(res.bodyBytes));
         paymentInfo =
             PaymentInfo.fromJson(decodedJson['dataResponse']['txnItem'][0]);
         update();
@@ -525,7 +529,7 @@ class PaymentLdbState extends GetxController {
   }) async {
     try {
       var res = await repository.post(
-          url: '${repository.urlApi}api/checkPaymentTransaction',
+          url: '${repository.nuXtJsUrlApi}api/Application/PaymentApiController/checkPaymentTransaction',
           body: {
             "id": id,
             "transactionId_payment": transactionIdPayment,

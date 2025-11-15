@@ -62,7 +62,7 @@ class HistoryPaymentState extends GetxController {
       // print('555555555555555555555');
       // print(type);
       var res = await repository.post(
-        url: repository.urlApi + repository.getDataListStudent,
+        url: repository.nuXtJsUrlApi + repository.getDataListStudent,
         body: {
           'year': year ?? '',
           'month': formattedMonth, // Use the formatted month
@@ -72,7 +72,8 @@ class HistoryPaymentState extends GetxController {
         auth: true,
       );
       if (res.statusCode == 200) {
-        var jsonData = jsonDecode(res.body)['data'];
+        var jsonData =
+            jsonDecode(utf8.decode(res.bodyBytes))['data'];
         for (var item in jsonData) {
           data.add(HistoryModel.fromJson(item));
         }

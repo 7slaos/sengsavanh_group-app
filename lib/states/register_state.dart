@@ -116,10 +116,11 @@ class RegisterState extends GetMaterialController {
   getSchools() async {
     schoolList = [];
     checkSchool = false;
-    var res = await rep.get(url: '${rep.urlApi}api/get_schools');
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/AddressApiController/get_schools');
     // print(res.body);
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         schoolList.add(SchoolListModel.fromMap(item));
       }
     }
@@ -129,10 +130,11 @@ class RegisterState extends GetMaterialController {
 
   getPackages() async {
     packageList = [];
-    var res = await rep.get(url: '${rep.urlApi}api/get_packages');
+    var res = await rep.get(url: '${rep.nuXtJsUrlApi}api/Application/LoginApiController/get_packages');
     // print(res.body);
     if (res.statusCode == 200) {
-      for (var item in jsonDecode(res.body)['data']) {
+      for (var item
+          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
         packageList.add(PackageModel.fromJson(item));
       }
     }
@@ -308,7 +310,7 @@ class RegisterState extends GetMaterialController {
   }) async {
     CustomDialogs().dialogLoading();
     try {
-      var uri = Uri.parse('${rep.urlApi}api/register_student');
+      var uri = Uri.parse('${rep.nuXtJsUrlApi}api/Application/LoginApiController/register_student');
       var request = http.MultipartRequest('POST', uri);
       request.headers.addAll({
         'Accept': 'application/json',
@@ -398,7 +400,7 @@ class RegisterState extends GetMaterialController {
   }) async {
     CustomDialogs().dialogLoading();
     try {
-      var res = await rep.post(url: '${rep.urlApi}api/register_school', body: {
+      var res = await rep.post(url: '${rep.nuXtJsUrlApi}api/Application/LoginApiController/register_school', body: {
         'id': id,
         'name_la': nameLa,
         'name_en': nameEn,
@@ -414,8 +416,8 @@ class RegisterState extends GetMaterialController {
       Get.back();
       if (res.statusCode == 200) {
         clearData();
-        registerSchoolModel =
-            RegisterSchoolModel.fromJson(jsonDecode(res.body)['data']);
+        registerSchoolModel = RegisterSchoolModel.fromJson(
+            jsonDecode(utf8.decode(res.bodyBytes))['data']);
         CustomDialogs().showToast(
           backgroundColor: AppColor().green.withOpacity(0.6),
           text: 'success'.tr,
@@ -427,7 +429,8 @@ class RegisterState extends GetMaterialController {
       } else {
         CustomDialogs().showToast(
           backgroundColor: AppColor().red.withOpacity(0.9),
-          text: jsonDecode(res.body)['message'] ?? 'Something went wrong'.tr,
+          text: jsonDecode(utf8.decode(res.bodyBytes))['message'] ??
+              'Something went wrong'.tr,
         );
       }
     } catch (e) {
@@ -588,7 +591,7 @@ class RegisterState extends GetMaterialController {
   }) async {
     CustomDialogs().dialogLoading();
     try {
-      var uri = Uri.parse('${rep.urlApi}api/update_profiled_studentrecord');
+      var uri = Uri.parse('${rep.nuXtJsUrlApi}api/Application/LoginApiController/update_profiled_studentrecord');
       var request = http.MultipartRequest('POST', uri);
       request.headers.addAll({
         'Accept': 'application/json',

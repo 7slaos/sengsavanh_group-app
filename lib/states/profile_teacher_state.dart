@@ -17,8 +17,11 @@ class ProfileTeacherState extends GetxController {
   
 
   checkToken() {
-    if (appVerification.token == '') {
-    } else {
+    // Use Nuxt token for protected APIs
+    final t = appVerification.nUxtToken.isNotEmpty
+        ? appVerification.nUxtToken
+        : appVerification.token;
+    if (t.isNotEmpty) {
       getProfiledTeacher();
     }
   }
@@ -27,13 +30,14 @@ class ProfileTeacherState extends GetxController {
     try {
       teacherModels = null;
       var res = await repository.get(
-        url: repository.urlApi + repository.teacherRecordePofiled,
+        url: repository.nuXtJsUrlApi + repository.teacherRecordePofiled,
         auth: true,
       );
       // print(res.body);
       if (res.statusCode == 200) {
+        final text = (() { try { return utf8.decode(res.bodyBytes); } catch (_) { return res.body; } })();
         teacherModels =
-            TeacherRcordeModels.fromJson(jsonDecode(res.body)['data']);
+            TeacherRcordeModels.fromJson(jsonDecode(text)['data']);
       }
     } catch (e) {
       // print(e);
@@ -71,7 +75,7 @@ class ProfileTeacherState extends GetxController {
       XFile? fileImage}) async {
     CustomDialogs().dialogLoading();
     try {
-      var uri = Uri.parse(repository.urlApi + repository.updateTeacherRecorde);
+      var uri = Uri.parse(repository.nuXtJsUrlApi + repository.updateTeacherRecorde);
       var request = http.MultipartRequest('POST', uri);
       request.headers.addAll({
         'Accept': 'application/json',
