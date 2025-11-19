@@ -51,16 +51,21 @@ class _CallChildrenPageState extends State<CallChildrenPage> {
           return CircleLoad();
         }
         if (getData.data.isEmpty) {
-          return Expanded(
-            child: Center(
-              child: CustomText(
-                text: 'not_found_data',
-                fontSize: fSize * 0.02,
-                color: appColor.grey,
-              ),
+          return Center(
+            child: CustomText(
+              text: 'not_found_data',
+              fontSize: fSize * 0.02,
+              color: appColor.grey,
             ),
           );
         }
+
+        if (callStudentState.isChecked.length != getData.data.length) {
+          callStudentState.isChecked =
+              List.generate(getData.data.length, (index) => false);
+          callStudentState.update();
+        }
+
         return Column(children: [
           SizedBox(
             height: size.height * 0.01,
@@ -117,7 +122,7 @@ class _CallChildrenPageState extends State<CallChildrenPage> {
                                   Container(
                                     width: size.width * 0.2,
                                     height: size.width * 0.2,
-                                    decoration: BoxDecoration(
+                                    decoration: BoxDecoration( 
                                       shape: BoxShape.circle,
                                       image: DecorationImage(
                                         image: NetworkImage(

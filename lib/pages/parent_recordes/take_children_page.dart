@@ -11,6 +11,7 @@ import 'package:pathana_school_app/states/profile_teacher_state.dart';
 import 'package:pathana_school_app/widgets/custom_app_bar.dart';
 import 'package:pathana_school_app/widgets/custom_circle_load.dart';
 import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:pathana_school_app/widgets/button_widget.dart';
 
 class TakeChildrenPage extends StatefulWidget {
   const TakeChildrenPage({super.key});
@@ -171,57 +172,57 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                 ),
               ),
             ),
-            GetBuilder<CallStudentState>(builder: (getCall) {
-              if (getCall.check == false && getCall.data.isEmpty) {
-                return Expanded(child: Center(child: CircleLoad()));
-              }
-              if (getCall.data.isEmpty && getCall.check == true) {
-                return Expanded(
-                  child: Center(
-                    child: CustomText(
-                      text: 'not_found_data',
-                      fontSize: fixSizes * 0.0165,
-                      color: appColor.grey,
-                    ),
-                  ),
-                );
-              }
-              var value = getCall.data
-                  .where(
-                      (e) => e.pCarnumber!.toLowerCase().contains(searchT.text))
-                  .toList();
-              return GetBuilder<ProfileTeacherState>(builder: (tProfile) {
-                return Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      tabController.index != 2
-                          ? Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8),
-                              child: CustomText(
-                                text:
-                                    '${"all".tr}: ${getCall.data.length} ${"items".tr}',
-                                color: appColor.grey,
-                              ),
-                            )
-                          : const SizedBox(),
-                      Expanded(
-                        child: RefreshIndicator(
-                          color: appColor.mainColor,
-                          onRefresh: () async {
-                            if (tabController.index != 2) {
-                              getData();
-                            }
-                          },
-                          child: ListView.builder(
-                            controller: scrollController,
+            Expanded(
+              child: GetBuilder<CallStudentState>(
+                builder: (getCall) {
+                  if (getCall.check == false && getCall.data.isEmpty) {
+                    return Center(child: CircleLoad());
+                  }
+                  if (getCall.data.isEmpty && getCall.check == true) {
+                    return Center(
+                      child: CustomText(
+                        text: 'not_found_data',
+                        fontSize: fixSizes * 0.0165,
+                        color: appColor.grey,
+                      ),
+                    );
+                  }
+                  var value = getCall.data
+                      .where((e) =>
+                          (e.pCarnumber ?? '')
+                              .toLowerCase()
+                              .contains(searchT.text.toLowerCase()))
+                      .toList();
+                  return GetBuilder<ProfileTeacherState>(
+                    builder: (tProfile) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
                             padding:
-                                EdgeInsets.only(bottom: size.height * 0.15),
-                            itemCount: tabController.index == 2
-                                ? value.length + 1
-                                : value.length,
-                            itemBuilder: (context, index) {
+                                const EdgeInsets.only(left: 8.0, right: 8),
+                            child: CustomText(
+                              text:
+                                  '${"all".tr}: ${value.length} ${"items".tr}',
+                              color: appColor.grey,
+                            ),
+                          ),
+                          Expanded(
+                            child: RefreshIndicator(
+                              color: appColor.mainColor,
+                              onRefresh: () async {
+                                if (tabController.index != 2) {
+                                  getData();
+                                }
+                              },
+                              child: ListView.builder(
+                                controller: scrollController,
+                                padding: EdgeInsets.only(
+                                    bottom: size.height * 0.15),
+                                itemCount: tabController.index == 2
+                                    ? value.length + 1
+                                    : value.length,
+                                itemBuilder: (context, index) {
                               if (tabController.index == 2) {
                                 if (index < value.length) {
                                   return GetBuilder<AppVerification>(
@@ -708,44 +709,31 @@ class _TakeChildrenPageState extends State<TakeChildrenPage>
                         ),
                       ),
                     ],
-                  ),
-                );
-              });
-            }),
+                  );
+                });
+              }),
+            ),
           ],
         ),
-        floatingActionButton:
+        bottomSheet:
             GetBuilder<ProfileTeacherState>(builder: (teacherPro) {
           return GetBuilder<AppVerification>(builder: (getRole) {
             if (getRole.role == 'p' ||
                 (teacherPro.teacherModels != null &&
                     teacherPro.teacherModels!.student.isNotEmpty)) {
-              return InkWell(
-                onTap: () {
+              return ButtonWidget(
+                height: size.height * 0.08,
+                width: size.width,
+                backgroundColor: appColor.mainColor,
+                fontSize: fixSize(0.0165, context),
+                text: 'ເລືອກນັກຮຽນທີ່ຈະຮ້ອງ',
+                onPressed: () {
                   callStudentState.clearcallStudent();
                   Get.to(() => CallChildrenPage(), transition: Transition.zoom);
                 },
-                child: Container(
-                  width: fixSizes * 0.065,
-                  height: fixSizes * 0.065,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(999),
-                      color: appColor.mainColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black54,
-                          blurRadius: fixSizes * 0.01,
-                        )
-                      ]),
-                  child: Icon(
-                    Icons.add,
-                    color: appColor.white,
-                    size: fixSizes * 0.025,
-                  ),
-                ),
               );
             }
-            return const SizedBox();
+            return const SizedBox.shrink();
           });
         }));
   }

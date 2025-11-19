@@ -352,35 +352,63 @@ class PaymentLdbState extends GetxController {
       String? note,
       required String type,
       required List<dynamic> cartList}) async {
-    var res = await http.get(
-        Uri.parse(
-            'https://velab.ldblao.la/vboxConsumers/api/v1/qrpayment/$transactionId/inquiry.service?reference2=$reference2'),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'x-client-transaction-id': transactionId,
-          'x-client-Transaction-datetime': xClientTransactionDatetime,
-          'partnerId': partnerId,
-          'digest': digest,
-          'signature':
-              'keyId="key1",algorithm="hs2019",created=$created,expires=$expires,headers="digest (request-target) (created) x-client-transaction-id",signature="$signature"',
-          'Content-Type': 'application/json',
-        });
-    // print('check payment 111111111');
-    // print(res.body);
-    if (res.statusCode == 200) {
-      var decodedJson = jsonDecode(utf8.decode(res.bodyBytes));
-      String paymentRef = decodedJson['dataResponse']['txnItem'][0]
-              ['paymentReference']
-          .toString();
-      paymentInfo =
-          PaymentInfo.fromJson(decodedJson['dataResponse']['txnItem'][0]);
-      update();
-      postPayment(
-          id: id,
-          paymentId: paymentRef,
-          amount: amount,
-          type: type,
-          cartList: cartList);
+    try {
+      final res = await http.get(
+          Uri.parse(
+              'https://velab.ldblao.la/vboxConsumers/api/v1/qrpayment/$transactionId/inquiry.service?reference2=$reference2'),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'x-client-transaction-id': transactionId,
+            'x-client-Transaction-datetime': xClientTransactionDatetime,
+            'partnerId': partnerId,
+            'digest': digest,
+            'signature':
+                'keyId="key1",algorithm="hs2019",created=$created,expires=$expires,headers="digest (request-target) (created) x-client-transaction-id",signature="$signature"',
+            'Content-Type': 'application/json',
+          });
+      if (res.statusCode == 200) {
+        final decodedJson = jsonDecode(utf8.decode(res.bodyBytes));
+        final dataResponse = decodedJson['dataResponse'];
+        final txnItems = (dataResponse is Map<String, dynamic>)
+            ? dataResponse['txnItem']
+            : null;
+        if (txnItems is List && txnItems.isNotEmpty) {
+          final first = txnItems[0] as Map<String, dynamic>;
+          final paymentRef =
+              (first['paymentReference'] ?? '').toString().trim();
+          if (paymentRef.isEmpty) {
+            CustomDialogs().showToast(
+              backgroundColor: AppColor().red.withOpacity(0.8),
+              text: 'something_went_wrong',
+            );
+            return;
+          }
+          paymentInfo = PaymentInfo.fromJson(first);
+          update();
+          await postPayment(
+              id: id,
+              paymentId: paymentRef,
+              amount: amount,
+              type: type,
+              cartList: cartList);
+        } else {
+          // Unexpected response shape (no txnItem list)
+          CustomDialogs().showToast(
+            backgroundColor: AppColor().red.withOpacity(0.8),
+            text: 'something_went_wrong',
+          );
+        }
+      } else {
+        CustomDialogs().showToast(
+          backgroundColor: AppColor().red.withOpacity(0.8),
+          text: 'something_went_wrong',
+        );
+      }
+    } catch (e) {
+      CustomDialogs().showToast(
+        backgroundColor: AppColor().red.withOpacity(0.8),
+        text: 'something_went_wrong',
+      );
     }
   }
 
@@ -429,17 +457,13 @@ class PaymentLdbState extends GetxController {
           backgroundColor: AppColor().green,
           text: '${"Pay_tuition_fees".tr} ${"success".tr}',
         );
-        if (res.body['data'].toString() != '[]') {
-           await Get.off(() => PrintBillWidget(data: res.body['data']));
-        }else {
-          Get.off(
-                  () =>
-                  PaymentSuccess(
-                      paymentId: paymentId,
-                      paymentInfo: paymentInfo,
-                      note: note),
-              transition: Transition.fadeIn);
-        }
+        // After successful payment, just go to success page (no auto print)
+        Get.off(
+            () => PaymentSuccess(
+                paymentId: paymentId,
+                paymentInfo: paymentInfo,
+                note: note),
+            transition: Transition.fadeIn);
       }
     } catch (e) {
       CustomDialogs().showToast(

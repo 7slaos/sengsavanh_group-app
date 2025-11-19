@@ -186,9 +186,35 @@ class PaymentLine {
   int? payType;
   String? billNumber;
   String? billDated;
+  int? creatorId;
+  int? creator2Id;
+  int? checkPayWebApp;
+  int? feeInvoicesId;
+  int? feeInvoiceRecordsId;
+  String? note;
+  String? datedGiveMoney;
+  int? status;
+  String? createdAt;
+  String? updatedAt;
+  String? deletedAt;
 
   PaymentLine(
-      {this.id, this.subtotal, this.payType, this.billNumber, this.billDated});
+      {this.id,
+      this.subtotal,
+      this.payType,
+      this.billNumber,
+      this.billDated,
+      this.creatorId,
+      this.creator2Id,
+      this.checkPayWebApp,
+      this.feeInvoicesId,
+      this.feeInvoiceRecordsId,
+      this.note,
+      this.datedGiveMoney,
+      this.status,
+      this.createdAt,
+      this.updatedAt,
+      this.deletedAt});
 
   PaymentLine.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -196,6 +222,17 @@ class PaymentLine {
     payType = json['pay_type'];
     billNumber = json['bill_number'];
     billDated = json['bill_dated'];
+    creatorId = json['creator_id'];
+    creator2Id = json['creator_2_id'];
+    checkPayWebApp = json['check_pay_web_app'];
+    feeInvoicesId = json['fee_invoices_id'];
+    feeInvoiceRecordsId = json['fee_invoice_records_id'];
+    note = json['note'];
+    datedGiveMoney = json['dated_give_money'];
+    status = json['status'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    deletedAt = json['deleted_at'];
   }
 
   Map<String, dynamic> toJson() {
@@ -205,6 +242,17 @@ class PaymentLine {
     data['pay_type'] = this.payType;
     data['bill_number'] = this.billNumber;
     data['bill_dated'] = this.billDated;
+    data['creator_id'] = this.creatorId;
+    data['creator_2_id'] = this.creator2Id;
+    data['check_pay_web_app'] = this.checkPayWebApp;
+    data['fee_invoices_id'] = this.feeInvoicesId;
+    data['fee_invoice_records_id'] = this.feeInvoiceRecordsId;
+    data['note'] = this.note;
+    data['dated_give_money'] = this.datedGiveMoney;
+    data['status'] = this.status;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    data['deleted_at'] = this.deletedAt;
     return data;
   }
 }

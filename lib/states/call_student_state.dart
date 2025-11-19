@@ -1,4 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pathana_school_app/custom/app_color.dart';
@@ -117,19 +118,43 @@ class CallStudentState extends GetxController {
       {required BuildContext context, required String note}) async {
     CustomDialogs().dialogLoading();
     try {
+      final url = rep.nuXtJsUrlApi + rep.callStudents;
+      final payload = {
+        'note': note,
+        'students': jsonEncode(callstudentList),
+      };
+
+      if (kDebugMode) {
+        print('[CallStudentState] POST $url');
+        print('[CallStudentState] body: ${jsonEncode(payload)}');
+      }
+
       var response = await http.post(
-        Uri.parse(rep.nuXtJsUrlApi + rep.callStudents),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': 'Bearer ${appVerification.token}',
+          'Authorization': 'Bearer ' +
+              ((appVerification.nUxtToken.isNotEmpty)
+                  ? appVerification.nUxtToken
+                  : appVerification.token),
         },
-        body: jsonEncode({
-          'note': note,
-          'students': jsonEncode(callstudentList),
-        }),
+        body: jsonEncode(payload),
       );
       Get.back();
+
+      if (kDebugMode) {
+        final text = (() {
+          try {
+            return utf8.decode(response.bodyBytes);
+          } catch (_) {
+            return response.body;
+          }
+        })();
+        print('[CallStudentState] status: ${response.statusCode}');
+        print('[CallStudentState] response: $text');
+      }
+
       // print(jsonDecode(response.body));
       // print(
       //     "11111111111111111111111000000000000000000000000000000000000000000000000000");
@@ -153,13 +178,21 @@ class CallStudentState extends GetxController {
           },
         ).show();
       } else if (response.statusCode == 402) {
+        String message;
+        try {
+          final err = jsonDecode(utf8.decode(response.bodyBytes));
+          message = (err['message'] ?? err['statusMessage'] ?? 'something_went_wrong').toString();
+        } catch (_) {
+          message = 'something_went_wrong'.tr;
+        }
+
         AwesomeDialog(
           // ignore: use_build_context_synchronously
           context: context,
           dialogType: DialogType.error,
           animType: AnimType.scale,
           title: 'sorry'.tr,
-          desc: jsonDecode(utf8.decode(response.bodyBytes))['message'],
+          desc: message,
           showCloseIcon: false,
           dismissOnTouchOutside: false,
           btnCancelText: 'cancel'.tr,
@@ -170,8 +203,10 @@ class CallStudentState extends GetxController {
         throw Exception('Failed to confirm sale: ${response.body}');
       }
     } catch (e, stackTrace) {
-      // print('Error: $e');
-      // print('StackTrace: $stackTrace');
+      if (kDebugMode) {
+        print('[CallStudentState] confirmcallStudent error: $e');
+        print(stackTrace);
+      }
       await CustomDialogs().showToast(
           text: 'something_went_wrong', backgroundColor: AppColor().red);
     }

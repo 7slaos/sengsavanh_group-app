@@ -188,14 +188,14 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                 'color': Colors.blue
               });
             }
-            if (getProfile.teacherModels != null && getProfile.teacherModels!.appleStore == 1 &&
-                !subjects.any((e) => e['title'] == 'scan-in-out')) {
+            // if (getProfile.teacherModels != null && getProfile.teacherModels!.appleStore == 1 &&
+            //     !subjects.any((e) => e['title'] == 'scan-in-out')) {
               subjects.add({
                 'title': 'scan-in-out',
                 'icon': Icons.qr_code_scanner,
                 'color': Colors.pink
               });
-            }
+            // }
             if (checkRole.checkRole("access_Fees") == true &&
                 !subjects.any((e) => e['title'] == 'Tuition_fees')) {
               subjects.add({
@@ -204,14 +204,14 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                 'color': Colors.blue
               });
             }
-            if (getProfile.teacherModels != null && getProfile.teacherModels!.appleStore == 1 &&
-                !subjects.any((e) => e['title'] == 'mark-student')) {
+            // if (getProfile.teacherModels != null && getProfile.teacherModels!.appleStore == 1 &&
+            //     !subjects.any((e) => e['title'] == 'mark-student')) {
               subjects.add({
                 'title': 'mark-student',
                 'icon': Icons.note_alt,
                 'color': Colors.red
               });
-            }
+            // }
             if (!subjects.any((e) => e['title'] == 'language')) {
               subjects.add({
                 'title': 'language',
@@ -318,7 +318,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                       ),
                     ),
                   ),
-                  if (getProfile.teacherModels !=null && getProfile.teacherModels!.appleStore == 1) ...[
+                  // if (getProfile.teacherModels !=null && getProfile.teacherModels!.appleStore == 1) ...[
                     SizedBox(height: size.height * 0.01),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10 * scale),
@@ -419,8 +419,8 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                             ),
                         ],
                       )
-                    ]
-                  ],
+                    ],
+                  // ],
                   SizedBox(height: size.height * 0.01),
                   // Subjects Grid
                   Expanded(

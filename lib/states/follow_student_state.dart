@@ -7,6 +7,7 @@ import 'package:pathana_school_app/models/follow_student_detail_model.dart';
 import 'package:pathana_school_app/models/select_dropdown_model.dart';
 import 'package:pathana_school_app/pages/teacher_recordes/follow_student_detail_page.dart';
 import 'package:pathana_school_app/widgets/custom_dialog.dart';
+import 'package:pathana_school_app/states/dashboard_teacher_state.dart';
 
 import '../repositorys/repository.dart';
 
@@ -46,14 +47,52 @@ class FollowStudentState extends GetMaterialController {
 
   /// Fetch dropdown data from the API
   fetchStudentDropdown({String? id}) async {
-    var res = await http.post(
-      Uri.parse('${repository.nuXtJsUrlApi}api/Application/GetDropdownController/get_student_record'),
-      body: {'id': id ?? ''},
-    );
-
-    for (var item in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
-      allStudentRecords.add(StudentRecordDropdownModel.fromMap(item));
+    // Resolve teacher_records.id if not explicitly provided
+    String? teacherRecordId = id;
+    if (teacherRecordId == null || teacherRecordId.isEmpty) {
+      try {
+        final dashboardState = Get.find<DashboardTeacherState>();
+        if (dashboardState.data?.id != null) {
+          teacherRecordId = dashboardState.data!.id!.toString();
+        }
+      } catch (_) {
+        // DashboardTeacherState not available; fall through
+      }
     }
+
+    // If we still don't have an id, skip the request to avoid 400/null errors
+    if (teacherRecordId == null || teacherRecordId.isEmpty) {
+      allStudentRecords = [];
+      update();
+      return;
+    }
+
+    try {
+      final res = await repository.post(
+        url: repository.nuXtJsUrlApi + repository.dropdownGetStudentRecord,
+        auth: true,
+        body: {'id': teacherRecordId},
+      );
+
+      allStudentRecords = [];
+
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+        final data = (decoded is Map) ? decoded['data'] : null;
+        if (data is Iterable) {
+          allStudentRecords = data
+              .map<StudentRecordDropdownModel>(
+                  (item) => StudentRecordDropdownModel.fromMap(item))
+              .toList();
+        }
+      } else {
+        // Non-200 status; leave list empty
+      }
+    } catch (_) {
+      // Network / parsing error; leave list empty
+      allStudentRecords = [];
+    }
+
     update();
   }
 

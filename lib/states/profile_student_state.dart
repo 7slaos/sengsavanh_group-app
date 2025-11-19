@@ -31,14 +31,30 @@ class ProfileStudentState extends GetxController {
       var res = await repository.get(
           url: repository.nuXtJsUrlApi + repository.getProfileStudentRecord,
           auth: true);
-      //  print(res.body);
       if (res.statusCode == 200) {
         dataModels = ProfileStudentRecordModel.fromJson(
             jsonDecode(utf8.decode(res.bodyBytes))['data']);
         check = true;
-      } else {
+      } else if (res.statusCode == 401 || res.statusCode == 403) {
+        // Unauthorized / token invalid → force logout
         appVerification.removeToken();
         Get.offAll(() => const LoginPage(), transition: Transition.fadeIn);
+      } else {
+        // Other errors (e.g. 404 Student record not found) → keep session, just show message
+        try {
+          final text = utf8.decode(res.bodyBytes);
+          final err = jsonDecode(text);
+          final msg = (err['statusMessage'] ?? err['message'] ?? 'something_went_wrong').toString();
+          CustomDialogs().showToast(
+            backgroundColor: AppColor().black.withOpacity(0.8),
+            text: msg,
+          );
+        } catch (_) {
+          CustomDialogs().showToast(
+            backgroundColor: AppColor().black.withOpacity(0.8),
+            text: 'something_went_wrong'.tr,
+          );
+        }
       }
     } catch (e) {
       CustomDialogs().showToast(

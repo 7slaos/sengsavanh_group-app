@@ -115,9 +115,18 @@ class ProfileStudentRecordModel {
     parentData = json['parent_data'];
     parentContact = json['parent_contact'];
     studentRecordsId = json['student_records_id'].toString();
-    lat = double.parse(json['lat'].toString());
-    lng = double.parse(json['lng'].toString());
-    km = double.parse(json['km'].toString());
+
+    // Safely parse optional numeric fields (may be null from API)
+    dynamic _numOrNull(dynamic value) {
+      if (value == null) return null;
+      if (value is num) return value.toDouble();
+      final s = value.toString();
+      return double.tryParse(s);
+    }
+
+    lat = _numOrNull(json['lat']) ?? 0.0;
+    lng = _numOrNull(json['lng']) ?? 0.0;
+    km = _numOrNull(json['km']) ?? 0.0;
   }
   // Map<String, dynamic> toJson() {
   //   final Map<String, dynamic> data = new Map<String, dynamic>();

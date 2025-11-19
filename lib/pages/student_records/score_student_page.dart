@@ -4,6 +4,7 @@ import 'package:pathana_school_app/functions/format_price.dart';
 import 'package:pathana_school_app/pages/student_records/detail_score_student_page.dart';
 import 'package:pathana_school_app/repositorys/repository.dart';
 import 'package:pathana_school_app/states/about_score_state.dart';
+import 'package:pathana_school_app/states/profile_student_state.dart';
 import 'package:pathana_school_app/states/date_picker_state.dart';
 import 'package:pathana_school_app/states/history_payment_state.dart';
 import 'package:pathana_school_app/widgets/custom_circle_load.dart';
@@ -22,6 +23,7 @@ class _ScoreStudentPageState extends State<ScoreStudentPage> {
   DatePickerState datePickerState = Get.put(DatePickerState());
   AboutScoreState aboutScoreState = Get.put(AboutScoreState());
   HistoryPaymentState historyPaymentState = Get.put(HistoryPaymentState());
+  ProfileStudentState profileStudentState = Get.put(ProfileStudentState());
   @override
   void initState() {
     getData();
@@ -146,6 +148,31 @@ class _ScoreStudentPageState extends State<ScoreStudentPage> {
         padding: EdgeInsets.all(fSize * 0.01),
         child: Column(
           children: [
+            // Show basic student + class info at top
+            GetBuilder<ProfileStudentState>(
+              builder: (p) {
+                final m = p.dataModels;
+                if (m == null) return const SizedBox.shrink();
+                return Padding(
+                  padding: EdgeInsets.only(bottom: size.height * 0.01),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: '${m.firstname ?? ''} ${m.lastname ?? ''}',
+                        fontSize: fixSize(0.0165, context),
+                        fontWeight: FontWeight.w600,
+                      ),
+                      CustomText(
+                        text: '${'class'.tr}: ${m.myClass ?? ''}',
+                        fontSize: fixSize(0.0150, context),
+                        color: appColor.grey,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
             GetBuilder<AboutScoreState>(
               builder: (getList) {
                 if (getList.checkMyOwnScore == false) {
