@@ -1,4 +1,4 @@
-package com.pathana.school.app
+package com.sschoolapp.s_school_app
 
 import io.flutter.embedding.android.FlutterActivity
 

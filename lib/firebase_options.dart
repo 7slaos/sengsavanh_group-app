@@ -41,48 +41,48 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDyD9rE76qGwc8YnW-dyVvHUCQ7KikHII8',
-    appId: '1:19246411386:web:e089e95fd6a3bd9bca15c3',
-    messagingSenderId: '19246411386',
-    projectId: 'pathana-school-a6577',
-    authDomain: 'pathana-school-a6577.firebaseapp.com',
-    storageBucket: 'pathana-school-a6577.firebasestorage.app',
-    measurementId: 'G-KPDZZCCGSK',
+    apiKey: 'AIzaSyDB2_4lBBtNztxJiHIe4V-8jAfJ2usZOho',
+    appId: '1:709794416722:web:757981df90f46e8e79778b',
+    messagingSenderId: '709794416722',
+    projectId: 'school-core',
+    authDomain: 'school-core.firebaseapp.com',
+    storageBucket: 'school-core.firebasestorage.app',
+    measurementId: 'G-TM29W996GY',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDf5DKdu6Yi5HxMUVGeyGSmP6XNb1MPi8s',
-    appId: '1:19246411386:android:10c7ceb8c162bd1cca15c3',
-    messagingSenderId: '19246411386',
-    projectId: 'pathana-school-a6577',
-    storageBucket: 'pathana-school-a6577.firebasestorage.app',
+    apiKey: 'AIzaSyDLwHwRPo2LQoPwHtv-TI5Qa3k4w5lS140',
+    appId: '1:709794416722:android:dbac21bb8624620f79778b',
+    messagingSenderId: '709794416722',
+    projectId: 'school-core',
+    storageBucket: 'school-core.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAl6BqjzJYCFU_Oy5n8HjxShfEHq2fBgDw',
-    appId: '1:19246411386:ios:0a875ec3774b2067ca15c3',
-    messagingSenderId: '19246411386',
-    projectId: 'pathana-school-a6577',
-    storageBucket: 'pathana-school-a6577.firebasestorage.app',
-    iosBundleId: 'com.pathana.sSchool.App',
+    apiKey: 'AIzaSyBeIMmFTuXBRpSbh0CjUJ-CB8QGxYyusRo',
+    appId: '1:709794416722:ios:9f5e805bf28cbcb979778b',
+    messagingSenderId: '709794416722',
+    projectId: 'school-core',
+    storageBucket: 'school-core.firebasestorage.app',
+    iosBundleId: 'com.sschoolapp.sSchoolApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAl6BqjzJYCFU_Oy5n8HjxShfEHq2fBgDw',
-    appId: '1:19246411386:ios:f205ab0c870cfe79ca15c3',
-    messagingSenderId: '19246411386',
-    projectId: 'pathana-school-a6577',
-    storageBucket: 'pathana-school-a6577.firebasestorage.app',
+    apiKey: 'AIzaSyBeIMmFTuXBRpSbh0CjUJ-CB8QGxYyusRo',
+    appId: '1:709794416722:ios:9f5e805bf28cbcb979778b',
+    messagingSenderId: '709794416722',
+    projectId: 'school-core',
+    storageBucket: 'school-core.firebasestorage.app',
     iosBundleId: 'com.sschoolapp.sSchoolApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDyD9rE76qGwc8YnW-dyVvHUCQ7KikHII8',
-    appId: '1:19246411386:web:63079a7d4184f737ca15c3',
-    messagingSenderId: '19246411386',
-    projectId: 'pathana-school-a6577',
-    authDomain: 'pathana-school-a6577.firebaseapp.com',
-    storageBucket: 'pathana-school-a6577.firebasestorage.app',
+    apiKey: 'AIzaSyDB2_4lBBtNztxJiHIe4V-8jAfJ2usZOho',
+    appId: '1:709794416722:web:d45c84481340792979778b',
+    messagingSenderId: '709794416722',
+    projectId: 'school-core',
+    authDomain: 'school-core.firebaseapp.com',
+    storageBucket: 'school-core.firebasestorage.app',
     measurementId: 'G-TM29W996GY',
   );
 }

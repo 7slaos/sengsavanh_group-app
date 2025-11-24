@@ -26,17 +26,32 @@ class InitListenNoti extends GetxController {
 
   getInit() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      // Detailed log for foreground notifications
+      try {
+        print('[InitListenNoti] onMessage: '
+            'title=${message.notification?.title}, '
+            'body=${message.notification?.body}, '
+            'data=${message.data}');
+      } catch (_) {}
+
       RemoteNotification notification = message.notification!;
       await flutterLocalNotificationsPlugin.show(
           notification.hashCode,
           (notification.title ?? '').tr,
           (notification.body ?? '').tr,
           _platformChannelSpecifics);
+      try {
+        print('[InitListenNoti] ✅ Local notification displayed (foreground).');
+      } catch (_) {}
       if (Get.currentRoute == '/TakeChildrenPage') {
         callStudentState.getData('1', 'noti');
       }
     });
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      try {
+        print('[InitListenNoti] onMessageOpenedApp: data=${message.data}');
+      } catch (_) {}
+
       RemoteNotification notification = message.notification!;
       await flutterLocalNotificationsPlugin.show(
           notification.hashCode,
