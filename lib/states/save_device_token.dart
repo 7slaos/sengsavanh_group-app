@@ -13,6 +13,9 @@ class SaveDeviceTokenState extends GetxController {
   postSaveDeviceToken() async {
     await _firebaseMessaging.getToken().then((token) async {
       try {
+        if (kDebugMode) {
+          print('[SaveDeviceTokenState] got FCM token: ${token ?? 'null'}');
+        }
         final uri = Uri.parse(rep.nuXtJsUrlApi + rep.saveDeviceToken);
         final headers = <String, String>{
           'Accept': 'application/json',
@@ -43,4 +46,3 @@ class SaveDeviceTokenState extends GetxController {
     });
   }
 }
-

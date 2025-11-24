@@ -24,7 +24,13 @@ const AndroidNotificationChannel androidNotificationChannel =
 );
 
 Future<void> firebaseBackgroundMessage(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  // Ensure Firebase is initialized in the background isolate.
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } on FirebaseException catch (e) {
+    // Ignore duplicate-app errors; app is already initialized on native side.
+    if (e.code != 'duplicate-app') rethrow;
+  }
 }
 
 //Initialize local notifications
@@ -32,15 +38,32 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 void handleMessage(RemoteMessage message) {
-  var keyData = jsonDecode(message.data['key']);
-  if(keyData['key'] == 'call_student'){
-      Get.to(() => TakeChildrenPage(), transition: Transition.fadeIn);
+  // Debug log to inspect incoming tap payloads
+  try {
+    debugPrint('[FCM] handleMessage data: ${message.data}');
+  } catch (_) {}
+
+  // Our backend sends: data: { type: 'call_student' }
+  final type = message.data['type'] ?? '';
+  if (type == 'call_student') {
+    debugPrint('[FCM] handleMessage: navigate to TakeChildrenPage (call_student)');
+    Get.to(() => TakeChildrenPage(), transition: Transition.fadeIn);
   }
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Initialize Firebase; ignore duplicate-app error on hot restart.
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } on FirebaseException catch (e) {
+    if (e.code != 'duplicate-app') rethrow;
+  }
+
+  // Debug: show which Firebase project is in use
+  final opts = DefaultFirebaseOptions.currentPlatform;
+  debugPrint('[FirebaseOptions] projectId=${opts.projectId} senderId=${opts.messagingSenderId}');
+
   await GetStorage.init();
 
   Get.put(LocaleState());
@@ -49,6 +72,12 @@ Future<void> main() async {
   HttpOverrides.global = MyHttpOverrides(); // Support for Android 12+
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // Debug: log current FCM token (if available)
+  try {
+    final currentToken = await messaging.getToken();
+    debugPrint('[FCM] initial device token: ${currentToken ?? 'null'}');
+  } catch (_) {}
 
   // Request permission for iOS notifications
   await messaging.requestPermission(alert: true, badge: true, sound: true);
@@ -104,6 +133,9 @@ Future<void> main() async {
 
   // **Foreground Notification Handling**
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    debugPrint('[FCM] onMessage received: '
+        'notification=${message.notification?.title}/${message.notification?.body}, '
+        'data=${message.data}');
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
 

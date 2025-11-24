@@ -26,6 +26,14 @@ class InitListenNoti extends GetxController {
 
   getInit() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      // Detailed log for foreground notifications
+      try {
+        print('[InitListenNoti] onMessage: '
+            'title=${message.notification?.title}, '
+            'body=${message.notification?.body}, '
+            'data=${message.data}');
+      } catch (_) {}
+
       RemoteNotification notification = message.notification!;
       await flutterLocalNotificationsPlugin.show(
           notification.hashCode,
@@ -37,6 +45,10 @@ class InitListenNoti extends GetxController {
       }
     });
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      try {
+        print('[InitListenNoti] onMessageOpenedApp: data=${message.data}');
+      } catch (_) {}
+
       RemoteNotification notification = message.notification!;
       await flutterLocalNotificationsPlugin.show(
           notification.hashCode,
