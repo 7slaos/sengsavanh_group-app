@@ -11,8 +11,8 @@ import '../states/appverification.dart';
 export 'dart:convert';
 
 class Repository {
-  // String nuXtJsUrlApi = 'http://demo.citschool.net/';
-  String nuXtJsUrlApi = 'http://192.168.100.224:3001/';
+  String nuXtJsUrlApi = 'http://demo.citschool.net/';
+  // String nuXtJsUrlApi = 'http://192.168.100.224:3001/';
   String getFunctionAvailableByRole = 'api/get_function_available_by_role';
   String loginUser = 'api/Application/login_users';
   String logoutUser = 'api/Application/LoginApiController/logouts';
