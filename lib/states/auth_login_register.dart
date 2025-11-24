@@ -112,22 +112,20 @@ class AuthLoginRegister extends GetxController {
 
         // Navigate by resolved roleId (with default fallback to parent home)
         if (roleId == "p") {
-          Get.off(
-            const HomePage(),
+          Get.off(() => const HomePage(),
             transition: Transition.rightToLeft,
           );
         } else if (roleId == 's') {
           Get.off(() => const DashboardPage());
         } else if (roleId == 't') {
-          Get.off(const TeacherDashboardPage(), transition: Transition.fadeIn);
+          Get.off(() => const TeacherDashboardPage(), transition: Transition.fadeIn);
         } else if (roleId == '1') {
-          Get.off(const SuperAdminDashboard(), transition: Transition.fadeIn);
+          Get.off(() => const SuperAdminDashboard(), transition: Transition.fadeIn);
         } else if (roleId == '3' || roleId == '2') {
-          Get.off(const AdminSchoolDashboard(), transition: Transition.fadeIn);
+          Get.off(() => const AdminSchoolDashboard(), transition: Transition.fadeIn);
         } else {
           // default route to parent home when role cannot be determined
-          Get.off(
-            const HomePage(),
+          Get.off(() => const HomePage(),
             transition: Transition.rightToLeft,
           );
         }
@@ -183,9 +181,7 @@ class AuthLoginRegister extends GetxController {
 
       if (reslogout.statusCode == 200) {
         appVerification.removeToken();
-        Get.off(
-          const LoginPage(),
-        );
+        Get.off(() => const LoginPage());
         CustomDialogs().showToast(
           // ignore: deprecated_member_use
           backgroundColor: AppColor().green.withOpacity(0.6),

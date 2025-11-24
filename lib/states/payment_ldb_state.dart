@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:pathana_school_app/custom/app_color.dart';
 import 'package:pathana_school_app/models/bank_payment_model.dart';
@@ -94,6 +95,10 @@ class PaymentLdbState extends GetxController {
           'grant_type': 'client_credentials', // Form-data field
         },
       );
+      developer.log(
+        '[fetchAuthToken] status=${response.statusCode}',
+        name: 'PaymentLdbState',
+      );
       if (response.statusCode == 200) {
         accessTokens =
             jsonDecode(utf8.decode(response.bodyBytes))['access_token'];
@@ -110,12 +115,21 @@ class PaymentLdbState extends GetxController {
             bankId: bankId,
             type: type,
             totalDebt: totalDebt);
+      } else {
+        developer.log(
+          '[fetchAuthToken] body=${utf8.decode(response.bodyBytes)}',
+          name: 'PaymentLdbState',
+        );
       }
       // } else {
       //   print("Error: ${response.statusCode}, ${response.body}");
       // }
     } catch (e) {
-      print("Exception: $e");
+      developer.log(
+        '[fetchAuthToken] exception',
+        name: 'PaymentLdbState',
+        error: e,
+      );
     }
   }
 
@@ -232,6 +246,10 @@ class PaymentLdbState extends GetxController {
             'Content-Type': 'application/json',
           },
           body: bodyString);
+      developer.log(
+        '[initiateQRPayment] status=${response.statusCode} transactionId=$transactionIds ref2=$ref2s',
+        name: 'PaymentLdbState',
+      );
       // print('transactionId :$transactionIds');
       // print('datetime :$xClientTransactionDatetimes');
       // print('partnerId :$partnerId');
@@ -243,8 +261,16 @@ class PaymentLdbState extends GetxController {
       // print('taken :$accessToken');
       // print(response.body);
       if (response.statusCode == 200) {
+        developer.log(
+          '[initiateQRPayment] body=${utf8.decode(response.bodyBytes)}',
+          name: 'PaymentLdbState',
+        );
         qrcodeLDBModel = QrcodeLDBModel.fromJson(
             jsonDecode(utf8.decode(response.bodyBytes))['dataResponse']);
+        developer.log(
+          '[initiateQRPayment] qrCode length=${qrcodeLDBModel?.qrCode?.length ?? 0} ref2=$ref2s',
+          name: 'PaymentLdbState',
+        );
         postUpdateTransactionIdPayment(
             id: id,
             type: type,
@@ -260,9 +286,18 @@ class PaymentLdbState extends GetxController {
             signature: signatures,
             reference2: ref2s,
             totalDebt: totalDebt);
+      } else {
+        developer.log(
+          '[initiateQRPayment] body=${utf8.decode(response.bodyBytes)}',
+          name: 'PaymentLdbState',
+        );
       }
     } catch (e) {
-      //print("Exception: $e");
+      developer.log(
+        '[initiateQRPayment] exception',
+        name: 'PaymentLdbState',
+        error: e,
+      );
     }
   }
 
@@ -324,11 +359,29 @@ class PaymentLdbState extends GetxController {
             },
             auth: true);
       }
+      developer.log(
+        '[postUpdateTransactionIdPayment] status=${res.statusCode} transactionId=$transactionIdPayment type=$type id=$id bankId=$bankId',
+        name: 'PaymentLdbState',
+      );
+      developer.log(
+        '[postUpdateTransactionIdPayment] body=${utf8.decode(res.bodyBytes)}',
+        name: 'PaymentLdbState',
+      );
       if (res.statusCode == 200) {
         checkQrcode = true;
         update();
+      } else {
+        developer.log(
+          '[postUpdateTransactionIdPayment] failed to persist QR transaction',
+          name: 'PaymentLdbState',
+        );
       }
     } catch (e) {
+      developer.log(
+        '[postUpdateTransactionIdPayment] exception',
+        name: 'PaymentLdbState',
+        error: e,
+      );
       CustomDialogs().showToast(
         // ignore: deprecated_member_use
         backgroundColor: AppColor().red.withOpacity(0.8),
@@ -353,6 +406,10 @@ class PaymentLdbState extends GetxController {
       required String type,
       required List<dynamic> cartList}) async {
     try {
+      developer.log(
+        '[checkPayment] start transactionId=$transactionId ref2=$reference2 amount=$amount type=$type',
+        name: 'PaymentLdbState',
+      );
       final res = await http.get(
           Uri.parse(
               'https://velab.ldblao.la/vboxConsumers/api/v1/qrpayment/$transactionId/inquiry.service?reference2=$reference2'),
@@ -366,8 +423,27 @@ class PaymentLdbState extends GetxController {
                 'keyId="key1",algorithm="hs2019",created=$created,expires=$expires,headers="digest (request-target) (created) x-client-transaction-id",signature="$signature"',
             'Content-Type': 'application/json',
           });
+      final resText = (() {
+        try {
+          return utf8.decode(res.bodyBytes);
+        } catch (_) {
+          return res.body;
+        }
+      })();
+      developer.log(
+        '[checkPayment] status=${res.statusCode} body=$resText',
+        name: 'PaymentLdbState',
+      );
       if (res.statusCode == 200) {
-        final decodedJson = jsonDecode(utf8.decode(res.bodyBytes));
+        final decodedJson = jsonDecode(resText);
+        if (decodedJson is Map && decodedJson['status'] == '05') {
+          // Inquiry empty - keep waiting without showing error
+          developer.log(
+            '[checkPayment] status 05 (INQUIRY_TXN_EMPTY) - waiting',
+            name: 'PaymentLdbState',
+          );
+          return;
+        }
         final dataResponse = decodedJson['dataResponse'];
         final txnItems = (dataResponse is Map<String, dynamic>)
             ? dataResponse['txnItem']
@@ -377,6 +453,10 @@ class PaymentLdbState extends GetxController {
           final paymentRef =
               (first['paymentReference'] ?? '').toString().trim();
           if (paymentRef.isEmpty) {
+            developer.log(
+              '[checkPayment] missing paymentReference in txnItem',
+              name: 'PaymentLdbState',
+            );
             CustomDialogs().showToast(
               backgroundColor: AppColor().red.withOpacity(0.8),
               text: 'something_went_wrong',
@@ -393,10 +473,11 @@ class PaymentLdbState extends GetxController {
               cartList: cartList);
         } else {
           // Unexpected response shape (no txnItem list)
-          CustomDialogs().showToast(
-            backgroundColor: AppColor().red.withOpacity(0.8),
-            text: 'something_went_wrong',
+          developer.log(
+            '[checkPayment] unexpected payload, txnItem missing or empty',
+            name: 'PaymentLdbState',
           );
+          // Do not toast, just keep waiting/polling
         }
       } else {
         CustomDialogs().showToast(
@@ -405,6 +486,11 @@ class PaymentLdbState extends GetxController {
         );
       }
     } catch (e) {
+      developer.log(
+        '[checkPayment] exception',
+        name: 'PaymentLdbState',
+        error: e,
+      );
       CustomDialogs().showToast(
         backgroundColor: AppColor().red.withOpacity(0.8),
         text: 'something_went_wrong',
@@ -420,6 +506,10 @@ class PaymentLdbState extends GetxController {
       String? note,
       required List<dynamic> cartList}) async {
     try {
+      developer.log(
+        '[postPayment] start type=$type id=$id paymentId=$paymentId amount=$amount',
+        name: 'PaymentLdbState',
+      );
       var res;
       if (type == 'one') {
         res = await repository.post(
@@ -445,6 +535,10 @@ class PaymentLdbState extends GetxController {
             },
             auth: true);
       }
+      developer.log(
+        '[postPayment] status=${res.statusCode} body=${utf8.decode(res.bodyBytes)}',
+        name: 'PaymentLdbState',
+      );
       if (res.statusCode == 200) {
         if (type == 'many') {
           paymentState.clearData();
@@ -466,6 +560,11 @@ class PaymentLdbState extends GetxController {
             transition: Transition.fadeIn);
       }
     } catch (e) {
+      developer.log(
+        '[postPayment] exception',
+        name: 'PaymentLdbState',
+        error: e,
+      );
       CustomDialogs().showToast(
         // ignore: deprecated_member_use
         backgroundColor: AppColor().red.withOpacity(0.8),
@@ -485,11 +584,15 @@ class PaymentLdbState extends GetxController {
     required String digest,
     required String created,
     required String expires,
-    required String signature,
-    required String reference2,
-    required String status,
-  }) async {
+      required String signature,
+      required String reference2,
+      required String status,
+    }) async {
     try {
+      developer.log(
+        '[checkPaymentInfo] start transactionId=$transactionId status=$status',
+        name: 'PaymentLdbState',
+      );
       CustomDialogs().dialogLoading();
       var res = await http.get(
           Uri.parse(
@@ -504,6 +607,17 @@ class PaymentLdbState extends GetxController {
                 'keyId="key1",algorithm="hs2019",created=$created,expires=$expires,headers="digest (request-target) (created) x-client-transaction-id",signature="$signature"',
             'Content-Type': 'application/json',
           });
+      final resText = (() {
+        try {
+          return utf8.decode(res.bodyBytes);
+        } catch (_) {
+          return res.body;
+        }
+      })();
+      developer.log(
+        '[checkPaymentInfo] status=${res.statusCode} body=$resText',
+        name: 'PaymentLdbState',
+      );
       // print('6666666666666');
       // print(res.body);
       Get.back();
@@ -529,6 +643,10 @@ class PaymentLdbState extends GetxController {
               status: status);
         }
       } else {
+        developer.log(
+          '[checkPaymentInfo] unexpected status ${res.statusCode}',
+          name: 'PaymentLdbState',
+        );
         CustomDialogs().showToast(
           // ignore: deprecated_member_use
           backgroundColor: AppColor().red.withOpacity(0.8),
@@ -536,6 +654,11 @@ class PaymentLdbState extends GetxController {
         );
       }
     } catch (e) {
+      developer.log(
+        '[checkPaymentInfo] exception',
+        name: 'PaymentLdbState',
+        error: e,
+      );
       CustomDialogs().showToast(
         // ignore: deprecated_member_use
         backgroundColor: AppColor().red.withOpacity(0.8),
@@ -552,6 +675,10 @@ class PaymentLdbState extends GetxController {
     required String status,
   }) async {
     try {
+      developer.log(
+        '[checkPaymentTransaction] start transactionId=$transactionIdPayment type=$type status=$status id=$id',
+        name: 'PaymentLdbState',
+      );
       var res = await repository.post(
           url: '${repository.nuXtJsUrlApi}api/Application/PaymentApiController/checkPaymentTransaction',
           body: {
@@ -562,6 +689,10 @@ class PaymentLdbState extends GetxController {
           },
           auth: true);
       Get.back();
+      developer.log(
+        '[checkPaymentTransaction] status=${res.statusCode} body=${utf8.decode(res.bodyBytes)}',
+        name: 'PaymentLdbState',
+      );
       if (res.statusCode == 200) {
         if (type == 'ok') {
           CustomDialogs().showToast(
@@ -592,6 +723,11 @@ class PaymentLdbState extends GetxController {
         );
       }
     } catch (e) {
+      developer.log(
+        '[checkPaymentTransaction] exception',
+        name: 'PaymentLdbState',
+        error: e,
+      );
       CustomDialogs().showToast(
         // ignore: deprecated_member_use
         backgroundColor: AppColor().red.withOpacity(0.8),

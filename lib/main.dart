@@ -76,8 +76,14 @@ Future<void> main() async {
   // Debug: log current FCM token (if available)
   try {
     final currentToken = await messaging.getToken();
-    debugPrint('[FCM] initial device token: ${currentToken ?? 'null'}');
+    debugPrint(
+        '[FCM] initial device token: ${currentToken ?? 'null'} (projectId=${opts.projectId})');
   } catch (_) {}
+
+  // Log token refresh events to verify FCM registration stays valid
+  FirebaseMessaging.instance.onTokenRefresh.listen((token) {
+    debugPrint('[FCM] token refreshed: $token (projectId=${opts.projectId})');
+  });
 
   // Request permission for iOS notifications
   await messaging.requestPermission(alert: true, badge: true, sound: true);
@@ -156,6 +162,8 @@ Future<void> main() async {
         payload: message.data['type'],
       );
     }
+
+    debugPrint('[FCM] ✅ Foreground notification displayed to user.');
   });
 
   // **Background Message Handling**

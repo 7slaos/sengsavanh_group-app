@@ -40,6 +40,9 @@ class InitListenNoti extends GetxController {
           (notification.title ?? '').tr,
           (notification.body ?? '').tr,
           _platformChannelSpecifics);
+      try {
+        print('[InitListenNoti] ✅ Local notification displayed (foreground).');
+      } catch (_) {}
       if (Get.currentRoute == '/TakeChildrenPage') {
         callStudentState.getData('1', 'noti');
       }

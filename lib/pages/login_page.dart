@@ -51,10 +51,10 @@ class _LoginPageState extends State<LoginPage> {
     }); // Build number
   }
 
-  checkversion() async {
+    checkversion() async {
     final newVer = NewVersionPlus(
-        androidId: "com.pathana.school.app",
-        iOSId: "com.pathana.sSchool.App",
+        androidId: "com.sschoolapp.s_school_app",
+        iOSId: "com.sschoolapp.sSchoolApp",
         iOSAppStoreCountry: 'LA');
     final status = await newVer.getVersionStatus();
     if (status != null && status.canUpdate) {

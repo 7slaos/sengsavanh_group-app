@@ -12,12 +12,12 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.pathana.school.app"
+    namespace "com.sschoolapp.s_school_app"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
     defaultConfig {
-        applicationId "com.pathana.school.app"
+        applicationId "com.sschoolapp.s_school_app"
         minSdkVersion flutter.minSdkVersion
         targetSdk flutter.targetSdkVersion
         versionCode flutter.versionCode

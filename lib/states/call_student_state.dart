@@ -125,8 +125,12 @@ class CallStudentState extends GetxController {
       };
 
       if (kDebugMode) {
-        print('[CallStudentState] POST $url');
-        print('[CallStudentState] body: ${jsonEncode(payload)}');
+        debugPrint(
+            "[CallStudentState][push-call-students] POST $url (push notification trigger)");
+        debugPrint(
+            "[CallStudentState][push-call-students] body: ${jsonEncode(payload)}");
+        debugPrint(
+            "[CallStudentState][push-call-students] selected student ids: ${callstudentList.map((e) => e['id']).toList()}");
       }
 
       var response = await http.post(
@@ -151,8 +155,14 @@ class CallStudentState extends GetxController {
             return response.body;
           }
         })();
-        print('[CallStudentState] status: ${response.statusCode}');
-        print('[CallStudentState] response: $text');
+        debugPrint(
+            '[CallStudentState][push-call-students] status: ${response.statusCode}');
+        debugPrint(
+            '[CallStudentState][push-call-students] response: $text');
+        if (response.statusCode == 200) {
+          debugPrint(
+              '[CallStudentState][push-call-students] ✅ Backend accepted push request; FCM delivery should follow.');
+        }
       }
 
       // print(jsonDecode(response.body));
