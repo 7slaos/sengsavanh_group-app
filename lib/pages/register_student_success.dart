@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/models/register_student_mode.dart';
-import 'package:pathana_school_app/pages/login_page.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/models/register_student_mode.dart';
+import 'package:multiple_school_app/pages/login_page.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 class RegisterStudentSuccess extends StatefulWidget {
   final RegisterStudentModel data;
@@ -58,6 +58,17 @@ class _RegisterStudentSuccessState extends State<RegisterStudentSuccess> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CustomText(
+                      text: 'ກະລຸນາລໍຖ້າໂຮງຮຽນອານຸມັດ',
+                      fontSize: fixSize(0.015, context),
+                      color: appColor.mainColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
                 Center(
                     child: Icon(
                   Icons.check_circle_outline,
@@ -181,76 +192,7 @@ class _RegisterStudentSuccessState extends State<RegisterStudentSuccess> {
                   fontSize: fixSize(0.0165, context),
                 ),
                 const Divider(),
-                CustomText(
-                  text: 'religion',
-                  fontSize: fixSize(0.0135, context),
-                  color: appColor.grey,
-                ),
-                CustomText(
-                  text: CheckLang(nameLa: widget.data.religionLa ?? '', nameEn: widget.data.religionEn ?? '', nameCn: widget.data.religionEn ?? '').toString(),
-                  fontSize: fixSize(0.0165, context),
-                ),
-                const Divider(),
-                CustomText(
-                  text: 'nationality',
-                  fontSize: fixSize(0.0135, context),
-                  color: appColor.grey,
-                ),
-                CustomText(
-                  text: CheckLang(nameLa: widget.data.nationalityLa ?? '', nameEn: widget.data.nationalityEn ?? '', nameCn: widget.data.nationalityEn ?? '').toString(),
-                  fontSize: fixSize(0.0165, context),
-                ),
-                const Divider(),
-                CustomText(
-                  text: 'group_language',
-                  fontSize: fixSize(0.0135, context),
-                  color: appColor.grey,
-                ),
-                CustomText(
-                  text: CheckLang(nameLa: widget.data.groupLanguageLa ?? '', nameEn: widget.data.groupLanguageEn ?? '', nameCn: widget.data.groupLanguageEn ?? '').toString(),
-                  fontSize: fixSize(0.0165, context),
-                ),
-                const Divider(),
-                CustomText(
-                  text: 'ethnicity',
-                  fontSize: fixSize(0.0135, context),
-                  color: appColor.grey,
-                ),
-                CustomText(
-                  text: CheckLang(nameLa: widget.data.ethnicityLa ?? '', nameEn: widget.data.ethnicityEn ?? '', nameCn: widget.data.ethnicityEn ?? '').toString(),
-                  fontSize: fixSize(0.0165, context),
-                ),
-                const Divider(),
-                CustomText(
-                  text: 'special_health',
-                  fontSize: fixSize(0.0135, context),
-                  color: appColor.grey,
-                ),
-                CustomText(
-                  text: CheckLang(nameLa: widget.data.specialHealthLa ?? '', nameEn: widget.data.specialHealthEn ?? '', nameCn: widget.data.specialHealthEn ?? '').toString(),
-                  fontSize: fixSize(0.0165, context),
-                ),
-                const Divider(),
-                CustomText(
-                  text: 'living',
-                  fontSize: fixSize(0.0135, context),
-                  color: appColor.grey,
-                ),
-                CustomText(
-                  text: CheckLang(nameLa: widget.data.livingLa ?? '', nameEn: widget.data.livingEn ?? '', nameCn: widget.data.livingEn ?? '').toString(),
-                  fontSize: fixSize(0.0165, context),
-                ),
-                const Divider(),
-                CustomText(
-                  text: 'Blood_type',
-                  fontSize: fixSize(0.0135, context),
-                  color: appColor.grey,
-                ),
-                CustomText(
-                  text: CheckLang(nameLa: widget.data.bloodGroupLa ?? '', nameEn: widget.data.bloodGroupEn ?? '', nameCn: widget.data.bloodGroupEn ?? '').toString(),
-                  fontSize: fixSize(0.0165, context),
-                ),
-                const Divider(),
+                // Hidden: religion, nationality, language group, ethnicity, special health, living, blood type per request
                 CustomText(
                   text: 'parent_data',
                   fontSize: fixSize(0.0135, context),

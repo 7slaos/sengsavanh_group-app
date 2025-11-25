@@ -7,10 +7,10 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/models/check_student_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/checkin-out-student/check_in_out_student_state.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/models/check_student_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/checkin-out-student/check_in_out_student_state.dart';
 
 class CameraScanPageState extends GetxController {
   AppColor appColors = AppColor();

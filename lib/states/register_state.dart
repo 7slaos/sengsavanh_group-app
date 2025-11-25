@@ -1,27 +1,28 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/models/home_model.dart';
-import 'package:pathana_school_app/models/package_model.dart';
-import 'package:pathana_school_app/models/profile_student_record_model.dart';
-import 'package:pathana_school_app/models/profiled_model.dart';
-import 'package:pathana_school_app/models/province_model.dart';
-import 'package:pathana_school_app/models/register_school_model.dart';
-import 'package:pathana_school_app/models/register_student_mode.dart';
-import 'package:pathana_school_app/pages/login_page.dart';
-import 'package:pathana_school_app/pages/register_student_success.dart';
-import 'package:pathana_school_app/states/address_state.dart';
-import 'package:pathana_school_app/states/appverification.dart';
-import 'package:pathana_school_app/states/home_state.dart';
-import 'package:pathana_school_app/states/profile_student_state.dart';
-import 'package:pathana_school_app/states/update_images_profile_state.dart';
-import 'package:pathana_school_app/widgets/button_widget.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/models/home_model.dart';
+import 'package:multiple_school_app/models/package_model.dart';
+import 'package:multiple_school_app/models/profile_student_record_model.dart';
+import 'package:multiple_school_app/models/profiled_model.dart';
+import 'package:multiple_school_app/models/province_model.dart';
+import 'package:multiple_school_app/models/register_school_model.dart';
+import 'package:multiple_school_app/models/register_student_mode.dart';
+import 'package:multiple_school_app/pages/login_page.dart';
+import 'package:multiple_school_app/pages/register_student_success.dart';
+import 'package:multiple_school_app/states/address_state.dart';
+import 'package:multiple_school_app/states/appverification.dart';
+import 'package:multiple_school_app/states/home_state.dart';
+import 'package:multiple_school_app/states/profile_student_state.dart';
+import 'package:multiple_school_app/states/update_images_profile_state.dart';
+import 'package:multiple_school_app/widgets/button_widget.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 import '../repositorys/repository.dart';
 import 'package:http/http.dart' as http;
 
@@ -310,13 +311,16 @@ class RegisterState extends GetMaterialController {
   }) async {
     CustomDialogs().dialogLoading();
     try {
-      var uri = Uri.parse('${rep.nuXtJsUrlApi}api/Application/LoginApiController/register_student');
-      var request = http.MultipartRequest('POST', uri);
-      request.headers.addAll({
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${appVerification.token}',
-      });
-      request.fields.addAll({
+      String? base64Image;
+      if (fileImage != null) {
+        final bytes = await fileImage.readAsBytes();
+        final mime = fileImage.path.toLowerCase().endsWith('.png')
+            ? 'image/png'
+            : 'image/jpeg';
+        base64Image = 'data:$mime;base64,${base64Encode(bytes)}';
+      }
+
+      final payload = {
         'branch_id': branchId,
         'gender': gender,
         'firstname': firstname,
@@ -340,18 +344,29 @@ class RegisterState extends GetMaterialController {
         'pro_id': proId ?? '',
         'personal_talent': personalTalent ?? '',
         'phone': phone,
-        'apple_setting': appleSetting ?? ''
-      });
-      if (fileImage != null) {
-        var picture =
-            await http.MultipartFile.fromPath('profile_image', fileImage.path);
-        request.files.add(picture);
+        'apple_setting': appleSetting ?? '',
+      };
+      if (base64Image != null) {
+        payload['profile_image'] = base64Image;
       }
-      var response = await request.send().timeout(const Duration(seconds: 120));
+      if (kDebugMode) {
+        print('[register_student] payload: $payload');
+      }
+
+      final uri = Uri.parse(
+          '${rep.nuXtJsUrlApi}api/Application/LoginApiController/register_student');
+      final response = await http
+          .post(uri,
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ${appVerification.token}',
+              },
+              body: jsonEncode(payload))
+          .timeout(const Duration(seconds: 120));
+
       Get.back();
-      var responseBody = await response.stream.bytesToString();
-      // print('2222222222222222222222222222222222222222222');
-      // print(jsonDecode(responseBody));
+      final responseBody = response.body;
       if (response.statusCode == 200) {
         addressState.clearData();
         clearData();
@@ -382,6 +397,7 @@ class RegisterState extends GetMaterialController {
         backgroundColor: AppColor().red,
         text: 'something_went_wrong'.tr,
       );
+ 
     }
   }
 

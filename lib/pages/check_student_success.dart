@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/models/check_student_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/payment_state.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/models/check_student_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/payment_state.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 class CheckStudentSuccess extends StatefulWidget {
   final CheckStudentModel data;

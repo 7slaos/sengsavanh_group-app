@@ -1,10 +1,10 @@
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/functions/format_price.dart';
-import 'package:pathana_school_app/models/score_student_model.dart';
-import 'package:pathana_school_app/states/about_score_state.dart';
-import 'package:pathana_school_app/widgets/button_widget.dart';
-import 'package:pathana_school_app/widgets/custom_app_bar.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/functions/format_price.dart';
+import 'package:multiple_school_app/models/score_student_model.dart';
+import 'package:multiple_school_app/states/about_score_state.dart';
+import 'package:multiple_school_app/widgets/button_widget.dart';
+import 'package:multiple_school_app/widgets/custom_app_bar.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

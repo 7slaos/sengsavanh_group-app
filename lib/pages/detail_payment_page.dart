@@ -1,24 +1,24 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/functions/format_price.dart';
-import 'package:pathana_school_app/models/history_model.dart';
-import 'package:pathana_school_app/pages/generate_qrcode_payment.dart';
-import 'package:pathana_school_app/pages/generate_qrcode_payment_ldb.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/appverification.dart';
-import 'package:pathana_school_app/states/date_picker_state.dart';
-import 'package:pathana_school_app/states/detail_payment_state.dart';
-import 'package:pathana_school_app/states/history_payment_state.dart';
-import 'package:pathana_school_app/states/home_state.dart';
-import 'package:pathana_school_app/states/payment_ldb_state.dart';
-import 'package:pathana_school_app/states/payment_state.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/functions/format_price.dart';
+import 'package:multiple_school_app/models/history_model.dart';
+import 'package:multiple_school_app/pages/generate_qrcode_payment.dart';
+import 'package:multiple_school_app/pages/generate_qrcode_payment_ldb.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/appverification.dart';
+import 'package:multiple_school_app/states/date_picker_state.dart';
+import 'package:multiple_school_app/states/detail_payment_state.dart';
+import 'package:multiple_school_app/states/history_payment_state.dart';
+import 'package:multiple_school_app/states/home_state.dart';
+import 'package:multiple_school_app/states/payment_ldb_state.dart';
+import 'package:multiple_school_app/states/payment_state.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/widgets/print_bill_widget.dart';
+import 'package:multiple_school_app/widgets/print_bill_widget.dart';
 
 // ignore: must_be_immutable
 class DetailPaymentPage extends StatefulWidget {

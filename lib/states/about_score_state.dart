@@ -1,13 +1,13 @@
 import 'package:intl/intl.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/models/my_classe_model.dart';
-import 'package:pathana_school_app/models/score_children_model.dart';
-import 'package:pathana_school_app/models/score_list_model.dart';
-import 'package:pathana_school_app/models/score_student_model.dart';
-import 'package:pathana_school_app/models/student_score_model.dart';
-import 'package:pathana_school_app/models/subject_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/models/my_classe_model.dart';
+import 'package:multiple_school_app/models/score_children_model.dart';
+import 'package:multiple_school_app/models/score_list_model.dart';
+import 'package:multiple_school_app/models/score_student_model.dart';
+import 'package:multiple_school_app/models/student_score_model.dart';
+import 'package:multiple_school_app/models/subject_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

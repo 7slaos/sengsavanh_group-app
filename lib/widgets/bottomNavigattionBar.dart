@@ -1,8 +1,8 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/states/home_state.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/states/home_state.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 class BottomnavigattionbarWidget extends StatefulWidget {
   const BottomnavigattionbarWidget({super.key});

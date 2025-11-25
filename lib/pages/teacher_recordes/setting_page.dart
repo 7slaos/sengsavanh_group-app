@@ -1,13 +1,13 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/pages/change_language_page.dart';
-import 'package:pathana_school_app/pages/profile_page.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/profile_teacher_recorde.dart';
-import 'package:pathana_school_app/states/appverification.dart';
-import 'package:pathana_school_app/states/auth_login_register.dart';
-import 'package:pathana_school_app/states/home_state.dart';
-import 'package:pathana_school_app/widgets/custom_app_bar.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/pages/change_language_page.dart';
+import 'package:multiple_school_app/pages/profile_page.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/profile_teacher_recorde.dart';
+import 'package:multiple_school_app/states/appverification.dart';
+import 'package:multiple_school_app/states/auth_login_register.dart';
+import 'package:multiple_school_app/states/home_state.dart';
+import 'package:multiple_school_app/widgets/custom_app_bar.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/pages/adminschool/admin_school_dashboard.dart';
-import 'package:pathana_school_app/pages/login_page.dart';
-import 'package:pathana_school_app/pages/parent_recordes/home_page.dart';
-import 'package:pathana_school_app/pages/student_records/dashboard_page.dart';
-import 'package:pathana_school_app/pages/superadmin/super_admin_dashboard.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/dashboard_page.dart';
-import 'package:pathana_school_app/states/appverification.dart';
-import 'package:pathana_school_app/states/profile_state.dart';
-import 'package:pathana_school_app/states/profile_student_state.dart';
-import 'package:pathana_school_app/states/profile_teacher_state.dart';
-import 'package:pathana_school_app/states/register_state.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/pages/adminschool/admin_school_dashboard.dart';
+import 'package:multiple_school_app/pages/login_page.dart';
+import 'package:multiple_school_app/pages/parent_recordes/home_page.dart';
+import 'package:multiple_school_app/pages/student_records/dashboard_page.dart';
+import 'package:multiple_school_app/pages/superadmin/super_admin_dashboard.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/dashboard_page.dart';
+import 'package:multiple_school_app/states/appverification.dart';
+import 'package:multiple_school_app/states/profile_state.dart';
+import 'package:multiple_school_app/states/profile_student_state.dart';
+import 'package:multiple_school_app/states/profile_teacher_state.dart';
+import 'package:multiple_school_app/states/register_state.dart';
 import '../states/auth_login_register.dart';
 
 class SplashPage extends StatefulWidget {

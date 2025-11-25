@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/format_price.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/format_price.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
 import 'package:intl/intl.dart';
 
 class FollowMissingSchool extends StatefulWidget {

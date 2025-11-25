@@ -1,21 +1,21 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:math';
-import 'package:pathana_school_app/functions/format_price.dart';
+import 'package:multiple_school_app/functions/format_price.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/pages/select_myclasse_page.dart';
-import 'package:pathana_school_app/pages/detail_score_page.dart';
-import 'package:pathana_school_app/states/about_score_state.dart';
-import 'package:pathana_school_app/states/date_picker_state.dart';
-import 'package:pathana_school_app/states/history_payment_state.dart';
-import 'package:pathana_school_app/states/payment_state.dart';
-import 'package:pathana_school_app/widgets/button_widget.dart';
-import 'package:pathana_school_app/widgets/custom_app_bar.dart';
-import 'package:pathana_school_app/widgets/custom_circle_load.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/pages/select_myclasse_page.dart';
+import 'package:multiple_school_app/pages/detail_score_page.dart';
+import 'package:multiple_school_app/states/about_score_state.dart';
+import 'package:multiple_school_app/states/date_picker_state.dart';
+import 'package:multiple_school_app/states/history_payment_state.dart';
+import 'package:multiple_school_app/states/payment_state.dart';
+import 'package:multiple_school_app/widgets/button_widget.dart';
+import 'package:multiple_school_app/widgets/custom_app_bar.dart';
+import 'package:multiple_school_app/widgets/custom_circle_load.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 class ScorePage extends StatefulWidget {
   const ScorePage({super.key});

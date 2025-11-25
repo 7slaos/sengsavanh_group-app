@@ -1,5 +1,5 @@
 // teacher_record_models.dart
-import 'package:pathana_school_app/models/province_model.dart';
+import 'package:multiple_school_app/models/province_model.dart';
 class TeacherRcordeModels {
   int? id;
   String? code;

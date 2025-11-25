@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
 import 'package:flutter/material.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 class SubjectCard extends StatelessWidget {
   final String title;

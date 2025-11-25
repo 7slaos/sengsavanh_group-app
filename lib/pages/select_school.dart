@@ -1,16 +1,16 @@
 import 'dart:math';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/pages/register_page.dart';
-import 'package:pathana_school_app/pages/register_school.dart';
-import 'package:pathana_school_app/states/address_state.dart';
-import 'package:pathana_school_app/states/register_state.dart';
-import 'package:pathana_school_app/widgets/custom_circle_load.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/pages/register_page.dart';
+import 'package:multiple_school_app/pages/register_school.dart';
+import 'package:multiple_school_app/states/address_state.dart';
+import 'package:multiple_school_app/states/register_state.dart';
+import 'package:multiple_school_app/widgets/custom_circle_load.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/widgets/text_field_widget.dart';
+import 'package:multiple_school_app/widgets/text_field_widget.dart';
 
 class SelectSchool extends StatefulWidget {
   const SelectSchool({super.key});
@@ -60,9 +60,19 @@ class _SelectSchoolState extends State<SelectSchool> {
           backgroundColor: appColors.white,
           elevation: 4,
           surfaceTintColor: appColors.white,
-          title: CustomText(
-            text: 'register',
-            color: appColors.mainColor,
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.edit,
+                color: appColors.mainColor,
+              ),
+              const SizedBox(width: 6),
+              CustomText(
+                text: 'register',
+                color: appColors.mainColor,
+              ),
+            ],
           ),
           leading: IconButton(
             onPressed: () {
@@ -173,30 +183,31 @@ class _SelectSchoolState extends State<SelectSchool> {
               //     ],
               //   ),
               // ),
-              // registerState.index == 0
-              //     ? Padding(
-              //         padding: const EdgeInsets.all(8.0),
-              //         child: TextFielWidget(
-              //           width: size.width,
-              //           height: fixSize(0.05, context),
-              //           icon: Icons.person,
-              //           hintText: 'search'.tr,
-              //           fixSize: fixSize(0.05, context),
-              //           appColor: AppColor(),
-              //           controller: searchT,
-              //           borderRaduis: 5.0,
-              //           margin: 0,
-              //           textInputType: TextInputType.text,
-              //           iconPrefix: Icon(
-              //             Icons.search,
-              //             size: fixSize(0.025, context),
-              //           ),
-              //           onChanged: (p0) {
-              //             registerState.update();
-              //           },
-              //         ),
-              //       )
-              //     : SizedBox(height: 8.0),
+              if (registerState.index == 0)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFielWidget(
+                    width: size.width,
+                    height: fixSize(0.05, context),
+                    icon: Icons.person,
+                    hintText: 'search'.tr,
+                    fixSize: fixSize(0.05, context),
+                    appColor: AppColor(),
+                    controller: searchT,
+                    borderRaduis: 5.0,
+                    margin: 0,
+                    textInputType: TextInputType.text,
+                    iconPrefix: Icon(
+                      Icons.search,
+                      size: fixSize(0.025, context),
+                    ),
+                    onChanged: (p0) {
+                      setState(() {});
+                    },
+                  ),
+                )
+              else
+                SizedBox(height: 8.0),
               SizedBox(height: 10.0),
               GetBuilder<RegisterState>(builder: (getData) {
                 if (getData.checkSchool == false) {

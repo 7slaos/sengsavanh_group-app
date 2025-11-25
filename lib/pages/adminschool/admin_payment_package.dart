@@ -1,20 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/functions/format_price.dart';
-import 'package:pathana_school_app/models/admin_school_dashboard.dart';
-import 'package:pathana_school_app/models/bank_payment_model.dart';
-import 'package:pathana_school_app/pages/adminschool/generate_qrcode_payment_package.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/adminschool/admin_payment_package_state.dart';
-import 'package:pathana_school_app/states/payment_ldb_state.dart';
-import 'package:pathana_school_app/widgets/custom_circle_load.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
-import 'package:pathana_school_app/widgets/text_field_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/functions/format_price.dart';
+import 'package:multiple_school_app/models/admin_school_dashboard.dart';
+import 'package:multiple_school_app/models/bank_payment_model.dart';
+import 'package:multiple_school_app/pages/adminschool/generate_qrcode_payment_package.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/adminschool/admin_payment_package_state.dart';
+import 'package:multiple_school_app/states/payment_ldb_state.dart';
+import 'package:multiple_school_app/widgets/custom_circle_load.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/text_field_widget.dart';
 
 class AdminPaymentPackage extends StatefulWidget {
   const AdminPaymentPackage(

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/pages/adminschool/admin_payment_package.dart';
-import 'package:pathana_school_app/states/adminschool/admin_dashboard_state.dart';
-import 'package:pathana_school_app/states/adminschool/admin_tuition_fee_state.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/pages/adminschool/admin_payment_package.dart';
+import 'package:multiple_school_app/states/adminschool/admin_dashboard_state.dart';
+import 'package:multiple_school_app/states/adminschool/admin_tuition_fee_state.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 class UpdatePackage extends StatefulWidget {
   const UpdatePackage({super.key});

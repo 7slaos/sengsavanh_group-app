@@ -1,4 +1,4 @@
-import 'package:pathana_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
 import 'package:flutter/material.dart';
 
 class CategoryCard extends StatelessWidget {

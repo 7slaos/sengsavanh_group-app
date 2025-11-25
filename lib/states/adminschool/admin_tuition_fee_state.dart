@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:pathana_school_app/models/admin_tuition_fee_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/models/admin_tuition_fee_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
 
 class AdminTuitionFeeState extends GetxController {
   Repository rep = Repository();

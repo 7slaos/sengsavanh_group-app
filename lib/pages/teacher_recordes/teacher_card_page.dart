@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/profile_state.dart';
-import 'package:pathana_school_app/states/profile_teacher_state.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/profile_state.dart';
+import 'package:multiple_school_app/states/profile_teacher_state.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 

@@ -7,8 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/appverification.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/appverification.dart';
 
 // Enable this to force logs even in release/profile runs.
 const bool _logDeviceToken = true;

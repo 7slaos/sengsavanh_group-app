@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/states/call_student_state.dart';
-import 'package:pathana_school_app/states/home_state.dart';
-import 'package:pathana_school_app/widgets/button_widget.dart';
-import 'package:pathana_school_app/widgets/custom_circle_load.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/states/call_student_state.dart';
+import 'package:multiple_school_app/states/home_state.dart';
+import 'package:multiple_school_app/widgets/button_widget.dart';
+import 'package:multiple_school_app/widgets/custom_circle_load.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 class CallChildrenPage extends StatefulWidget {
   const CallChildrenPage({super.key});

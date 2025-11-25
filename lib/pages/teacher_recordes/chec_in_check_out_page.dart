@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/check_in_map_page.dart';
-import 'package:pathana_school_app/widgets/bottom_bill_bar.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/check_in_map_page.dart';
+import 'package:multiple_school_app/widgets/bottom_bill_bar.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 // Your controller & model
 import '../../states/checkin-out-student/check_in_out_student_state.dart';

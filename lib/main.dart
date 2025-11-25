@@ -1,19 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/pages/parent_recordes/take_children_page.dart';
-import 'package:pathana_school_app/pages/splash_page.dart';
-import 'package:pathana_school_app/states/appverification.dart';
-import 'package:pathana_school_app/states/translate.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/pages/parent_recordes/take_children_page.dart';
+import 'package:multiple_school_app/pages/splash_page.dart';
+import 'package:multiple_school_app/states/appverification.dart';
+import 'package:multiple_school_app/states/translate.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:pathana_school_app/firebase_options.dart';
+import 'package:multiple_school_app/firebase_options.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 const AndroidNotificationChannel androidNotificationChannel =
     AndroidNotificationChannel(

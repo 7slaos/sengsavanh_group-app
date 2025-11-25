@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/pages/camera_scan_page.dart';
-import 'package:pathana_school_app/states/checkin-out-student/check_in_out_student_state.dart';
-import 'package:pathana_school_app/states/profile_state.dart';
-import 'package:pathana_school_app/states/profile_student_state.dart';
-import 'package:pathana_school_app/states/profile_teacher_state.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/pages/camera_scan_page.dart';
+import 'package:multiple_school_app/states/checkin-out-student/check_in_out_student_state.dart';
+import 'package:multiple_school_app/states/profile_state.dart';
+import 'package:multiple_school_app/states/profile_student_state.dart';
+import 'package:multiple_school_app/states/profile_teacher_state.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 import '../../widgets/bottom_bill_bar.dart';
 

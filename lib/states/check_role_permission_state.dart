@@ -2,8 +2,8 @@
 
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/models/check_role_permission_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/models/check_role_permission_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
 
 class CheckRolePermissionState extends GetxController {
   final Repository rep = Repository();

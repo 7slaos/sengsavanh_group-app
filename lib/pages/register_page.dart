@@ -1,19 +1,19 @@
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/models/province_model.dart';
-import 'package:pathana_school_app/models/select_dropdown_model.dart';
-import 'package:pathana_school_app/pages/login_page.dart';
-import 'package:pathana_school_app/states/address_state.dart';
-import 'package:pathana_school_app/states/follow_student_state.dart';
-import 'package:pathana_school_app/states/register_state.dart';
-import 'package:pathana_school_app/states/update_images_profile_state.dart';
-import 'package:pathana_school_app/widgets/button_widget.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
-import 'package:pathana_school_app/widgets/text_field_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/models/province_model.dart';
+import 'package:multiple_school_app/models/select_dropdown_model.dart';
+import 'package:multiple_school_app/pages/login_page.dart';
+import 'package:multiple_school_app/states/address_state.dart';
+import 'package:multiple_school_app/states/follow_student_state.dart';
+import 'package:multiple_school_app/states/register_state.dart';
+import 'package:multiple_school_app/states/update_images_profile_state.dart';
+import 'package:multiple_school_app/widgets/button_widget.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/text_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -35,6 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
   StudentRecordDropdownModel? selectedValue;
   bool obscureText = true;
   bool obscureTextPasseord = true;
+  Map<String, String> _fieldErrors = {};
   @override
   void initState() {
     super.initState();
@@ -44,6 +45,60 @@ class _RegisterPageState extends State<RegisterPage> {
 
   getData() {
     addressState.getclassGroup(int.parse(widget.data.id.toString()));
+  }
+
+  Widget _errorText(BuildContext context, String key) {
+    final msg = _fieldErrors[key];
+    if (msg == null || msg.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 6),
+      child: CustomText(
+        text: msg,
+        color: appColor.red,
+        fontSize: fixSize(0.013, context),
+      ),
+    );
+  }
+
+  bool _validateForm(int appleSetting) {
+    final errors = <String, String>{};
+
+    if (registerState.firstname.text.trim().isEmpty) {
+      errors['firstname'] = 'ກະລຸນາປ້ອນຊື່';
+    }
+    if (registerState.lastname.text.trim().isEmpty) {
+      errors['lastname'] = 'ກະລຸນາປ້ອນນາມສະກຸນ';
+    }
+    if (registerState.parentData.text.trim().isEmpty) {
+      errors['parentData'] = 'ກະລຸນາປ້ອນຊື່ຜູ້ປົກຄອງ';
+    }
+    if (registerState.parentContact.text.trim().isEmpty) {
+      errors['parentContact'] = 'ກະລຸນາປ້ອນເບີໂທ';
+    } else if (registerState.parentContact.text.trim().length < 8) {
+      errors['parentContact'] = 'ເບີໂທ 8 ໂຕເລກ';
+    }
+    if (registerState.password.text.trim().isEmpty) {
+      errors['password'] = 'ກະລຸນາຕັ້ງລະຫັດ';
+    }
+    if (registerState.confirmPassword.text.trim().isEmpty) {
+      errors['confirmPassword'] = 'ກະລຸນາຢືນຢັນລະຫັດ';
+    } else if (registerState.password.text !=
+        registerState.confirmPassword.text) {
+      errors['confirmPassword'] = 'ລະຫັດບໍ່ກົງກັນ';
+    }
+    if (appleSetting == 0) {
+      if (registerState.selectclassGroup == null) {
+        errors['classGroup'] = 'ເລືອກລະດັບຊັ້ນ';
+      }
+      if (registerState.selectClass == null) {
+        errors['class'] = 'ເລືອກຫ້ອງຮຽນ';
+      }
+    }
+
+    setState(() {
+      _fieldErrors = errors;
+    });
+    return errors.isEmpty;
   }
 
   @override
@@ -94,10 +149,10 @@ class _RegisterPageState extends State<RegisterPage> {
                           pickImageState.showPickImage(context);
                         },
                         child: Container(
-                          width: size.width * 0.5,
-                          height: size.width *
-                              0.5, // Ensure it's a square for a perfect circle
+                          width: 150,
+                          height: 150,
                           decoration: BoxDecoration(
+                            shape: BoxShape.circle,
                             border:
                                 Border.all(width: 5, color: appColor.mainColor),
                             image: DecorationImage(
@@ -120,43 +175,105 @@ class _RegisterPageState extends State<RegisterPage> {
                       right: size.width * 0.02,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Radio(
-                              value: '2',
-                              groupValue: registerState.gender,
-                              activeColor: appColor.mainColor,
-                              onChanged: (v) =>
-                                  {registerState.updateGender(v.toString())},
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              registerState.updateGender('2');
+                              setState(() {});
+                            },
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 12.0),
+                              decoration: BoxDecoration(
+                                color: registerState.gender == '2'
+                                    ? appColor.mainColor.withOpacity(0.12)
+                                    : appColor.white,
+                                border: Border.all(
+                                  color: registerState.gender == '2'
+                                      ? appColor.mainColor
+                                      : appColor.grey,
+                                  width: 1.4,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: appColor.grey.withOpacity(0.2),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.male,
+                                    color: registerState.gender == '2'
+                                        ? appColor.mainColor
+                                        : appColor.grey,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  CustomText(
+                                    text: 'male',
+                                    color: registerState.gender == '2'
+                                        ? appColor.mainColor
+                                        : appColor.grey,
+                                  ),
+                                ],
+                              ),
                             ),
-                            CustomText(text: 'male')
-                          ],
+                          ),
                         ),
-                        Row(
-                          children: [
-                            Radio(
-                              value: '1',
-                              groupValue: registerState.gender,
-                              activeColor: appColor.mainColor,
-                              onChanged: (v) =>
-                                  {registerState.updateGender(v.toString())},
+                        SizedBox(width: size.width * 0.02),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              registerState.updateGender('1');
+                              setState(() {});
+                            },
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 12.0),
+                              decoration: BoxDecoration(
+                                color: registerState.gender == '1'
+                                    ? appColor.mainColor.withOpacity(0.12)
+                                    : appColor.white,
+                                border: Border.all(
+                                  color: registerState.gender == '1'
+                                      ? appColor.mainColor
+                                      : appColor.grey,
+                                  width: 1.4,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: appColor.grey.withOpacity(0.2),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.female,
+                                    color: registerState.gender == '1'
+                                        ? appColor.mainColor
+                                        : appColor.grey,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  CustomText(
+                                    text: 'female',
+                                    color: registerState.gender == '1'
+                                        ? appColor.mainColor
+                                        : appColor.grey,
+                                  ),
+                                ],
+                              ),
                             ),
-                            CustomText(text: 'female')
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Radio(
-                              value: '3',
-                              groupValue: registerState.gender,
-                              activeColor: appColor.mainColor,
-                              onChanged: (v) =>
-                                  {registerState.updateGender(v.toString())},
-                            ),
-                            CustomText(text: 'other')
-                          ],
+                          ),
                         ),
                       ],
                     ),
@@ -164,42 +281,60 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(
                     height: size.height * 0.02,
                   ),
-                  Row(
-                    children: [
-                      CustomText(text: '*', color: appColor.red),
-                      CustomText(
-                        text: 'firstname',
-                        fontSize: fSize * 0.0165,
-                      ),
-                    ],
-                  ),
                   TextFielWidget(
                     width: size.width,
                     height: fSize * 0.05,
-                    hintText: 'firstname'.tr,
+                    hintText: 'ຊື່ແທ້ນັກຮຽນ',
                     fixSize: fSize,
                     appColor: appColor,
                     controller: registerState.firstname,
                     borderRaduis: 5.0,
                     margin: 0,
                     fontSize: fixSize(0.0146, context),
+                    iconPrefix: (registerState.gender == '1' ||
+                            registerState.gender == '2')
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: CustomText(
+                              text: registerState.gender == '1'
+                                  ? 'ນາງ'
+                                  : 'ທ້າວ',
+                              color: appColor.mainColor,
+                              fontSize: fixSize(0.0146, context),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : null,
+                    textInputType: TextInputType.text,
+                  ),
+                  _errorText(context, 'firstname'),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  TextFielWidget(
+                    width: size.width,
+                    height: fSize * 0.05,
+                    hintText: 'ນາມສະກຸນນັກຮຽນ',
+                    fixSize: fSize,
+                    appColor: appColor,
+                    fontSize: fixSize(0.0146, context),
+                    controller: registerState.lastname,
+                    borderRaduis: 5.0,
+                    margin: 0,
                     iconPrefix: Icon(
                       Icons.person,
                       size: fSize * 0.02,
                     ),
                     textInputType: TextInputType.text,
                   ),
+                  _errorText(context, 'lastname'),
                   SizedBox(
                     height: size.height * 0.02,
-                  ),
-                  CustomText(
-                    text: 'nick_name',
-                    fontSize: fSize * 0.0165,
                   ),
                   TextFielWidget(
                     width: size.width,
                     height: fSize * 0.05,
-                    hintText: 'nick_name'.tr,
+                    hintText: 'ຊື່ຫຼິ້ນນັກຮຽນ',
                     fontSize: fixSize(0.0146, context),
                     fixSize: fSize,
                     appColor: appColor,
@@ -215,43 +350,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(
                     height: size.height * 0.02,
                   ),
-                  Row(
-                    children: [
-                      CustomText(text: '*', color: appColor.red),
-                      CustomText(
-                        text: 'lastname',
-                        fontSize: fSize * 0.0165,
-                      ),
-                    ],
-                  ),
-                  TextFielWidget(
-                    width: size.width,
-                    height: fSize * 0.05,
-                    hintText: 'lastname'.tr,
-                    fixSize: fSize,
-                    appColor: appColor,
-                    fontSize: fixSize(0.0146, context),
-                    controller: registerState.lastname,
-                    borderRaduis: 5.0,
-                    margin: 0,
-                    iconPrefix: Icon(
-                      Icons.person,
-                      size: fSize * 0.02,
-                    ),
-                    textInputType: TextInputType.text,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  CustomText(
-                    text: 'birtdaydate',
-                    fontSize: fSize * 0.0165,
-                  ),
                   TextFielWidget(
                     width: size.width,
                     height: fSize * 0.05,
                     icon: Icons.lock,
-                    hintText: 'birtdaydate'.tr,
+                    hintText: 'ວັນ/ເດືອນ/ປີ ເກີດນັກຮຽນ',
                     fontSize: fixSize(0.0146, context),
                     fixSize: fSize,
                     appColor: appColor,
@@ -268,23 +371,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       registerState.selectDate(context);
                     },
                   ),
+                  _errorText(context, 'province'),
                   SizedBox(
                     height: size.height * 0.02,
-                  ),
-                  Row(
-                    children: [
-                      CustomText(text: '*', color: appColor.red),
-                      CustomText(
-                        text: 'province',
-                        fontSize: fSize * 0.0165,
-                      ),
-                    ],
                   ),
                   DropdownButtonHideUnderline(
                     child: DropdownButton2<ProvinceDropdownModel>(
                       isExpanded: true,
                       hint: CustomText(
-                        text: 'province',
+                        text: 'ເລຶອກແຂວງ',
                         fontSize: fSize * 0.016,
                         color: Theme.of(context).hintColor,
                       ),
@@ -372,20 +467,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   if (addressState.districtList.isNotEmpty)
                     Column(
                       children: [
-                        Row(
-                          children: [
-                            CustomText(text: '*', color: appColor.red),
-                            CustomText(
-                              text: 'district',
-                              fontSize: fSize * 0.0165,
-                            ),
-                          ],
-                        ),
                         DropdownButtonHideUnderline(
                           child: DropdownButton2<DistrictDropdownModel>(
                             isExpanded: true,
                             hint: CustomText(
-                              text: 'district',
+                              text: 'ເລືອກເມືອງ',
                               fontSize: fSize * 0.016,
                               color: Theme.of(context).hintColor,
                             ),
@@ -470,26 +556,18 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ],
                     ),
+                  _errorText(context, 'district'),
                   SizedBox(
                     height: size.height * 0.02,
                   ),
                   if (addressState.villageList.isNotEmpty)
                     Column(
                       children: [
-                        Row(
-                          children: [
-                            CustomText(text: '*', color: appColor.red),
-                            CustomText(
-                              text: 'village',
-                              fontSize: fSize * 0.0165,
-                            ),
-                          ],
-                        ),
                         DropdownButtonHideUnderline(
                           child: DropdownButton2<VillageDropdownModel>(
                             isExpanded: true,
                             hint: CustomText(
-                              text: 'village',
+                              text: 'ເລືອກບ້ານ',
                               fontSize: fSize * 0.016,
                               color: Theme.of(context).hintColor,
                             ),
@@ -572,467 +650,471 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ],
                     ),
-                  CustomText(
-                    text: 'religion',
-                    fontSize: fSize * 0.0165,
-                  ),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton2<ReligionDropdownModel>(
-                      isExpanded: true,
-                      hint: CustomText(
-                        text: 'religion',
-                        fontSize: fSize * 0.016,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      items: getAdress.religiongroupList
-                          .map((item) => DropdownMenuItem(
-                                value: item,
-                                child: CustomText(
-                                  text: CheckLang(
-                                          nameLa: item.nameLa ?? '',
-                                          nameEn: item.nameEn)
-                                      .toString(),
-                                  fontSize: fSize * 0.016,
-                                ),
-                              ))
-                          .toList(),
-                      value: addressState.selectReligion,
-                      onChanged: (value) {
-                        addressState.updateDropdownReligion(value!);
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: fSize * 0.05,
-                        decoration: BoxDecoration(
-                          color: appColor.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: fixSize(0.0025, context),
-                              offset: const Offset(0, 1),
-                              color: appColor.grey,
-                            ),
-                          ],
+                  // Hidden optional fields per request.
+                  if (false) ...[
+                    CustomText(
+                      text: 'religion',
+                      fontSize: fSize * 0.0165,
+                    ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<ReligionDropdownModel>(
+                        isExpanded: true,
+                        hint: CustomText(
+                          text: 'religion',
+                          fontSize: fSize * 0.016,
+                          color: Theme.of(context).hintColor,
                         ),
-                      ),
-                      dropdownStyleData: const DropdownStyleData(
-                        maxHeight: 200,
-                      ),
-                      menuItemStyleData: MenuItemStyleData(
-                        height: size.height * 0.06,
-                      ),
-                      dropdownSearchData: DropdownSearchData(
-                        searchController: registerState.searchReligion,
-                        searchInnerWidgetHeight: 50,
-                        searchInnerWidget: Container(
-                          height: 50,
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 4,
-                            right: 8,
-                            left: 8,
-                          ),
-                          child: TextFormField(
-                            expands: true,
-                            maxLines: null,
-                            controller: registerState.searchReligion,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              hintText: '${'search'.tr}...',
-                              hintStyle: TextStyle(fontSize: fSize * 0.016),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                        searchMatchFn: (item, searchValue) {
-                          final nameLa =
-                              item.value?.nameLa?.toLowerCase() ?? '';
-                          final nameEn =
-                              item.value?.nameEn?.toLowerCase() ?? '';
-                          return nameLa.contains(searchValue.toLowerCase()) ||
-                              nameEn.contains(searchValue.toLowerCase());
+                        items: getAdress.religiongroupList
+                            .map((item) => DropdownMenuItem(
+                                  value: item,
+                                  child: CustomText(
+                                    text: CheckLang(
+                                            nameLa: item.nameLa ?? '',
+                                            nameEn: item.nameEn)
+                                        .toString(),
+                                    fontSize: fSize * 0.016,
+                                  ),
+                                ))
+                            .toList(),
+                        value: addressState.selectReligion,
+                        onChanged: (value) {
+                          addressState.updateDropdownReligion(value!);
                         },
+                        buttonStyleData: ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: fSize * 0.05,
+                          decoration: BoxDecoration(
+                            color: appColor.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: fixSize(0.0025, context),
+                                offset: const Offset(0, 1),
+                                color: appColor.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        dropdownStyleData: const DropdownStyleData(
+                          maxHeight: 200,
+                        ),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: size.height * 0.06,
+                        ),
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: registerState.searchReligion,
+                          searchInnerWidgetHeight: 50,
+                          searchInnerWidget: Container(
+                            height: 50,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 4,
+                              right: 8,
+                              left: 8,
+                            ),
+                            child: TextFormField(
+                              expands: true,
+                              maxLines: null,
+                              controller: registerState.searchReligion,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                hintText: '${'search'.tr}...',
+                                hintStyle: TextStyle(fontSize: fSize * 0.016),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            final nameLa =
+                                item.value?.nameLa?.toLowerCase() ?? '';
+                            final nameEn =
+                                item.value?.nameEn?.toLowerCase() ?? '';
+                            return nameLa.contains(searchValue.toLowerCase()) ||
+                                nameEn.contains(searchValue.toLowerCase());
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  CustomText(
-                    text: 'nationality',
-                    fontSize: fSize * 0.0165,
-                  ),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton2<NationalityDropdownModel>(
-                      isExpanded: true,
-                      hint: CustomText(
-                        text: 'nationality',
-                        fontSize: fSize * 0.016,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      items: getAdress.nationalityList
-                          .map((item) => DropdownMenuItem(
-                                value: item,
-                                child: CustomText(
-                                  text: CheckLang(
-                                          nameLa: item.nameLa ?? '',
-                                          nameEn: item.nameEn)
-                                      .toString(),
-                                  fontSize: fSize * 0.016,
-                                ),
-                              ))
-                          .toList(),
-                      value: addressState.selectNationality,
-                      onChanged: (value) {
-                        addressState.updateDropDownNationality(value!);
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: fSize * 0.05,
-                        decoration: BoxDecoration(
-                          color: appColor.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: fixSize(0.0025, context),
-                              offset: const Offset(0, 1),
-                              color: appColor.grey,
-                            ),
-                          ],
+                    SizedBox(
+                      height: size.height * 0.015,
+                    ),
+                    CustomText(
+                      text: 'nationality',
+                      fontSize: fSize * 0.0165,
+                    ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<NationalityDropdownModel>(
+                        isExpanded: true,
+                        hint: CustomText(
+                          text: 'nationality',
+                          fontSize: fSize * 0.016,
+                          color: Theme.of(context).hintColor,
                         ),
-                      ),
-                      dropdownStyleData: const DropdownStyleData(
-                        maxHeight: 200,
-                      ),
-                      menuItemStyleData: MenuItemStyleData(
-                        height: size.height * 0.06,
-                      ),
-                      dropdownSearchData: DropdownSearchData(
-                        searchController: registerState.searchNationality,
-                        searchInnerWidgetHeight: 50,
-                        searchInnerWidget: Container(
-                          height: 50,
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 4,
-                            right: 8,
-                            left: 8,
-                          ),
-                          child: TextFormField(
-                            expands: true,
-                            maxLines: null,
-                            controller: registerState.searchNationality,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              hintText: '${'search'.tr}...',
-                              hintStyle: TextStyle(fontSize: fSize * 0.016),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                        searchMatchFn: (item, searchValue) {
-                          final nameLa =
-                              item.value?.nameLa?.toLowerCase() ?? '';
-                          final nameEn =
-                              item.value?.nameEn?.toLowerCase() ?? '';
-                          return nameLa.contains(searchValue.toLowerCase()) ||
-                              nameEn.contains(searchValue.toLowerCase());
+                        items: getAdress.nationalityList
+                            .map((item) => DropdownMenuItem(
+                                  value: item,
+                                  child: CustomText(
+                                    text: CheckLang(
+                                            nameLa: item.nameLa ?? '',
+                                            nameEn: item.nameEn)
+                                        .toString(),
+                                    fontSize: fSize * 0.016,
+                                  ),
+                                ))
+                            .toList(),
+                        value: addressState.selectNationality,
+                        onChanged: (value) {
+                          addressState.updateDropDownNationality(value!);
                         },
+                        buttonStyleData: ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: fSize * 0.05,
+                          decoration: BoxDecoration(
+                            color: appColor.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: fixSize(0.0025, context),
+                                offset: const Offset(0, 1),
+                                color: appColor.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        dropdownStyleData: const DropdownStyleData(
+                          maxHeight: 200,
+                        ),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: size.height * 0.06,
+                        ),
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: registerState.searchNationality,
+                          searchInnerWidgetHeight: 50,
+                          searchInnerWidget: Container(
+                            height: 50,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 4,
+                              right: 8,
+                              left: 8,
+                            ),
+                            child: TextFormField(
+                              expands: true,
+                              maxLines: null,
+                              controller: registerState.searchNationality,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                hintText: '${'search'.tr}...',
+                                hintStyle: TextStyle(fontSize: fSize * 0.016),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            final nameLa =
+                                item.value?.nameLa?.toLowerCase() ?? '';
+                            final nameEn =
+                                item.value?.nameEn?.toLowerCase() ?? '';
+                            return nameLa.contains(searchValue.toLowerCase()) ||
+                                nameEn.contains(searchValue.toLowerCase());
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  CustomText(
-                    text: 'group_language',
-                    fontSize: fSize * 0.0165,
-                  ),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton2<LanguageGroupDropdownModel>(
-                      isExpanded: true,
-                      hint: CustomText(
-                        text: 'group_language',
-                        fontSize: fSize * 0.016,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      items: getAdress.languageGroupList
-                          .map((item) => DropdownMenuItem(
-                                value: item,
-                                child: CustomText(
-                                  text: CheckLang(
-                                          nameLa: item.nameLa ?? '',
-                                          nameEn: item.nameEn)
-                                      .toString(),
-                                  fontSize: fSize * 0.016,
-                                ),
-                              ))
-                          .toList(),
-                      value: addressState.selectlanguageGroup,
-                      onChanged: (value) {
-                        addressState.updateDropDownlanguageDrop(value!);
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: fSize * 0.05,
-                        decoration: BoxDecoration(
-                          color: appColor.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: fixSize(0.0025, context),
-                              offset: const Offset(0, 1),
-                              color: appColor.grey,
-                            ),
-                          ],
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    CustomText(
+                      text: 'group_language',
+                      fontSize: fSize * 0.0165,
+                    ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<LanguageGroupDropdownModel>(
+                        isExpanded: true,
+                        hint: CustomText(
+                          text: 'group_language',
+                          fontSize: fSize * 0.016,
+                          color: Theme.of(context).hintColor,
                         ),
-                      ),
-                      dropdownStyleData: const DropdownStyleData(
-                        maxHeight: 200,
-                      ),
-                      menuItemStyleData: MenuItemStyleData(
-                        height: size.height * 0.06,
-                      ),
-                      dropdownSearchData: DropdownSearchData(
-                        searchController: registerState.searchLanguageGroup,
-                        searchInnerWidgetHeight: 50,
-                        searchInnerWidget: Container(
-                          height: 50,
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 4,
-                            right: 8,
-                            left: 8,
-                          ),
-                          child: TextFormField(
-                            expands: true,
-                            maxLines: null,
-                            controller: registerState.searchLanguageGroup,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              hintText: '${'search'.tr}...',
-                              hintStyle: TextStyle(fontSize: fSize * 0.016),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                        searchMatchFn: (item, searchValue) {
-                          final nameLa =
-                              item.value?.nameLa?.toLowerCase() ?? '';
-                          final nameEn =
-                              item.value?.nameEn?.toLowerCase() ?? '';
-                          return nameLa.contains(searchValue.toLowerCase()) ||
-                              nameEn.contains(searchValue.toLowerCase());
+                        items: getAdress.languageGroupList
+                            .map((item) => DropdownMenuItem(
+                                  value: item,
+                                  child: CustomText(
+                                    text: CheckLang(
+                                            nameLa: item.nameLa ?? '',
+                                            nameEn: item.nameEn)
+                                        .toString(),
+                                    fontSize: fSize * 0.016,
+                                  ),
+                                ))
+                            .toList(),
+                        value: addressState.selectlanguageGroup,
+                        onChanged: (value) {
+                          addressState.updateDropDownlanguageDrop(value!);
                         },
+                        buttonStyleData: ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: fSize * 0.05,
+                          decoration: BoxDecoration(
+                            color: appColor.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: fixSize(0.0025, context),
+                                offset: const Offset(0, 1),
+                                color: appColor.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        dropdownStyleData: const DropdownStyleData(
+                          maxHeight: 200,
+                        ),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: size.height * 0.06,
+                        ),
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: registerState.searchLanguageGroup,
+                          searchInnerWidgetHeight: 50,
+                          searchInnerWidget: Container(
+                            height: 50,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 4,
+                              right: 8,
+                              left: 8,
+                            ),
+                            child: TextFormField(
+                              expands: true,
+                              maxLines: null,
+                              controller: registerState.searchLanguageGroup,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                hintText: '${'search'.tr}...',
+                                hintStyle: TextStyle(fontSize: fSize * 0.016),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            final nameLa =
+                                item.value?.nameLa?.toLowerCase() ?? '';
+                            final nameEn =
+                                item.value?.nameEn?.toLowerCase() ?? '';
+                            return nameLa.contains(searchValue.toLowerCase()) ||
+                                nameEn.contains(searchValue.toLowerCase());
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  CustomText(
-                    text: 'ethnicity',
-                    fontSize: fSize * 0.0165,
-                  ),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton2<EthnicGroupDropdownModel>(
-                      isExpanded: true,
-                      hint: CustomText(
-                        text: 'ethnicity',
-                        fontSize: fSize * 0.016,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      items: getAdress.ethnicityList
-                          .map((item) => DropdownMenuItem(
-                                value: item,
-                                child: CustomText(
-                                  text: CheckLang(
-                                          nameLa: item.nameLa ?? '',
-                                          nameEn: item.nameEn)
-                                      .toString(),
-                                  fontSize: fSize * 0.016,
-                                ),
-                              ))
-                          .toList(),
-                      value: addressState.selectEthinicity,
-                      onChanged: (value) {
-                        addressState.updateDropDownEthinicity(value!);
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: fSize * 0.05,
-                        decoration: BoxDecoration(
-                          color: appColor.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: fixSize(0.0025, context),
-                              offset: const Offset(0, 1),
-                              color: appColor.grey,
-                            ),
-                          ],
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    CustomText(
+                      text: 'ethnicity',
+                      fontSize: fSize * 0.0165,
+                    ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<EthnicGroupDropdownModel>(
+                        isExpanded: true,
+                        hint: CustomText(
+                          text: 'ethnicity',
+                          fontSize: fSize * 0.016,
+                          color: Theme.of(context).hintColor,
                         ),
-                      ),
-                      dropdownStyleData: const DropdownStyleData(
-                        maxHeight: 200,
-                      ),
-                      menuItemStyleData: MenuItemStyleData(
-                        height: size.height * 0.06,
-                      ),
-                      dropdownSearchData: DropdownSearchData(
-                        searchController: registerState.searchEthinicity,
-                        searchInnerWidgetHeight: 50,
-                        searchInnerWidget: Container(
-                          height: 50,
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 4,
-                            right: 8,
-                            left: 8,
-                          ),
-                          child: TextFormField(
-                            expands: true,
-                            maxLines: null,
-                            controller: registerState.searchEthinicity,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              hintText: '${'search'.tr}...',
-                              hintStyle: TextStyle(fontSize: fSize * 0.016),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                        searchMatchFn: (item, searchValue) {
-                          final nameLa =
-                              item.value?.nameLa?.toLowerCase() ?? '';
-                          final nameEn =
-                              item.value?.nameEn?.toLowerCase() ?? '';
-                          return nameLa.contains(searchValue.toLowerCase()) ||
-                              nameEn.contains(searchValue.toLowerCase());
+                        items: getAdress.ethnicityList
+                            .map((item) => DropdownMenuItem(
+                                  value: item,
+                                  child: CustomText(
+                                    text: CheckLang(
+                                            nameLa: item.nameLa ?? '',
+                                            nameEn: item.nameEn)
+                                        .toString(),
+                                    fontSize: fSize * 0.016,
+                                  ),
+                                ))
+                            .toList(),
+                        value: addressState.selectEthinicity,
+                        onChanged: (value) {
+                          addressState.updateDropDownEthinicity(value!);
                         },
+                        buttonStyleData: ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: fSize * 0.05,
+                          decoration: BoxDecoration(
+                            color: appColor.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: fixSize(0.0025, context),
+                                offset: const Offset(0, 1),
+                                color: appColor.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        dropdownStyleData: const DropdownStyleData(
+                          maxHeight: 200,
+                        ),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: size.height * 0.06,
+                        ),
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: registerState.searchEthinicity,
+                          searchInnerWidgetHeight: 50,
+                          searchInnerWidget: Container(
+                            height: 50,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 4,
+                              right: 8,
+                              left: 8,
+                            ),
+                            child: TextFormField(
+                              expands: true,
+                              maxLines: null,
+                              controller: registerState.searchEthinicity,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                hintText: '${'search'.tr}...',
+                                hintStyle: TextStyle(fontSize: fSize * 0.016),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            final nameLa =
+                                item.value?.nameLa?.toLowerCase() ?? '';
+                            final nameEn =
+                                item.value?.nameEn?.toLowerCase() ?? '';
+                            return nameLa.contains(searchValue.toLowerCase()) ||
+                                nameEn.contains(searchValue.toLowerCase());
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  CustomText(
-                    text: 'special_health',
-                    fontSize: fSize * 0.0165,
-                  ),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton2<SpecialHealthdownModel>(
-                      isExpanded: true,
-                      hint: CustomText(
-                        text: 'special_health',
-                        fontSize: fSize * 0.016,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      items: getAdress.specialHealthList
-                          .map((item) => DropdownMenuItem(
-                                value: item,
-                                child: CustomText(
-                                  text: CheckLang(
-                                          nameLa: item.nameLa ?? '',
-                                          nameEn: item.nameEn)
-                                      .toString(),
-                                  fontSize: fSize * 0.016,
-                                ),
-                              ))
-                          .toList(),
-                      value: addressState.selectspecialHealth,
-                      onChanged: (value) {
-                        addressState.updateDropDownspecialHealth(value!);
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: fSize * 0.05,
-                        decoration: BoxDecoration(
-                          color: appColor.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: fixSize(0.0025, context),
-                              offset: const Offset(0, 1),
-                              color: appColor.grey,
-                            ),
-                          ],
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    CustomText(
+                      text: 'special_health',
+                      fontSize: fSize * 0.0165,
+                    ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<SpecialHealthdownModel>(
+                        isExpanded: true,
+                        hint: CustomText(
+                          text: 'special_health',
+                          fontSize: fSize * 0.016,
+                          color: Theme.of(context).hintColor,
                         ),
-                      ),
-                      dropdownStyleData: const DropdownStyleData(
-                        maxHeight: 200,
-                      ),
-                      menuItemStyleData: MenuItemStyleData(
-                        height: size.height * 0.06,
-                      ),
-                      dropdownSearchData: DropdownSearchData(
-                        searchController: registerState.searchSpecialHealth,
-                        searchInnerWidgetHeight: 50,
-                        searchInnerWidget: Container(
-                          height: 50,
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 4,
-                            right: 8,
-                            left: 8,
-                          ),
-                          child: TextFormField(
-                            expands: true,
-                            maxLines: null,
-                            controller: registerState.searchSpecialHealth,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              hintText: '${'search'.tr}...',
-                              hintStyle: TextStyle(fontSize: fSize * 0.016),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                        searchMatchFn: (item, searchValue) {
-                          final nameLa =
-                              item.value?.nameLa?.toLowerCase() ?? '';
-                          final nameEn =
-                              item.value?.nameEn?.toLowerCase() ?? '';
-                          return nameLa.contains(searchValue.toLowerCase()) ||
-                              nameEn.contains(searchValue.toLowerCase());
+                        items: getAdress.specialHealthList
+                            .map((item) => DropdownMenuItem(
+                                  value: item,
+                                  child: CustomText(
+                                    text: CheckLang(
+                                            nameLa: item.nameLa ?? '',
+                                            nameEn: item.nameEn)
+                                        .toString(),
+                                    fontSize: fSize * 0.016,
+                                  ),
+                                ))
+                            .toList(),
+                        value: addressState.selectspecialHealth,
+                        onChanged: (value) {
+                          addressState.updateDropDownspecialHealth(value!);
                         },
+                        buttonStyleData: ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: fSize * 0.05,
+                          decoration: BoxDecoration(
+                            color: appColor.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: fixSize(0.0025, context),
+                                offset: const Offset(0, 1),
+                                color: appColor.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        dropdownStyleData: const DropdownStyleData(
+                          maxHeight: 200,
+                        ),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: size.height * 0.06,
+                        ),
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: registerState.searchSpecialHealth,
+                          searchInnerWidgetHeight: 50,
+                          searchInnerWidget: Container(
+                            height: 50,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 4,
+                              right: 8,
+                              left: 8,
+                            ),
+                            child: TextFormField(
+                              expands: true,
+                              maxLines: null,
+                              controller: registerState.searchSpecialHealth,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                hintText: '${'search'.tr}...',
+                                hintStyle: TextStyle(fontSize: fSize * 0.016),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            final nameLa =
+                                item.value?.nameLa?.toLowerCase() ?? '';
+                            final nameEn =
+                                item.value?.nameEn?.toLowerCase() ?? '';
+                            return nameLa.contains(searchValue.toLowerCase()) ||
+                                nameEn.contains(searchValue.toLowerCase());
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  if (appleSetting == 0) ...[
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                  ],
+                  // Hidden: residence field not used
+                  if (false) ...[
                     CustomText(
                       text: 'living',
                       fontSize: fSize * 0.0165,
@@ -1121,127 +1203,121 @@ class _RegisterPageState extends State<RegisterPage> {
                           },
                         ),
                       ),
-                    )
+                    ),
                   ],
                   SizedBox(
                     height: size.height * 0.02,
                   ),
-                  CustomText(
-                    text: 'Blood_type',
-                    fontSize: fixSize(0.0146, context),
-                  ),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton2<BloodGroupDropdownModel>(
-                      isExpanded: true,
-                      hint: CustomText(
-                        text: 'Blood_type',
-                        fontSize: fSize * 0.016,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      items: getAdress.bloodgroupList
-                          .map((item) => DropdownMenuItem(
-                                value: item,
-                                child: CustomText(
-                                  text: CheckLang(
-                                          nameLa: item.nameLa ?? '',
-                                          nameEn: item.nameEn)
-                                      .toString(),
-                                  fontSize: fSize * 0.016,
-                                ),
-                              ))
-                          .toList(),
-                      value: addressState.selectBloodGroup,
-                      onChanged: (value) {
-                        addressState.updateDropDownBloodGroup(value!);
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: fSize * 0.05,
-                        decoration: BoxDecoration(
-                          color: appColor.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: fixSize(0.0025, context),
-                              offset: const Offset(0, 1),
-                              color: appColor.grey,
-                            ),
-                          ],
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                      ),
-                      menuItemStyleData: MenuItemStyleData(
-                        height: size.height * 0.06,
-                      ),
-                      dropdownSearchData: DropdownSearchData(
-                        searchController: registerState.searchBloodGroup,
-                        searchInnerWidgetHeight: 60,
-                        searchInnerWidget: Container(
-                          height: 60,
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 4,
-                            right: 8,
-                            left: 8,
-                          ),
-                          child: TextFormField(
-                            expands: true,
-                            maxLines: null,
-                            controller: registerState.searchBloodGroup,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              hintText: '${'search'.tr}...',
-                              hintStyle: TextStyle(fontSize: fSize * 0.016),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                        searchMatchFn: (item, searchValue) {
-                          final nameLa =
-                              item.value?.nameLa?.toLowerCase() ?? '';
-                          final nameEn =
-                              item.value?.nameEn?.toLowerCase() ?? '';
-                          return nameLa.contains(searchValue.toLowerCase()) ||
-                              nameEn.contains(searchValue.toLowerCase());
-                        },
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  CustomText(
-                    text: 'personal_talent',
-                    fontSize: fixSize(0.0146, context),
-                  ),
-                  TextFielWidget(
-                    contentPadding: EdgeInsets.only(left: 5),
-                    height: fSize * 0.05,
-                    hintText: 'personal_talent'.tr,
-                    fixSize: fSize,
-                    appColor: appColor,
-                    controller: registerState.personalTalent,
-                    borderRaduis: 5.0,
-                    margin: 0,
-                    fontSize: fixSize(0.0146, context),
-                    textInputType: TextInputType.text,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  if (appleSetting == 0) ...[
+                  if (false) ...[
                     CustomText(
-                      text: 'SelectClass_group',
-                      fontSize: fSize * 0.0165,
+                      text: 'Blood_type',
+                      fontSize: fixSize(0.0146, context),
                     ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<BloodGroupDropdownModel>(
+                        isExpanded: true,
+                        hint: CustomText(
+                          text: 'Blood_type',
+                          fontSize: fSize * 0.016,
+                          color: Theme.of(context).hintColor,
+                        ),
+                        items: getAdress.bloodgroupList
+                            .map((item) => DropdownMenuItem(
+                                  value: item,
+                                  child: CustomText(
+                                    text: CheckLang(
+                                            nameLa: item.nameLa ?? '',
+                                            nameEn: item.nameEn)
+                                        .toString(),
+                                    fontSize: fSize * 0.016,
+                                  ),
+                                ))
+                            .toList(),
+                        value: addressState.selectBloodGroup,
+                        onChanged: (value) {
+                          addressState.updateDropDownBloodGroup(value!);
+                        },
+                        buttonStyleData: ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: fSize * 0.05,
+                          decoration: BoxDecoration(
+                            color: appColor.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: fixSize(0.0025, context),
+                                offset: const Offset(0, 1),
+                                color: appColor.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                        ),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: size.height * 0.06,
+                        ),
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: registerState.searchBloodGroup,
+                          searchInnerWidgetHeight: 60,
+                          searchInnerWidget: Container(
+                            height: 60,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 4,
+                              right: 8,
+                              left: 8,
+                            ),
+                            child: TextFormField(
+                              expands: true,
+                              maxLines: null,
+                              controller: registerState.searchBloodGroup,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                hintText: '${'search'.tr}...',
+                                hintStyle: TextStyle(fontSize: fSize * 0.016),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            final nameLa =
+                                item.value?.nameLa?.toLowerCase() ?? '';
+                            final nameEn =
+                                item.value?.nameEn?.toLowerCase() ?? '';
+                            return nameLa.contains(searchValue.toLowerCase()) ||
+                                nameEn.contains(searchValue.toLowerCase());
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    TextFielWidget(
+                      contentPadding: EdgeInsets.only(left: 5),
+                      height: fSize * 0.05,
+                      hintText: 'ຄວາມສາມາດພິເສດ ຫຼື ຄວາມສົນໃຈຂອງນັກຮຽນ',
+                      fixSize: fSize,
+                      appColor: appColor,
+                      controller: registerState.personalTalent,
+                      borderRaduis: 5.0,
+                      margin: 0,
+                      fontSize: fixSize(0.0146, context),
+                      textInputType: TextInputType.text,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.015,
+                    ),
+                  ],
+                  // if (appleSetting == 0) ...[
                     DropdownButtonHideUnderline(
                       child: DropdownButton2<ClassGroupDropdownModel>(
                         isExpanded: true,
@@ -1329,16 +1405,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                     ),
+                    _errorText(context, 'classGroup'),
                     if (getAdress.classList.isNotEmpty)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
                             height: size.height * 0.02,
-                          ),
-                          CustomText(
-                            text: 'Select_Class',
-                            fontSize: fSize * 0.0165,
                           ),
                           DropdownButtonHideUnderline(
                             child: DropdownButton2<ClassListDropdownModel>(
@@ -1427,15 +1500,13 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             ),
                           ),
+                          _errorText(context, 'class'),
                         ],
                       ),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
-                    CustomText(
-                      text: '${'phone'.tr}(${'student'.tr})',
-                      fontSize: fSize * 0.0165,
-                    ),
+                  _errorText(context, 'village'),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
                     Row(
                       children: [
                         Container(
@@ -1468,7 +1539,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: TextFielWidget(
                             height: fSize * 0.05,
                             icon: Icons.person,
-                            hintText: 'XXXXXXXX'.tr,
+                            hintText: 'ເບີໂທ 8 ໂຕເລກ',
                             fixSize: fSize,
                             appColor: appColor,
                             controller: registerState.phone,
@@ -1482,43 +1553,46 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ],
                     ),
-                  ],
-                  if (appleSetting == 0) ...[
+                  // ],
+                  // if (appleSetting == 0) ...[
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    CustomText(
-                      text: 'parent',
-                      fontSize: fSize * 0.0165,
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: appColor.mainColor.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: CustomText(
+                          text: 'ຂໍ້ມູນຜູ້ປົກຄອງເຂົ້າສູ່ລະບົບ',
+                          color: appColor.mainColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
                     ),
                     TextFielWidget(
                       contentPadding: EdgeInsets.only(left: 5),
                       height: fSize * 0.05,
-                      hintText: 'parent'.tr,
+                      hintText: 'ຊື່ຜູ້ປົກຄອງ',
                       fixSize: fSize,
-                      appColor: appColor,
-                      controller: registerState.parentData,
-                      borderRaduis: 5.0,
-                      margin: 0,
-                      fontSize: fixSize(0.0146, context),
-                      textInputType: TextInputType.text,
-                    ),
+                    appColor: appColor,
+                    controller: registerState.parentData,
+                    borderRaduis: 5.0,
+                    margin: 0,
+                    fontSize: fixSize(0.0146, context),
+                    textInputType: TextInputType.text,
+                  ),
+                    _errorText(context, 'parentData'),
                     SizedBox(
                       height: size.height * 0.02,
-                    )
-                  ],
-                  Row(
-                    children: [
-                      if(appleSetting == 0)
-                      CustomText(text: '*', color: appColor.red),
-                      CustomText(
-                        text: appleSetting == 1
-                            ? 'phone'
-                            : '${'phone'.tr}(${'parent'.tr})',
-                        fontSize: fSize * 0.0165,
-                      ),
-                    ],
-                  ),
+                    ),
+                  // ],
                   Row(
                     children: [
                       Container(
@@ -1551,7 +1625,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: TextFielWidget(
                           height: fSize * 0.05,
                           icon: Icons.person,
-                          hintText: 'XXXXXXXX'.tr,
+                          hintText: 'ເບີໂທ 8 ໂຕເລກ',
                           fixSize: fSize,
                           appColor: appColor,
                           controller: registerState.parentContact,
@@ -1565,99 +1639,95 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ],
                   ),
+                  _errorText(context, 'parentContact'),
                   SizedBox(
                     height: size.height * 0.02,
                   ),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomText(text: '*', color: appColor.red),
-                      CustomText(
-                        text: 'password',
-                        fontSize: fSize * 0.0165,
-                      ),
+                      Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextFielWidget(
+                                width: size.width,
+                              height: fSize * 0.05,
+                              icon: Icons.lock,
+                              hintText: 'ລະຫັດຜ່ານເຂົ້າໃຊ້',
+                              fontSize: fixSize(0.0146, context),
+                              fixSize: fSize,
+                              appColor: appColor,
+                              controller: registerState.password,
+                              borderRaduis: 5.0,
+                              margin: 0,
+                              iconPrefix: Icon(
+                                Icons.lock,
+                                size: fSize * 0.02,
+                              ),
+                              textInputType: TextInputType.visiblePassword,
+                              obscureText: obscureTextPasseord,
+                              iconSuffix: IconButton(
+                                icon: Icon(
+                                  obscureTextPasseord
+                                      ? Icons.visibility_off
+                                      : Icons.remove_red_eye,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    obscureTextPasseord =
+                                        !obscureTextPasseord;
+                                  });
+                                },
+                                ),
+                              ),
+                              _errorText(context, 'password'),
+                            ],
+                          ),
+                        ),
+                      SizedBox(width: size.width * 0.02),
+                      Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextFielWidget(
+                                width: size.width,
+                              height: fSize * 0.05,
+                              icon: Icons.lock,
+                              hintText: 'ຢືນຢັນລະຫັດຜ່ານ',
+                              fixSize: fSize,
+                              appColor: appColor,
+                              controller: registerState.confirmPassword,
+                              borderRaduis: 5.0,
+                              fontSize: fixSize(0.0146, context),
+                              margin: 0,
+                              iconPrefix: Icon(
+                                Icons.lock,
+                                size: fSize * 0.02,
+                              ),
+                              textInputType: TextInputType.visiblePassword,
+                              obscureText: obscureTextPasseord,
+                              iconSuffix: IconButton(
+                                icon: Icon(
+                                  obscureTextPasseord
+                                      ? Icons.visibility_off
+                                      : Icons.remove_red_eye,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    obscureTextPasseord =
+                                        !obscureTextPasseord;
+                                  });
+                                },
+                                ),
+                              ),
+                              _errorText(context, 'confirmPassword'),
+                            ],
+                          ),
+                        ),
                     ],
-                  ),
-                  TextFielWidget(
-                    width: size.width,
-                    height: fSize * 0.05,
-                    icon: Icons.lock,
-                    hintText: 'password'.tr,
-                    fontSize: fixSize(0.0146, context),
-                    fixSize: fSize,
-                    appColor: appColor,
-                    controller: registerState.password,
-                    borderRaduis: 5.0,
-                    margin: 0,
-                    iconPrefix: Icon(
-                      Icons.lock,
-                      size: fSize * 0.02,
-                    ),
-                    textInputType: TextInputType.visiblePassword,
-                    obscureText: obscureTextPasseord,
-                    iconSuffix: IconButton(
-                      icon: Icon(
-                        obscureTextPasseord
-                            ? Icons.visibility_off
-                            : Icons.remove_red_eye,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          if (obscureTextPasseord) {
-                            obscureTextPasseord = false;
-                          } else {
-                            obscureTextPasseord = true;
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  Row(
-                    children: [
-                      CustomText(text: '*', color: appColor.red),
-                      CustomText(
-                        text: 'confirm_password',
-                        fontSize: fSize * 0.0165,
-                      ),
-                    ],
-                  ),
-                  TextFielWidget(
-                    width: size.width,
-                    height: fSize * 0.05,
-                    icon: Icons.lock,
-                    hintText: 'confirm_password'.tr,
-                    fixSize: fSize,
-                    appColor: appColor,
-                    controller: registerState.confirmPassword,
-                    borderRaduis: 5.0,
-                    fontSize: fixSize(0.0146, context),
-                    margin: 0,
-                    iconPrefix: Icon(
-                      Icons.lock,
-                      size: fSize * 0.02,
-                    ),
-                    textInputType: TextInputType.visiblePassword,
-                    obscureText: obscureTextPasseord,
-                    iconSuffix: IconButton(
-                      icon: Icon(
-                        obscureTextPasseord
-                            ? Icons.visibility_off
-                            : Icons.remove_red_eye,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          if (obscureTextPasseord) {
-                            obscureTextPasseord = false;
-                          } else {
-                            obscureTextPasseord = true;
-                          }
-                        });
-                      },
-                    ),
                   ),
                   SizedBox(
                     height: size.height * 0.05,
@@ -1672,27 +1742,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       fontWeight: FontWeight.bold,
                       borderRadius: 5,
                       onPressed: () async {
-                        if (registerState.firstname.text.trim().isEmpty ||
-                            registerState.lastname.text.trim().isEmpty ||
-                            registerState.parentContact.text.trim().isEmpty ||
-                            registerState.password.text.trim().isEmpty ||
-                            addressState.selectProvince == null ||
-                            addressState.selectDistrict == null ||
-                            addressState.selectVillage == null) {
-                          CustomDialogs().showToast(
-                            // ignore: deprecated_member_use
-                              backgroundColor: appColor.red.withOpacity(0.8),
-                              text: 'please_enter_complete_information'.tr);
-                          return;
-                        }
-                        if (registerState.password.text !=
-                            registerState.confirmPassword.text) {
-                          CustomDialogs().showToast(
-                            // ignore: deprecated_member_use
-                              backgroundColor: appColor.red.withOpacity(0.8),
-                              text: 'password_not_match'.tr);
-                          return;
-                        }
+                        if (!_validateForm(appleSetting)) return;
                         registerState.registerStudent(
                             context: context,
                             gender: registerState.gender,
@@ -1709,9 +1759,12 @@ class _RegisterPageState extends State<RegisterPage> {
                             myClassid: registerState.selectClass != null
                                 ? registerState.selectClass!.id.toString()
                                 : '',
-                            villId: addressState.selectVillage!.id.toString(),
-                            disId: addressState.selectDistrict!.id.toString(),
-                            proId: addressState.selectProvince!.id.toString(),
+                            villId: addressState.selectVillage?.id.toString() ??
+                                '',
+                            disId: addressState.selectDistrict?.id.toString() ??
+                                '',
+                            proId: addressState.selectProvince?.id.toString() ??
+                                '',
                             parentData: registerState.parentData.text,
                             parentContact:
                             '20${registerState.parentContact.text}',

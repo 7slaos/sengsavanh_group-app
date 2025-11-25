@@ -2,11 +2,11 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/models/call_student_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/appverification.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/models/call_student_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/appverification.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
 import 'package:http/http.dart' as http;
 
 class CallStudentState extends GetxController {

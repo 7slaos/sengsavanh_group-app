@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:pathana_school_app/pages/login_page.dart';
+import 'package:multiple_school_app/pages/login_page.dart';
 
 
 import '../states/appverification.dart';
@@ -11,7 +11,7 @@ import '../states/appverification.dart';
 export 'dart:convert';
 
 class Repository {
-  String nuXtJsUrlApi = 'http://demo.citschool.net/';
+  String nuXtJsUrlApi = 'https://www.citschool.net/';
   // String nuXtJsUrlApi = 'http://192.168.100.224:3001/';
   String getFunctionAvailableByRole = 'api/get_function_available_by_role';
   String loginUser = 'api/Application/login_users';

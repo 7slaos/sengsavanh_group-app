@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/functions/format_price.dart';
-import 'package:pathana_school_app/widgets/custom_circle_load.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/functions/format_price.dart';
+import 'package:multiple_school_app/widgets/custom_circle_load.dart';
 
 class PrintBillWidget extends StatefulWidget {
   final List<Map<String, dynamic>> data;

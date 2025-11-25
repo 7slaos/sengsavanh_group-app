@@ -1,10 +1,10 @@
 import 'package:image_picker/image_picker.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/models/profile_teacher_recorde_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/appverification.dart';
-import 'package:pathana_school_app/states/register_state.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/models/profile_teacher_recorde_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/appverification.dart';
+import 'package:multiple_school_app/states/register_state.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;

@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:pathana_school_app/models/follow_student_detail_model.dart';
-import 'package:pathana_school_app/models/select_dropdown_model.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/follow_student_detail_page.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
-import 'package:pathana_school_app/states/dashboard_teacher_state.dart';
+import 'package:multiple_school_app/models/follow_student_detail_model.dart';
+import 'package:multiple_school_app/models/select_dropdown_model.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/follow_student_detail_page.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/states/dashboard_teacher_state.dart';
 
 import '../repositorys/repository.dart';
 

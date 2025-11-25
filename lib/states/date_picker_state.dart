@@ -1,5 +1,5 @@
-import 'package:pathana_school_app/functions/format_date.dart';
-import 'package:pathana_school_app/functions/format_month.dart';
+import 'package:multiple_school_app/functions/format_date.dart';
+import 'package:multiple_school_app/functions/format_month.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

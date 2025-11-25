@@ -1,21 +1,21 @@
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/models/home_model.dart';
-import 'package:pathana_school_app/models/province_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/address_state.dart';
-import 'package:pathana_school_app/states/profile_student_state.dart';
-import 'package:pathana_school_app/states/register_state.dart';
-import 'package:pathana_school_app/states/update_images_profile_state.dart';
-import 'package:pathana_school_app/widgets/button_widget.dart';
-import 'package:pathana_school_app/widgets/custom_circle_load.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/models/home_model.dart';
+import 'package:multiple_school_app/models/province_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/address_state.dart';
+import 'package:multiple_school_app/states/profile_student_state.dart';
+import 'package:multiple_school_app/states/register_state.dart';
+import 'package:multiple_school_app/states/update_images_profile_state.dart';
+import 'package:multiple_school_app/widgets/button_widget.dart';
+import 'package:multiple_school_app/widgets/custom_circle_load.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 import '../../widgets/text_field_widget.dart';
 
 class StudentProfilePage extends StatefulWidget {

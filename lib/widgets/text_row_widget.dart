@@ -1,5 +1,5 @@
 
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 import 'package:flutter/material.dart';
 
 class TextRowWidget extends StatefulWidget {

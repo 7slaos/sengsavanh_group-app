@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/format_price.dart';
-import 'package:pathana_school_app/models/paymentinfo_model.dart';
-import 'package:pathana_school_app/states/payment_state.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/format_price.dart';
+import 'package:multiple_school_app/models/paymentinfo_model.dart';
+import 'package:multiple_school_app/states/payment_state.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 class PaymentSuccess extends StatefulWidget {
   final String paymentId;
