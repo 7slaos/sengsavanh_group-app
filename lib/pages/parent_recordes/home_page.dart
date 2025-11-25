@@ -1,9 +1,9 @@
-import 'package:pathana_school_app/pages/history_payment_page.dart';
-import 'package:pathana_school_app/pages/parent_recordes/dashboard_parent_page.dart';
-import 'package:pathana_school_app/pages/parent_recordes/view_score_children_page.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/setting_page.dart';
-import 'package:pathana_school_app/states/home_state.dart';
-import 'package:pathana_school_app/widgets/bottomNavigattionBar.dart';
+import 'package:multiple_school_app/pages/history_payment_page.dart';
+import 'package:multiple_school_app/pages/parent_recordes/dashboard_parent_page.dart';
+import 'package:multiple_school_app/pages/parent_recordes/view_score_children_page.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/setting_page.dart';
+import 'package:multiple_school_app/states/home_state.dart';
+import 'package:multiple_school_app/widgets/bottomNavigattionBar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

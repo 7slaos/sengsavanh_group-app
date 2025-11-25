@@ -1,7 +1,7 @@
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/functions/custom_date_picker.dart';
-import 'package:pathana_school_app/widgets/custom_date_widget.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/functions/custom_date_picker.dart';
+import 'package:multiple_school_app/widgets/custom_date_widget.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';

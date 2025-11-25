@@ -1,4 +1,4 @@
-import 'package:pathana_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
 import 'package:get/get.dart';
 // import 'package:http/http.dart' as http;
 

@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/models/admin_student_model.dart';
-import 'package:pathana_school_app/models/confirm_register_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/models/admin_student_model.dart';
+import 'package:multiple_school_app/models/confirm_register_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
 
 class AdminStudentsState extends GetxController {
   Repository rep = Repository();

@@ -1,22 +1,22 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/pages/change_language_page.dart';
-import 'package:pathana_school_app/pages/student_records/profile_page.dart';
-import 'package:pathana_school_app/pages/student_records/score_student_page.dart';
-import 'package:pathana_school_app/pages/student_records/student_card_page.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/check_in_map_page.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/dashboard_page.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/address_state.dart';
-import 'package:pathana_school_app/states/appverification.dart';
-import 'package:pathana_school_app/states/auth_login_register.dart';
-import 'package:pathana_school_app/states/profile_student_state.dart';
-import 'package:pathana_school_app/states/register_state.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
-import 'package:pathana_school_app/widgets/subject_card_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/pages/change_language_page.dart';
+import 'package:multiple_school_app/pages/student_records/profile_page.dart';
+import 'package:multiple_school_app/pages/student_records/score_student_page.dart';
+import 'package:multiple_school_app/pages/student_records/student_card_page.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/check_in_map_page.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/dashboard_page.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/address_state.dart';
+import 'package:multiple_school_app/states/appverification.dart';
+import 'package:multiple_school_app/states/auth_login_register.dart';
+import 'package:multiple_school_app/states/profile_student_state.dart';
+import 'package:multiple_school_app/states/register_state.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/subject_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

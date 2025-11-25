@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/widgets/custom_app_bar.dart';
-import 'package:pathana_school_app/states/camera_scan_state.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/widgets/custom_app_bar.dart';
+import 'package:multiple_school_app/states/camera_scan_state.dart';
 
 class CameraScanPage extends StatelessWidget {
   CameraScanPage({super.key, required this.type, this.student_records_id, this.id});

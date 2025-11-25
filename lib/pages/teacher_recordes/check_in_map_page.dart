@@ -10,10 +10,10 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/scan_result_page.dart';
-import 'package:pathana_school_app/states/profile_state.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/scan_result_page.dart';
+import 'package:multiple_school_app/states/profile_state.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
 
 import '../../functions/determine_postion.dart';
 import '../../states/checkin-out-student/check_in_out_student_state.dart';

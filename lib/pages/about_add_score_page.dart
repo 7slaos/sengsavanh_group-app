@@ -1,17 +1,17 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/models/my_classe_model.dart';
-import 'package:pathana_school_app/models/subject_model.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/states/about_score_state.dart';
-import 'package:pathana_school_app/states/date_picker_state.dart';
-import 'package:pathana_school_app/widgets/button_icon_widget.dart';
-import 'package:pathana_school_app/widgets/custom_circle_load.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
-import 'package:pathana_school_app/widgets/drop_down_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/models/my_classe_model.dart';
+import 'package:multiple_school_app/models/subject_model.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/states/about_score_state.dart';
+import 'package:multiple_school_app/states/date_picker_state.dart';
+import 'package:multiple_school_app/widgets/button_icon_widget.dart';
+import 'package:multiple_school_app/widgets/custom_circle_load.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

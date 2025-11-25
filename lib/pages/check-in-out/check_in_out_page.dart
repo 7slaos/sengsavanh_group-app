@@ -4,9 +4,9 @@
 // import 'package:geolocator/geolocator.dart';
 // import 'package:get/get.dart';
 // import 'package:intl/intl.dart';
-// import 'package:pathana_school_app/pages/check-in-out/select_who_go_with.dart';
-// import 'package:pathana_school_app/states/appverification.dart';
-// import 'package:pathana_school_app/states/camera_scan_state.dart';
+// import 'package:multiple_school_app/pages/check-in-out/select_who_go_with.dart';
+// import 'package:multiple_school_app/states/appverification.dart';
+// import 'package:multiple_school_app/states/camera_scan_state.dart';
 // import '../../custom/app_color.dart';
 // import '../../custom/app_size.dart';
 // import '../../functions/determine_postion.dart';
@@ -15,7 +15,7 @@
 // import '../../widgets/button_widget.dart';
 // import '../../widgets/custom_dialog.dart';
 // import '../camera_scan_page.dart';
-// import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+// import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 //
 // class CheckInOutPage extends StatefulWidget {
 //   const CheckInOutPage({super.key, this.type = 'teacher'});

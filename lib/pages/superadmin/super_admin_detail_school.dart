@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/check_lang.dart';
-import 'package:pathana_school_app/functions/format_price.dart';
-import 'package:pathana_school_app/models/admin_schools_model.dart';
-import 'package:pathana_school_app/models/branch_model.dart';
-import 'package:pathana_school_app/states/adminschool/admin_dashboard_state.dart';
-import 'package:pathana_school_app/states/appverification.dart';
-import 'package:pathana_school_app/states/superadmin/super_admin_state.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
-import 'package:pathana_school_app/widgets/drop_down_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/check_lang.dart';
+import 'package:multiple_school_app/functions/format_price.dart';
+import 'package:multiple_school_app/models/admin_schools_model.dart';
+import 'package:multiple_school_app/models/branch_model.dart';
+import 'package:multiple_school_app/states/adminschool/admin_dashboard_state.dart';
+import 'package:multiple_school_app/states/appverification.dart';
+import 'package:multiple_school_app/states/superadmin/super_admin_state.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/drop_down_widget.dart';
 
 class SuperAdminDetailSchool extends StatefulWidget {
   const SuperAdminDetailSchool({super.key, this.data, this.branchid});

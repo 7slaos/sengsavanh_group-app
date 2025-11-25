@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:pathana_school_app/states/translate.dart';
+import 'package:multiple_school_app/states/translate.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';

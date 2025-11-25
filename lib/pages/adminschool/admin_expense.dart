@@ -2,19 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/functions/format_price.dart';
-import 'package:pathana_school_app/models/expense_category_model.dart';
-import 'package:pathana_school_app/states/adminschool/admin_expense_state.dart';
-import 'package:pathana_school_app/states/superadmin/super_admin_state.dart';
-import 'package:pathana_school_app/states/update_images_profile_state.dart';
-import 'package:pathana_school_app/widgets/custom_circle_load.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/functions/format_price.dart';
+import 'package:multiple_school_app/models/expense_category_model.dart';
+import 'package:multiple_school_app/states/adminschool/admin_expense_state.dart';
+import 'package:multiple_school_app/states/superadmin/super_admin_state.dart';
+import 'package:multiple_school_app/states/update_images_profile_state.dart';
+import 'package:multiple_school_app/widgets/custom_circle_load.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
 
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
-import 'package:pathana_school_app/widgets/drop_down_widget.dart';
-import 'package:pathana_school_app/widgets/shimmer_listview.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/drop_down_widget.dart';
+import 'package:multiple_school_app/widgets/shimmer_listview.dart';
 
 import '../../widgets/button_widget.dart';
 

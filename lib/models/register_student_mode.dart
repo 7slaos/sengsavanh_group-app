@@ -102,7 +102,7 @@ class RegisterStudentModel {
     personalTalent = json['personal_talent'];
     livingLa = json['living_la'];
     livingEn = json['living_en'];
-    admissionNumber = json['admission_number'].toString();
+    admissionNumber = json['admission_number']?.toString() ?? '';
     admissionDate = json['admission_date'];
     parentData = json['parent_data'];
     parentContact = json['parent_contact'];

@@ -1,17 +1,17 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/custom/app_size.dart';
-import 'package:pathana_school_app/models/follow_student_detail_model.dart';
-import 'package:pathana_school_app/models/select_dropdown_model.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/follow_student_detail_page.dart';
-import 'package:pathana_school_app/states/about_score_state.dart';
-import 'package:pathana_school_app/states/dashboard_teacher_state.dart';
-import 'package:pathana_school_app/states/follow_student_state.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
-import 'package:pathana_school_app/widgets/drop_down_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/custom/app_size.dart';
+import 'package:multiple_school_app/models/follow_student_detail_model.dart';
+import 'package:multiple_school_app/models/select_dropdown_model.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/follow_student_detail_page.dart';
+import 'package:multiple_school_app/states/about_score_state.dart';
+import 'package:multiple_school_app/states/dashboard_teacher_state.dart';
+import 'package:multiple_school_app/states/follow_student_state.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/widgets/drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

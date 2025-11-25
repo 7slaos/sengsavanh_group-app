@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/models/check_payment_model.dart';
-import 'package:pathana_school_app/models/laoqr_model.dart';
-import 'package:pathana_school_app/models/paymentinfo_model.dart';
-import 'package:pathana_school_app/pages/payment_success.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/services/service_api.dart';
-import 'package:pathana_school_app/states/history_payment_state.dart';
-import 'package:pathana_school_app/widgets/custom_dialog.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/models/check_payment_model.dart';
+import 'package:multiple_school_app/models/laoqr_model.dart';
+import 'package:multiple_school_app/models/paymentinfo_model.dart';
+import 'package:multiple_school_app/pages/payment_success.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/services/service_api.dart';
+import 'package:multiple_school_app/states/history_payment_state.dart';
+import 'package:multiple_school_app/widgets/custom_dialog.dart';
 
 class PaymentState extends GetxController {
   final monthYear = TextEditingController();

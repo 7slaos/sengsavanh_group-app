@@ -1,9 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/main.dart';
-import 'package:pathana_school_app/states/call_student_state.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/main.dart';
+import 'package:multiple_school_app/states/call_student_state.dart';
 
 class InitListenNoti extends GetxController {
   CallStudentState callStudentState = Get.put(CallStudentState());

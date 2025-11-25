@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pathana_school_app/custom/app_color.dart';
-import 'package:pathana_school_app/pages/mark_student/list_check_student_page.dart';
-import 'package:pathana_school_app/pages/teacher_recordes/dashboard_page.dart';
-import 'package:pathana_school_app/repositorys/repository.dart';
-import 'package:pathana_school_app/widgets/custom_text_widget.dart';
+import 'package:multiple_school_app/custom/app_color.dart';
+import 'package:multiple_school_app/pages/mark_student/list_check_student_page.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/dashboard_page.dart';
+import 'package:multiple_school_app/repositorys/repository.dart';
+import 'package:multiple_school_app/widgets/custom_text_widget.dart';
 
 class SubjectTeacherPage extends StatefulWidget {
   const SubjectTeacherPage({super.key});
