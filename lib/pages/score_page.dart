@@ -1,13 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:math';
-import 'package:multiple_school_app/functions/format_price.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:multiple_school_app/custom/app_color.dart';
 import 'package:multiple_school_app/custom/app_size.dart';
-import 'package:multiple_school_app/pages/select_myclasse_page.dart';
 import 'package:multiple_school_app/pages/detail_score_page.dart';
+import 'package:multiple_school_app/models/subject_teacher_student_model.dart';
+import 'package:multiple_school_app/pages/teacher_recordes/dashboard_page.dart';
 import 'package:multiple_school_app/states/about_score_state.dart';
 import 'package:multiple_school_app/states/date_picker_state.dart';
 import 'package:multiple_school_app/states/history_payment_state.dart';
@@ -30,22 +30,55 @@ class _ScorePageState extends State<ScorePage> {
   final DatePickerState datePickerState = Get.put(DatePickerState());
   final AboutScoreState scoreState = Get.put(AboutScoreState());
   HistoryPaymentState historyPaymentState = Get.put(HistoryPaymentState());
-  final searchT = TextEditingController();
 
   int indexCategory = 0;
   int classId = 0;
   String monthly = '${DateTime.now().month}/${DateTime.now().year}';
+  String selectedClassName = '';
+  int tabIndex = 0; // 0: ຕາຕະລາງກວດກາ, 1: ຕາຕະລາງສອບເສັງ
 
   @override
   void initState() {
     super.initState();
     datePickerState.setCurrentMonth();
-    getData('0', '0');
+    if (historyPaymentState.selectedMonth2.isEmpty ||
+        historyPaymentState.selectedYear1.isEmpty) {
+      historyPaymentState.setCurrentMonth();
+    }
+    _loadSubjectsForTab(tabIndex);
   }
 
-  Future<void> getData(String? id, String monthly) async {
-    await Future.delayed(Duration.zero);
-    await scoreState.getAllScore(id, monthly);
+  int _scheduleTypeForTab(int index) {
+    // API accepts schedule types 2 or 3; map tabs to those values.
+    return index == 0 ? 2 : 3;
+  }
+
+  Future<void> _loadSubjectsForTab(int index) async {
+    final type = _scheduleTypeForTab(index);
+    scoreState.resetTeacherSubjects();
+    await scoreState.fetchTeacherSubjects(type);
+    await _prefetchStudentsForActiveMonth();
+  }
+
+  Future<void> _prefetchStudentsForActiveMonth() async {
+    final monthStr = historyPaymentState.selectedMonth2.isNotEmpty
+        ? historyPaymentState.selectedMonth2
+        : DateTime.now().month.toString().padLeft(2, '0');
+    final yearStr = historyPaymentState.selectedYear1.isNotEmpty
+        ? historyPaymentState.selectedYear1
+        : DateTime.now().year.toString();
+    final month = int.tryParse(monthStr) ?? DateTime.now().month;
+    final year = int.tryParse(yearStr) ?? DateTime.now().year;
+    final currentSubjects = scoreState.teacherSubjects;
+    for (final subj in currentSubjects) {
+      await scoreState.fetchSubjectTeacherStudents(
+        subjectTeacherId: subj.subjectTeacherId,
+        scheduleId: subj.scheduleId,
+        year: year,
+        month: month,
+        force: true,
+      );
+    }
   }
 
   @override
@@ -70,7 +103,14 @@ class _ScorePageState extends State<ScorePage> {
       backgroundColor: appColor.white,
       appBar: CustomAppBar(
         leading: InkWell(
-          onTap: Get.back,
+          onTap: () {
+            // Ensure back always lands on teacher dashboard
+            if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/') {
+              Get.back();
+            } else {
+              Get.offAll(() => const TeacherDashboardPage());
+            }
+          },
           child: Icon(
             Icons.arrow_back,
             color: appColor.white,
@@ -82,266 +122,415 @@ class _ScorePageState extends State<ScorePage> {
         color: appColor.white,
         titleSize: fSize * 0.02,
         title: "score",
-        actions: [
-          IconButton(
-              onPressed: () {
-                showBottomDialog();
-              },
-              icon: Icon(
-                Icons.calendar_month,
-                color: appColor.white,
-              ))
-        ],
+        actions: const [],
       ),
       body: Column(
         children: [
-          const SizedBox(
-            height: 5,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextFormField(
-              controller: searchT, // Attach the controller
-              onChanged: (value) => {scoreState.update()},
-              decoration: InputDecoration(
-                suffixIcon: Icon(Icons.search),
-                labelText: 'search'.tr,
-                hintStyle: TextStyle(fontSize: fSize * 0.015),
-                labelStyle: TextStyle(fontSize: fSize * 0.015),
-                fillColor: appColor.white.withOpacity(0.98),
-                filled: true,
-
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(width: 0.5, color: appColor.grey),
-                ),
-
-                // Customize the focused border
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 0.5, // Customize width
-                    color:
-                        appColor.mainColor, // Change this to your desired color
-                  ),
-                ),
-                // Optionally, you can also change the enabled border
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 0.5,
-                    color: appColor.grey,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // Score List
           Expanded(
             child: GetBuilder<AboutScoreState>(
-              builder: (getList_) {
-                if (!getList_.checkClasse || !getList_.checkScoreList) {
+              builder: (state) {
+                final currentMonthStr = DateTime.now().month.toString().padLeft(2, '0');
+                final currentYearStr = DateTime.now().year.toString();
+                final monthOptions = historyPaymentState.monthList.isNotEmpty
+                    ? historyPaymentState.monthList
+                    : List.generate(12, (i) => '${i + 1}'.padLeft(2, '0'));
+                final yearOptions = historyPaymentState.yearList.isNotEmpty
+                    ? historyPaymentState.yearList
+                    : [currentYearStr];
+                final activeMonth = historyPaymentState.selectedMonth2.isNotEmpty
+                    ? historyPaymentState.selectedMonth2
+                    : (monthOptions.contains(currentMonthStr)
+                        ? currentMonthStr
+                        : monthOptions.first);
+                final activeYear = historyPaymentState.selectedYear1.isNotEmpty
+                    ? historyPaymentState.selectedYear1
+                    : (yearOptions.contains(currentYearStr)
+                        ? currentYearStr
+                        : yearOptions.first);
+                final activeMonthInt = int.tryParse(activeMonth) ?? DateTime.now().month;
+                final activeYearInt = int.tryParse(activeYear) ?? DateTime.now().year;
+                monthly = '$activeMonth/$activeYear';
+
+                if (state.loadingTeacherSubjects) {
                   return CircleLoad(); // Loading widget
-                } else if (getList_.scoreListModel.isEmpty) {
-                  return SizedBox(
-                    height: fSize * 0.4,
-                    child: Center(
-                      child: CustomText(
-                        text: 'No_information_yet',
-                        fontSize: fSize * 0.0185,
-                      ),
-                    ),
-                  );
                 }
-                var value = getList_.scoreListModel
-                    .where((e) =>
-                        (e.firstname ?? '')
-                            .toLowerCase()
-                            .contains(searchT.text.toLowerCase()) ||
-                        (e.lastname ?? '')
-                            .toLowerCase()
-                            .contains(searchT.text.toLowerCase()))
-                    .toList();
-                return Column(
-                  children: [
-                    // Classe List
-                    Container(
-                      height: size.height * 0.04,
-                      color: appColor.white,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: getList_.classeList.length,
-                        itemBuilder: (context, index) {
-                          final classe = getList_.classeList[index];
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                indexCategory = index;
-                                classId = getList_.classeList[index].id!;
-                              });
-                              getData(
-                                  getList_.classeList[index].id.toString(), '');
-                              // clear data class
-                              getList_.classeList.clear();
-                            },
+                final desiredType = _scheduleTypeForTab(tabIndex);
+                final subjects =
+                    state.teacherSubjects.where((s) => s.scheduleType == desiredType).toList();
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    historyPaymentState.clearData();
+                    historyPaymentState.setCurrentMonth();
+                    await _loadSubjectsForTab(tabIndex);
+                  },
+                  child: ListView.builder(
+                    itemCount: subjects.length + 2,
+                    padding: EdgeInsets.only(
+                      bottom: size.height * 0.1,
+                      top: 0,
+                    ),
+                    itemBuilder: (context, subjectIndex) {
+                      if (subjectIndex == 0) {
+                        return Padding(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                             child: Container(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: fSize * 0.016),
-                              alignment: Alignment.center,
-                              child: CustomText(
-                                text: classe.name ?? '',
-                                fontSize: fixSize(0.015, context),
-                                color: indexCategory == index
-                                    ? appColor.mainColor
-                                    : appColor.black,
-                                fontWeight: indexCategory == index
-                                    ? FontWeight.bold
-                                    : null,
+                                horizontal: fSize * 0.008,
+                                vertical: fSize * 0.006,
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    SizedBox(height: fSize * 0.01),
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          historyPaymentState.clearData();
-                          setState(() {
-                            monthly =
-                                '${DateTime.now().month}/${DateTime.now().year}';
-                          });
-                          await getData(classId.toString(), monthly);
-                        },
-                        child: getList_.scoreListModel.isEmpty
-                            ? Center(
-                                child: CustomText(
-                                  text: 'No_information_yet', // Add data
-                                  fontSize: fixSize(0.0160, context),
-                                  color: appColor.grey,
+                            decoration: BoxDecoration(
+                              color: appColor.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: appColor.grey.withOpacity(0.14),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
                                 ),
-                              )
-                            : ListView.builder(
-                                itemCount: value.length,
-                                padding:
-                                    EdgeInsets.only(bottom: size.height * 0.1),
-                                itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () {
-                                      Get.to(
-                                        () => DetailScorePage(
-                                          data: value[index],
-                                          monthly: monthly,
-                                        ),
-                                        transition: Transition.fadeIn,
-                                      );
-                                    },
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: fSize * 0.008,
-                                        vertical: fSize * 0.008,
-                                      ),
-                                      child: Stack(
-                                        alignment: Alignment.topRight,
-                                        children: [
-                                          Container(
-                                            padding:
-                                                EdgeInsets.all(fSize * 0.008),
-                                            decoration: BoxDecoration(
-                                              color: appColor.white,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  blurRadius:
-                                                      fixSize(0.0025, context),
-                                                  offset: const Offset(0, 1),
-                                                  color: appColor.grey,
-                                                ),
-                                              ],
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      fSize * 0.005),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                CircleAvatar(
-                                                  backgroundColor:
-                                                      getRandomColor(),
-                                                  child: CustomText(
-                                                    text: '${index + 1}',
-                                                    fontWeight: FontWeight.bold,
-                                                    color: appColor.white,
-                                                  ),
-                                                ),
-                                                SizedBox(width: fSize * 0.01),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(
-                                                      width: size.width *
-                                                          0.5, // Restrict width
-                                                      child: CustomText(
-                                                        text:
-                                                            '${value[index].firstname ?? ''} ${value[index].lastname ?? ''}',
-                                                        fontSize: fSize * 0.015,
-                                                        color: appColor.black,
-                                                      ),
-                                                    ),
-                                                    CustomText(
-                                                      text:
-                                                          '${'average_score'.tr}: ${value[index].averageScore.toString().replaceAll('.', ',')}',
-                                                      fontSize: fSize * 0.015,
-                                                    ),
-                                                    CustomText(
-                                                      text:
-                                                          '${'monthly'.tr}: $monthly',
-                                                      fontSize: fSize * 0.015,
-                                                      color: appColor.black
-                                                          .withOpacity(0.5),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    value:
+                                        yearOptions.contains(activeYear) ? activeYear : yearOptions.first,
+                                    underline: const SizedBox.shrink(),
+                                    items: yearOptions
+                                        .map(
+                                          (y) => DropdownMenuItem(
+                                            value: y,
+                                            child: CustomText(
+                                              text: 'ປີ $y',
+                                              fontSize: fSize * 0.013,
                                             ),
                                           ),
-                                          ButtonWidget(
-                                            height: size.width * 0.125,
-                                            width: size.width * 0.25,
-                                            color: appColor.mainColor
-                                                .withOpacity(0.95),
-                                            backgroundColor:
-                                                Colors.blue.withOpacity(0.2),
-                                            fontSize: fixSize(0.0145, context),
-                                            borderRadius: 10,
-                                            onPressed: () {},
+                                        )
+                                        .toList(),
+                                    onChanged: (selectedYear) async {
+                                      if (selectedYear == null) return;
+                                      await historyPaymentState.updateYear(selectedYear);
+                                      final newYear = selectedYear;
+                                      final newMonth =
+                                          historyPaymentState.selectedMonth2.isNotEmpty
+                                              ? historyPaymentState.selectedMonth2
+                                              : currentMonthStr;
+                                    setState(() {
+                                      monthly = '$newMonth/$newYear';
+                                    });
+                                    scoreState.clearSubjectTeacherStudentsCache();
+                                      await _loadSubjectsForTab(tabIndex);
+                                  },
+                                ),
+                                ),
+                                SizedBox(width: fSize * 0.01),
+                                Expanded(
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    value:
+                                        monthOptions.contains(activeMonth) ? activeMonth : monthOptions.first,
+                                    underline: const SizedBox.shrink(),
+                                    items: monthOptions
+                                        .map(
+                                          (m) => DropdownMenuItem(
+                                            value: m,
+                                            child: CustomText(
+                                              text: 'ເດືອນ $m',
+                                              fontSize: fSize * 0.013,
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (selectedMonth) async {
+                                      if (selectedMonth == null) return;
+                                      await historyPaymentState.updateMonth(selectedMonth);
+                                      final newMonth = selectedMonth;
+                                      final newYear = historyPaymentState.selectedYear1.isNotEmpty
+                                          ? historyPaymentState.selectedYear1
+                                          : currentYearStr;
+                                    setState(() {
+                                      monthly = '$newMonth/$newYear';
+                                    });
+                                    scoreState.clearSubjectTeacherStudentsCache();
+                                      await _loadSubjectsForTab(tabIndex);
+                                  },
+                                ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (subjectIndex == 1) {
+                        return Column(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: appColor.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: appColor.grey.withOpacity(0.16),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () async {
+                                            setState(() => tabIndex = 0);
+                                            await _loadSubjectsForTab(0);
+                                          },
+                                          child: AnimatedContainer(
+                                            duration: const Duration(milliseconds: 120),
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: fSize * 0.0075,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: tabIndex == 0
+                                                  ? appColor.mainColor.withOpacity(0.12)
+                                                  : appColor.white,
+                                              borderRadius: const BorderRadius.only(
+                                                topLeft: Radius.circular(12),
+                                                bottomLeft: Radius.circular(12),
+                                              ),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: CustomText(
+                                              text: 'ຕາຕະລາງກວດກາ',
+                                              fontSize: fSize * 0.0135,
+                                              fontWeight:
+                                                  tabIndex == 0 ? FontWeight.w700 : null,
+                                              color: tabIndex == 0
+                                                  ? appColor.mainColor
+                                                  : appColor.black.withOpacity(0.65),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () async {
+                                            setState(() => tabIndex = 1);
+                                            await _loadSubjectsForTab(1);
+                                          },
+                                          child: AnimatedContainer(
+                                            duration: const Duration(milliseconds: 120),
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: fSize * 0.0075,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: tabIndex == 1
+                                                  ? appColor.mainColor.withOpacity(0.12)
+                                                  : appColor.white,
+                                              borderRadius: const BorderRadius.only(
+                                                topRight: Radius.circular(12),
+                                                bottomRight: Radius.circular(12),
+                                              ),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: CustomText(
+                                              text: 'ຕາຕະລາງສອບເສັງ',
+                                              fontSize: fSize * 0.0135,
+                                              fontWeight:
+                                                  tabIndex == 1 ? FontWeight.w700 : null,
+                                              color: tabIndex == 1
+                                                  ? appColor.mainColor
+                                                  : appColor.black.withOpacity(0.65),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (subjects.isEmpty)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(fSize * 0.01),
+                                  decoration: BoxDecoration(
+                                    color: appColor.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: appColor.grey.withOpacity(0.12),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: CustomText(
+                                    text: 'ບໍ່ພົບວິຊາສຳລັບຕາຕະລາງນີ້',
+                                    fontSize: fSize * 0.0135,
+                                    color: appColor.black.withOpacity(0.7),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      }
+
+                      final subject = subjects[subjectIndex - 2];
+                      final subjectData =
+                          state.subjectTeacherStudents[subject.subjectTeacherId];
+                      final subjectLoading =
+                          state.loadingSubjectTeacherStudents[subject.subjectTeacherId] ?? false;
+                      if (subjectData == null && !subjectLoading) {
+                        scoreState.fetchSubjectTeacherStudents(
+                          subjectTeacherId: subject.subjectTeacherId,
+                          scheduleId: subject.scheduleId,
+                          year: activeYearInt,
+                          month: activeMonthInt,
+                          force: true,
+                        );
+                      }
+                      final students = subjectData?.students ?? <SubjectTeacherStudent>[];
+                      final subjectTotal = students.length;
+                      final subjectScored =
+                          students.where((s) => (s.hasScore || s.score != null)).length;
+                      final subjectPending =
+                          (subjectTotal - subjectScored).clamp(0, subjectTotal);
+                      final classLabel = subject.className ?? '--';
+                      final subjectName = subject.subjectName ?? '---';
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            InkWell(
+                              onTap: () async {
+                                SubjectTeacherStudentsResult? data = subjectData;
+                                // Fetch if not yet loaded
+                                if (data == null) {
+                                  await scoreState.fetchSubjectTeacherStudents(
+                                    subjectTeacherId: subject.subjectTeacherId,
+                                    scheduleId: subject.scheduleId,
+                                    year: activeYearInt,
+                                    month: activeMonthInt,
+                                    force: true,
+                                  );
+                                  data = scoreState
+                                      .subjectTeacherStudents[subject.subjectTeacherId];
+                                }
+                                final resolved = data;
+                                if (resolved == null) return;
+                                Get.to(
+                                  () => DetailScorePage(
+                                    subjectName: subjectName,
+                                    className: classLabel,
+                                    monthly: monthly,
+                                    subjectTeacherStudents: resolved.students,
+                                    subjectTeacherId: subject.subjectTeacherId,
+                                  ),
+                                  transition: Transition.fadeIn,
+                                );
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: fSize * 0.009,
+                                  vertical: fSize * 0.0075,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: appColor.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: appColor.grey.withOpacity(0.18),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          CustomText(
+                                            text: subjectName,
+                                            fontSize: fSize * 0.015,
+                                            fontWeight: FontWeight.w700,
+                                            color: appColor.mainColor,
+                                          ),
+                                          SizedBox(height: fSize * 0.0025),
+                                          CustomText(
                                             text:
-                                                '${'no'.tr} ${FormatPrice(price: num.parse(value[index].level.toString()))}',
+                                                'ຫ້ອງ: ${classLabel.isEmpty ? '--' : classLabel}',
+                                            fontSize: fSize * 0.012,
+                                            color: appColor.black.withOpacity(0.55),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  );
-                                },
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        CustomText(
+                                          text: 'ນັກຮຽນທັງໝົດ: $subjectTotal',
+                                          fontSize: fSize * 0.0118,
+                                          fontWeight: FontWeight.w700,
+                                          color: appColor.darkBlue,
+                                        ),
+                                        CustomText(
+                                          text: 'ໃຫ້ຄະແນນເເລ້ວ: $subjectScored',
+                                          fontSize: fSize * 0.0118,
+                                          fontWeight: FontWeight.w700,
+                                          color: appColor.green,
+                                        ),
+                                        CustomText(
+                                          text: 'ຍັງບໍ່ໃຫ້ເທື່ອ: $subjectPending',
+                                          fontSize: fSize * 0.0118,
+                                          fontWeight: FontWeight.w700,
+                                          color: appColor.red,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                      ),
-                    ),
-                  ],
+                            ),
+                            const SizedBox(height: 4),
+                            if (subjectLoading && students.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                child: CustomText(
+                                  text: 'ກຳລັງໂຫລດລາຍຊື່ນັກຮຽນ...',
+                                  fontSize: fSize * 0.013,
+                                  color: appColor.black.withOpacity(0.6),
+                                ),
+                              )
+                            else if (students.isEmpty)
+                              SizedBox.shrink(),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: appColor.mainColor,
-        onPressed: () {
-          Get.to(
-            () => const SelectMyclassePage(),
-            transition: Transition.leftToRight,
-          );
-        },
-        child: Icon(
-          Icons.add,
-          color: appColor.white,
-        ),
       ),
     );
   }

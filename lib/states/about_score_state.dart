@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:multiple_school_app/custom/app_color.dart';
 import 'package:multiple_school_app/models/my_classe_model.dart';
@@ -6,6 +9,8 @@ import 'package:multiple_school_app/models/score_list_model.dart';
 import 'package:multiple_school_app/models/score_student_model.dart';
 import 'package:multiple_school_app/models/student_score_model.dart';
 import 'package:multiple_school_app/models/subject_model.dart';
+import 'package:multiple_school_app/models/subject_teacher_student_model.dart';
+import 'package:multiple_school_app/models/teacher_subject_model.dart';
 import 'package:multiple_school_app/repositorys/repository.dart';
 import 'package:multiple_school_app/widgets/custom_dialog.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +34,208 @@ class AboutScoreState extends GetxController {
   bool checkStudentScoreList = false;
   bool checkscoreChildren = false;
   bool checkMyOwnScore = false;
+  bool loadingTeacherSubjects = false;
+  List<TeacherSubjectModel> teacherSubjects = [];
+  Map<int, SubjectTeacherStudentsResult> subjectTeacherStudents = {};
+  Map<int, bool> loadingSubjectTeacherStudents = {};
+  Set<int> fetchedSubjectTeacherIds = {};
+  bool savingTeacherScores = false;
 
   getAllScore(String? id, String monthly) {
     getMyClasses();
     getTotalScore(id, monthly);
+  }
+
+  void resetTeacherSubjects() {
+    teacherSubjects = [];
+    clearSubjectTeacherStudentsCache();
+    loadingTeacherSubjects = false;
+    update();
+  }
+
+  void clearSubjectTeacherStudentsCache() {
+    subjectTeacherStudents = {};
+    loadingSubjectTeacherStudents = {};
+    fetchedSubjectTeacherIds = {};
+    update();
+  }
+
+  Future<void> fetchTeacherSubjects(int scheduleType) async {
+    loadingTeacherSubjects = true;
+    teacherSubjects = [];
+    update();
+    try {
+      final uri = Uri.parse(
+        '${repository.nuXtJsUrlApi}${repository.teacherSubjectsByScheduleType}',
+      ).replace(queryParameters: {'type': scheduleType.toString()});
+
+      final response = await repository.get(url: uri.toString(), auth: true);
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        final data = decoded['data_list'] as List? ?? [];
+        teacherSubjects = data
+            .map((item) => TeacherSubjectModel.fromJson(
+                  Map<String, dynamic>.from(item as Map),
+                ))
+            .toList();
+      }
+    } catch (e) {
+      CustomDialogs().showToast(
+        backgroundColor: AppColor().black.withOpacity(0.8),
+        text: 'something_went_wrong',
+      );
+    }
+    loadingTeacherSubjects = false;
+    update();
+  }
+
+  Future<void> fetchSubjectTeacherStudents({
+    required int subjectTeacherId,
+    int? scheduleId,
+    required int year,
+    required int month,
+    bool force = false,
+  }) async {
+    if (!force && fetchedSubjectTeacherIds.contains(subjectTeacherId)) {
+      return;
+    }
+    fetchedSubjectTeacherIds.add(subjectTeacherId);
+    loadingSubjectTeacherStudents[subjectTeacherId] = true;
+    update();
+    try {
+      final params = {
+        'subject_teacher_id': subjectTeacherId.toString(),
+        'year': year.toString(),
+        'month': month.toString(),
+        if (scheduleId != null && scheduleId > 0) 'schedule_id': scheduleId.toString(),
+      };
+
+      final uri = Uri.parse(
+        '${repository.nuXtJsUrlApi}${repository.studentsBySubjectTeacher}',
+      ).replace(queryParameters: params);
+
+      final response = await repository.get(url: uri.toString(), auth: true);
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        final meta = SubjectTeacherMeta.fromJson(
+          Map<String, dynamic>.from(decoded['meta'] ?? {}),
+        );
+        final list = (decoded['data_list'] as List? ?? [])
+            .map((item) => SubjectTeacherStudent.fromJson(
+                  Map<String, dynamic>.from(item as Map),
+                ))
+            .toList();
+        subjectTeacherStudents[subjectTeacherId] = SubjectTeacherStudentsResult(
+          meta: meta,
+          students: list,
+        );
+      }
+    } catch (e) {
+      CustomDialogs().showToast(
+        backgroundColor: AppColor().black.withOpacity(0.8),
+        text: 'something_went_wrong',
+      );
+    }
+    loadingSubjectTeacherStudents[subjectTeacherId] = false;
+    update();
+  }
+
+  Future<bool> saveTeacherScores({
+    required SubjectTeacherStudentsResult subjectData,
+    required Map<int, String> scores,
+    String? datedOverride,
+  }) async {
+    if (savingTeacherScores) return false;
+    savingTeacherScores = true;
+    update();
+    bool success = false;
+    try {
+      final payload = scores.entries
+          .map((e) => {
+                'studentId': e.key,
+                'qty': e.value,
+              })
+          .toList();
+      final meta = subjectData.meta;
+      final subjectId = meta.subjectId;
+      final now = DateTime.now();
+      String dateStr = DateFormat('yyyy-MM-dd').format(now);
+      if (datedOverride != null && datedOverride.isNotEmpty) {
+        dateStr = datedOverride;
+      }
+
+      if (subjectId == null || subjectId == 0) {
+        CustomDialogs().showToast(
+          backgroundColor: AppColor().black.withOpacity(0.8),
+          text: 'something_went_wrong'.tr,
+        );
+        savingTeacherScores = false;
+        update();
+        return false;
+      }
+
+      if (kDebugMode) {
+        print('[SAVE TEACHER SCORES] subject_teacher_id=${meta.subjectTeacherId}, '
+            'subject_id=$subjectId, date=$dateStr, count=${payload.length}');
+        print('[SAVE TEACHER SCORES] payload: ${jsonEncode(payload)}');
+      }
+
+      final res = await repository.post(
+        url: '${repository.nuXtJsUrlApi}${repository.saveTeacherScores}',
+        auth: true,
+        body: {
+          'subject_teacher_id': meta.subjectTeacherId.toString(),
+          'subject_id': subjectId.toString(),
+          'schedule_id': meta.schedule?.id?.toString() ?? '',
+          'scores': jsonEncode(payload),
+          'dated': dateStr,
+        },
+      );
+      if (kDebugMode) {
+        final text = (() {
+          try {
+            return utf8.decode(res.bodyBytes);
+          } catch (_) {
+            return res.body;
+          }
+        })();
+        print('[SAVE TEACHER SCORES] status=${res.statusCode}, response=$text');
+      }
+      if (res.statusCode == 200) {
+        success = true;
+        CustomDialogs().showToast(
+          backgroundColor: AppColor().green.withOpacity(0.8),
+          text: 'ໃຫ້ຄະແນນສຳເລັດ',
+        );
+        // Refresh the cache for this subject to reflect saved data
+        fetchedSubjectTeacherIds.remove(meta.subjectTeacherId);
+        final parsedDate = DateTime.tryParse(dateStr);
+        final refreshYear = meta.year ?? parsedDate?.year;
+        final refreshMonth = meta.month ?? parsedDate?.month;
+        if (refreshYear != null && refreshMonth != null) {
+          await fetchSubjectTeacherStudents(
+            subjectTeacherId: meta.subjectTeacherId,
+            scheduleId: meta.schedule?.id,
+            year: refreshYear,
+            month: refreshMonth,
+            force: true,
+          );
+        }
+      } else {
+        CustomDialogs().showToast(
+          backgroundColor: AppColor().black.withOpacity(0.8),
+          text: 'something_went_wrong'.tr,
+        );
+      }
+    } catch (e) {
+      CustomDialogs().showToast(
+        backgroundColor: AppColor().black.withOpacity(0.8),
+        text: 'something_went_wrong'.tr,
+      );
+    }
+    savingTeacherScores = false;
+    update();
+    return success;
   }
 
   clearSubject() {

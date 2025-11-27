@@ -181,7 +181,8 @@ class AuthLoginRegister extends GetxController {
 
       if (reslogout.statusCode == 200) {
         appVerification.removeToken();
-        Get.off(() => const LoginPage());
+        // Clear the entire navigation stack so back cannot return to authenticated pages
+        Get.offAll(() => const LoginPage());
         CustomDialogs().showToast(
           // ignore: deprecated_member_use
           backgroundColor: AppColor().green.withOpacity(0.6),

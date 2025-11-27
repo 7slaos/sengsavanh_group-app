@@ -25,7 +25,7 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   // Dev toggle: when true (and in debug), always show LoginPage to inspect UI
-  static const bool kAlwaysShowLoginDuringDev = true;
+  static const bool kAlwaysShowLoginDuringDev = false;
   final AppVerification appVerification = Get.put(AppVerification());
   final RegisterState registerState = Get.put(RegisterState());
   final ProfileState profileState = Get.put(ProfileState());

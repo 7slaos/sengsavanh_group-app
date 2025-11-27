@@ -129,7 +129,8 @@ class ProfileState extends GetxController {
 
       if (reslogout.statusCode == 200) {
         appVerification.removeToken();
-        Get.off(
+        // Clear the whole stack so back cannot reopen a protected screen
+        Get.offAll(
           const LoginPage(),
         );
         CustomDialogs().showToast(

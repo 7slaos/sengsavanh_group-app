@@ -12,7 +12,7 @@ export 'dart:convert';
 
 class Repository {
   String nuXtJsUrlApi = 'https://www.citschool.net/';
-  // String nuXtJsUrlApi = 'http://192.168.100.224:3001/';
+  // String nuXtJsUrlApi = 'http://192.168.100.230:3000/';
   String getFunctionAvailableByRole = 'api/get_function_available_by_role';
   String loginUser = 'api/Application/login_users';
   String logoutUser = 'api/Application/LoginApiController/logouts';
@@ -134,6 +134,12 @@ class Repository {
   String GetMarkStatus = 'api/api_for_app/mark_student/get_mark_status';
   String GetHistoryCheckInOut = 'api/api_for_app/mark_student/get_history_check_in_out';
   String GetStudentMissingSchool = 'api/api_for_app/mark_student/get_student_missing_school';
+  String teacherSubjectsByScheduleType =
+      'api/Application/TeacherScoreController/subjects_by_schedule_type';
+  String studentsBySubjectTeacher =
+      'api/Application/TeacherScoreController/students_by_subject_teacher';
+  String saveTeacherScores =
+      'api/Application/TeacherScoreController/save_scores';
   AppVerification appVerification = Get.put(AppVerification());
   Future<http.Response> get(
       {required String url, Map<String, String>? header, bool? auth}) async {
