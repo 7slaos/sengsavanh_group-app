@@ -18,24 +18,24 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
   final AppColor appColors = AppColor();
   final Repository repository = Repository();
 
-  String? selectedDay;
+  String? selectedDayKey;
   final ScrollController _dayScrollController = ScrollController();
 
-  final List<String> days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday"
+  final List<String> dayKeys = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday"
   ];
 
   List<dynamic> subjectData = []; // ✅ ใช้ Map ตรง ๆ
   bool isLoading = true;
 
   void _scrollToSelectedDay() {
-    final idx = days.indexOf(selectedDay ?? '');
+    final idx = dayKeys.indexOf(selectedDayKey ?? '');
     if (idx != -1 && _dayScrollController.hasClients) {
       _dayScrollController.animateTo(
         idx * 90.0,
@@ -51,7 +51,7 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
     super.initState();
 
     int weekday = DateTime.now().weekday;
-    selectedDay = days[weekday - 1];
+    selectedDayKey = dayKeys[weekday - 1];
 
     fetchSubjects();
 
@@ -105,7 +105,7 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
         backgroundColor: appColors.mainColor,
         elevation: 4,
         title: CustomText(
-          text: 'Subjects for teach'.tr,
+          text: 'subjects_for_teach'.tr,
           color: appColors.white,
           fontSize: fs(0.05),
           fontWeight: FontWeight.bold,
@@ -130,10 +130,10 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                     child: ListView(
                       controller: _dayScrollController,
                       scrollDirection: Axis.horizontal,
-                      children: days.map((day) {
-                        final isSelected = day == selectedDay;
+                      children: dayKeys.map((dayKey) {
+                        final isSelected = dayKey == selectedDayKey;
                         return GestureDetector(
-                          onTap: () => setState(() => selectedDay = day),
+                          onTap: () => setState(() => selectedDayKey = dayKey),
                           child: Container(
                             margin: const EdgeInsets.only(right: 8),
                             padding: const EdgeInsets.symmetric(
@@ -147,7 +147,7 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                             ),
                             child: Center(
                               child: CustomText(
-                                text: day,
+                                text: dayKey.tr,
                                 color: isSelected
                                     ? Colors.white
                                     : appColors.mainColor,
@@ -166,11 +166,12 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                   // ✅ รายการวิชา
                   Expanded(
                     child: subjectData.isEmpty
-                        ? const Center(child: Text("ບໍ່ມີຂໍ້ມູນ"))
+                        ? Center(child: Text("no_information_found".tr))
                         : ListView(
                             children: subjectData.where((item) {
-                              String apiDay = days[(item["days"] ?? 1) - 1];
-                              return apiDay == selectedDay;
+                              String apiDayKey =
+                                  dayKeys[(item["days"] ?? 1) - 1];
+                              return apiDayKey == selectedDayKey;
                             }).map((item) {
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 10),
@@ -233,7 +234,7 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                                         children: [
                                           CustomText(
                                             text:
-                                                'ຊັ້ນ: ${item["class_name"] ?? "-"}',
+                                                '${'class'.tr}: ${item["class_name"] ?? "-"}',
                                             fontSize: fs(0.035),
                                             color: Colors.grey[700],
                                             maxLines: 1,
@@ -246,8 +247,9 @@ class _SubjectTeacherPageState extends State<SubjectTeacherPage> {
                                                   color: appColors.mainColor),
                                               const SizedBox(width: 4),
                                               CustomText(
-                                                text: days[
-                                                    (item["days"] ?? 1) - 1],
+                                                text: dayKeys[
+                                                        (item["days"] ?? 1) - 1]
+                                                    .tr,
                                                 fontSize: fs(0.035),
                                                 color: appColors.mainColor,
                                                 maxLines: 1,

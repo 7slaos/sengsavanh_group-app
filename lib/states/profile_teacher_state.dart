@@ -33,7 +33,8 @@ class ProfileTeacherState extends GetxController {
         url: repository.nuXtJsUrlApi + repository.teacherRecordePofiled,
         auth: true,
       );
-      // print(res.body);
+      print("Teacher profilesssssssssss");
+      print(res.body);
       if (res.statusCode == 200) {
         final text = (() { try { return utf8.decode(res.bodyBytes); } catch (_) { return res.body; } })();
         teacherModels =

@@ -175,10 +175,10 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
           });
         }
       } else {
-        Get.snackbar("Error", "ไม่พบข้อมูลสถานะ");
+        Get.snackbar("error".tr, "no_status_found".tr);
       }
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      Get.snackbar("error".tr, e.toString());
     }
   }
 
@@ -226,13 +226,13 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
             Future<void> _save() async {
               final id = student['id'];
               if (id == null) {
-                Get.snackbar("Error", "Missing record id",
+                Get.snackbar("error".tr, "missing_record_id".tr,
                     snackPosition: SnackPosition.BOTTOM);
                 return;
               }
 
               if (statusValue == null) {
-                Get.snackbar("Warning", "Please select status",
+                Get.snackbar("warning".tr, "please_select_status".tr,
                     snackPosition: SnackPosition.BOTTOM);
                 return;
               }
@@ -262,18 +262,18 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
 
                 if (res['success'] == true) {
                   Get.back(result: true);
-                  Get.snackbar("Success", "Updated successfully",
+                  Get.snackbar("success".tr, "update_success".tr,
                       snackPosition: SnackPosition.BOTTOM,
                       backgroundColor: Colors.green);
                 } else {
                   Get.snackbar(
-                    "Error",
-                    res['message']?.toString() ?? "Update failed",
+                    "error".tr,
+                    res['message']?.toString() ?? "update_failed".tr,
                     snackPosition: SnackPosition.BOTTOM,
                   );
                 }
               } catch (e) {
-                Get.snackbar("Error", e.toString(),
+                Get.snackbar("error".tr, e.toString(),
                     snackPosition: SnackPosition.BOTTOM);
               } finally {
                 setSheetState(() => isSaving = false);
@@ -303,7 +303,7 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                       ),
                     ),
                     Text(
-                      "ແກ້ໄຂຂໍ້ມູນ: ${student['firstname']} ${student['lastname']}",
+                      "${'edit'.tr}: ${student['firstname']} ${student['lastname']}",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -314,9 +314,9 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                     // 🔹 Status (Dropdown จาก API)
                     DropdownButtonFormField<int>(
                       value: statusValue,
-                      decoration: const InputDecoration(
-                        labelText: "ສະຖານະ",
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: "status".tr,
+                        border: const OutlineInputBorder(),
                       ),
                       items: markStatusList.map((item) {
                         return DropdownMenuItem<int>(
@@ -333,9 +333,9 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                     // 🔹 Note
                     TextField(
                       controller: noteController,
-                      decoration: const InputDecoration(
-                        labelText: "ໝາຍເຫດ",
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: "note".tr,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -346,9 +346,9 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                         Expanded(
                           child: IgnorePointer(
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: "ວັນທີ",
-                                border: OutlineInputBorder(),
+                              decoration: InputDecoration(
+                                labelText: "date".tr,
+                                border: const OutlineInputBorder(),
                                 enabled: false,
                               ),
                               child: Text(
@@ -362,9 +362,9 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                         Expanded(
                           child: IgnorePointer(
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: "ເວລາ",
-                                border: OutlineInputBorder(),
+                              decoration: InputDecoration(
+                                labelText: "time".tr,
+                                border: const OutlineInputBorder(),
                                 enabled: false,
                               ),
                               child: Text(
@@ -399,7 +399,7 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                                 child:
                                     CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text("ແກ້ໄຂ"),
+                            : Text("edit".tr),
                       ),
                     ),
                   ],
@@ -419,17 +419,17 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
         : int.tryParse("${row['id'] ?? ''}");
 
     if (id == null) {
-      Get.snackbar("Error", "Record id not found",
+      Get.snackbar("error".tr, "missing_record_id".tr,
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
     // confirm dialog
     final bool? ok = await Get.defaultDialog<bool?>(
-      title: "Confirm delete",
+      title: "confirm_delete_title".tr,
       middleText: "${row['firstname'] ?? ''} ${row['lastname'] ?? ''}",
-      textCancel: "Cancel",
-      textConfirm: "Delete",
+      textCancel: "cancel".tr,
+      textConfirm: "delete".tr,
       confirmTextColor: Colors.white,
       buttonColor: Colors.red,
       onConfirm: () => Get.back(result: true),
@@ -441,15 +441,17 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
     try {
       final resp = await repo.deleteCheckMissingAPI(id: id);
       if (resp['success'] == true) {
-        Get.snackbar("Deleted", "Delete success",
+        Get.snackbar("delete".tr, "delete_success".tr,
             snackPosition: SnackPosition.BOTTOM);
         _load(); // refresh list
       } else {
-        Get.snackbar("Error", resp['message']?.toString() ?? "Delete failed",
+        Get.snackbar("error".tr,
+            resp['message']?.toString() ?? "delete_failed".tr,
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("error".tr, e.toString(),
+          snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -464,7 +466,8 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
         backgroundColor: appColors.mainColor,
         elevation: 4,
         title: CustomText(
-          text: 'Students - ${widget.className} (${widget.subjectName})',
+          text:
+              '${'students_title'.tr} - ${widget.className} (${widget.subjectName})',
           color: appColors.white,
         ),
 // ใน AppBar
@@ -531,9 +534,12 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
             if (_loading)
               const Expanded(child: Center(child: CircularProgressIndicator()))
             else if (_error != null)
-              Expanded(child: Center(child: Text('Error: $_error')))
+              Expanded(
+                  child: Center(child: Text("${'error'.tr}: ${_error ?? ''}")))
             else if (_items.isEmpty)
-              const Expanded(child: Center(child: Text('No data')))
+              Expanded(
+                  child:
+                      Center(child: Text('no_information_found'.tr)))
             else
               Expanded(
                 child: RefreshIndicator(
@@ -580,7 +586,7 @@ class _ListCheckStudentPageState extends State<ListCheckStudentPage> {
                                   const SizedBox(width: 4),
                                   CustomText(
                                     text:
-                                        "- ${student['score']?.toString() ?? '-'} ຄະແນນ",
+                                        "${'score'.tr}: ${student['score']?.toString() ?? '-'}",
                                     fontSize: fsize * 0.013,
                                   ),
                                   const SizedBox(width: 12),

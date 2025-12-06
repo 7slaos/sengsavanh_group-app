@@ -58,8 +58,8 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
         Get.to(() => const ProfileTeacherRecordePage(),
             transition: Transition.fadeIn);
       },
-      'Missing_school': () =>
-          Get.to(() => FollowStudentPage(), transition: Transition.fadeIn),
+      // 'Missing_school': () =>
+      //     Get.to(() => FollowStudentPage(), transition: Transition.fadeIn),
       'take_children': () =>
           Get.to(() => const TakeChildrenPage(), transition: Transition.fadeIn),
       'scan-in-out': () => Get.to(() => CheckInCheckOutPage(type: 't'),
@@ -168,11 +168,11 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                 'icon': Icons.person_pin,
                 'color': Colors.orange
               },
-              {
-                'title': 'Missing_school',
-                'icon': Icons.cancel,
-                'color': Colors.red
-              },
+              // {
+              //   'title': 'Missing_school',
+              //   'icon': Icons.cancel,
+              //   'color': Colors.red
+              // },
               {
                 'title': 'take_children',
                 'icon': Icons.campaign_outlined,

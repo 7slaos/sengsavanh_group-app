@@ -134,6 +134,7 @@ class Repository {
   String GetMarkStatus = 'api/api_for_app/mark_student/get_mark_status';
   String GetHistoryCheckInOut = 'api/api_for_app/mark_student/get_history_check_in_out';
   String GetStudentMissingSchool = 'api/api_for_app/mark_student/get_student_missing_school';
+  String GetBranchMarkTime = 'api/api_for_app/mark_student/get_mark_time_window';
   String teacherSubjectsByScheduleType =
       'api/Application/TeacherScoreController/subjects_by_schedule_type';
   String studentsBySubjectTeacher =
@@ -473,6 +474,26 @@ class Repository {
       return jsonDecode(decodedBody);
     } else {
       throw Exception("Failed to fetch students: ${res.statusCode}");
+    }
+  }
+
+  Future<Map<String, dynamic>> getBranchMarkTimeAPI() async {
+    final res = await getNUxt(
+      url: "$nuXtJsUrlApi$GetBranchMarkTime",
+      header: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${appVerification.nUxtToken}',
+      },
+    );
+
+    try {
+      final decodedBody = utf8.decode(res.bodyBytes);
+      final data = jsonDecode(decodedBody);
+      if (data is Map<String, dynamic>) return data;
+      return {"success": false, "message": "Invalid response"};
+    } catch (e) {
+      return {"success": false, "message": "Invalid response"};
     }
   }
 

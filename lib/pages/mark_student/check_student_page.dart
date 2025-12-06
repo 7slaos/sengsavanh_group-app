@@ -48,16 +48,23 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
   final Set<int> selectedIds = {}; // selected by student id (stable)
 
   bool isLoading = true;
+  String? startTimeMark;
+  String? endTimeMark;
+  bool markTimeLoaded = false;
+  Timer? _countdownTimer;
+  String countdownText = '';
 
   @override
   void initState() {
     super.initState();
+    _fetchMarkTimeWindow();
     _fetchMarkStatus();
     _fetchStudents();
   }
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _debounce?.cancel();
     searchController.dispose();
     noteController.dispose();
@@ -75,10 +82,10 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
           markStatusList = List<Map<String, dynamic>>.from(data['data']);
         });
       } else {
-        Get.snackbar("Error", "ไม่พบข้อมูลสถานะ");
+        Get.snackbar("error".tr, "no_status_found".tr);
       }
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      Get.snackbar("error".tr, e.toString());
     }
   }
 
@@ -98,15 +105,112 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
           });
         } else {
           setState(() => isLoading = false);
-          Get.snackbar("Notice", "API ไม่พบรายชื่อนักเรียน");
+          Get.snackbar("notice".tr, "no_students_found".tr);
         }
       } else {
         setState(() => isLoading = false);
-        Get.snackbar("Error", data['message'] ?? "Failed to load students");
+        Get.snackbar("error".tr, data['message'] ?? "no_students_found".tr);
       }
     } catch (e) {
       setState(() => isLoading = false);
-      Get.snackbar("Error", e.toString());
+      Get.snackbar("error".tr, e.toString());
+    }
+  }
+
+  Future<void> _fetchMarkTimeWindow() async {
+    try {
+      final data = await repo.getBranchMarkTimeAPI();
+      if (data['success'] == true) {
+        final payload = (data['data'] ?? {}) as Map<String, dynamic>;
+        final s = (payload['start_time_mark'] ?? '').toString();
+        final e = (payload['end_time_mark'] ?? '').toString();
+        if (!mounted) return;
+        setState(() {
+          startTimeMark = s.isNotEmpty && s.toLowerCase() != 'null' ? s : null;
+          endTimeMark = e.isNotEmpty && e.toLowerCase() != 'null' ? e : null;
+          markTimeLoaded = true;
+        });
+        _startCountdownTimer();
+      } else {
+        markTimeLoaded = true;
+        _startCountdownTimer();
+      }
+    } catch (_) {
+      markTimeLoaded = true;
+      _startCountdownTimer();
+    } finally {
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
+  DateTime? _parseTimeToday(String? value) {
+    if (value == null) return null;
+    final text = value.trim();
+    if (text.isEmpty || text.toLowerCase() == 'null') return null;
+    final parts = text.split(':');
+    if (parts.length < 2) return null;
+    final h = int.tryParse(parts[0]) ?? 0;
+    final m = int.tryParse(parts[1]) ?? 0;
+    final s = parts.length > 2 ? int.tryParse(parts[2]) ?? 0 : 0;
+    final now = DateTime.now();
+    return DateTime(
+      now.year,
+      now.month,
+      now.day,
+      h.clamp(0, 23),
+      m.clamp(0, 59),
+      s.clamp(0, 59),
+    );
+  }
+
+  bool get _isWithinMarkWindow {
+    final start = _parseTimeToday(startTimeMark);
+    final end = _parseTimeToday(endTimeMark);
+    if (start == null || end == null) return true; // no config -> allow
+    final now = DateTime.now();
+    if (now.isBefore(start)) return false;
+    if (now.isAfter(end)) return false;
+    return true;
+  }
+
+  String _formatDuration(Duration d) {
+    final hh = d.inHours.remainder(100).abs().toString().padLeft(2, '0');
+    final mm = d.inMinutes.remainder(60).abs().toString().padLeft(2, '0');
+    final ss = d.inSeconds.remainder(60).abs().toString().padLeft(2, '0');
+    return '$hh:$mm:$ss';
+  }
+
+  void _startCountdownTimer() {
+    _countdownTimer?.cancel();
+    final end = _parseTimeToday(endTimeMark);
+    if (end == null) return;
+    // kick once immediately
+    _updateCountdown();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _updateCountdown();
+    });
+  }
+
+  void _updateCountdown() {
+    final end = _parseTimeToday(endTimeMark);
+    if (end == null) {
+      if (countdownText.isNotEmpty) {
+        setState(() => countdownText = '');
+      }
+      return;
+    }
+    final now = DateTime.now();
+    final diff = end.difference(now);
+    String nextText;
+    if (diff.isNegative) {
+      nextText = "${'mark_time_closed'.tr} (${_formatDuration(diff)})";
+    } else {
+      nextText = "${'mark_time_remaining'.tr} ${_formatDuration(diff)}";
+    }
+    if (mounted && nextText != countdownText) {
+      setState(() => countdownText = nextText);
     }
   }
 
@@ -145,17 +249,22 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
 
   void _onConfirm() async {
     if (students.isEmpty || selectedIds.isEmpty) {
-      Get.snackbar("Warning", "ກະລຸນາເລືອກນັກຮຽນ");
+      Get.snackbar("warning".tr, "please_select_students".tr);
       return;
     }
 
     if (noteController.text.isEmpty) {
-      Get.snackbar("Warning", "Please input note");
+      Get.snackbar("warning".tr, "please_input_note".tr);
       return;
     }
 
     if (selectedStatus == null) {
-      Get.snackbar("Warning", "Please select status");
+      Get.snackbar("warning".tr, "please_select_status".tr);
+      return;
+    }
+
+    if (!_isWithinMarkWindow) {
+      Get.snackbar("warning".tr, "mark_time_closed".tr);
       return;
     }
 
@@ -165,13 +274,10 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
     );
     final scoreValue = selectedStatusItem['score'] ?? 0;
 
-    final combinedDateTime = DateTime(
-      selectedDate.year,
-      selectedDate.month,
-      selectedDate.day,
-      selectedTime.hour,
-      selectedTime.minute,
-    );
+    final now = DateTime.now();
+    selectedDate = DateTime(now.year, now.month, now.day);
+    selectedTime = TimeOfDay.fromDateTime(now);
+    final combinedDateTime = now;
 
     final formattedDateTime =
         "${combinedDateTime.toIso8601String().split('.')[0].replaceFirst('T', ' ')}";
@@ -181,7 +287,7 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
         .toList();
 
     if (chosen.isEmpty) {
-      Get.snackbar("Warning", "No selected students found.");
+      Get.snackbar("warning".tr, "no_selected_students".tr);
       return;
     }
 
@@ -217,9 +323,9 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
         );
 
         Get.defaultDialog(
-          title: "Success",
-          middleText: "Saved success",
-          textConfirm: "OK",
+          title: "success".tr,
+          middleText: "saved_success".tr,
+          textConfirm: "ok".tr,
           onConfirm: () {
             Get.back();
             Get.offAll(() => ListCheckStudentPage(
@@ -231,10 +337,10 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
           },
         );
       } else {
-        Get.snackbar("Error", result['message'] ?? "ບັນທຶກບໍ່ສຳເລັດ");
+        Get.snackbar("error".tr, result['message'] ?? "save_failed".tr);
       }
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      Get.snackbar("error".tr, e.toString());
     }
   }
 
@@ -251,7 +357,8 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
         backgroundColor: appColors.mainColor,
         elevation: 4,
         title: CustomText(
-          text: 'Mark Students - ${widget.className} (${widget.subjectName})',
+          text:
+              '${'mark_students_title'.tr} - ${widget.className} (${widget.subjectName})',
           color: appColors.white,
         ),
         leading: IconButton(
@@ -401,13 +508,13 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),
-                  hint: const Text('Status'),
+                  hint: Text('status'.tr),
                   value: selectedStatus,
                   items: markStatusList.map((item) {
                     return DropdownMenuItem<int>(
                       value: item['id'],
                       child: Text(
-                          "${item['name']} (- ${item['score'] ?? 0} Score)"),
+                          "${item['name']} (- ${item['score'] ?? 0} ${'score'.tr})"),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -423,7 +530,7 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
                 TextField(
                   controller: noteController,
                   decoration: InputDecoration(
-                    hintText: 'Note',
+                    hintText: 'note'.tr,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(6),
                     ),
@@ -439,7 +546,7 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
                       child: IgnorePointer(
                         child: InputDecorator(
                           decoration: InputDecoration(
-                            labelText: "Date",
+                            labelText: "date".tr,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -457,7 +564,7 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
                       child: IgnorePointer(
                         child: InputDecorator(
                           decoration: InputDecoration(
-                            labelText: "Time",
+                            labelText: "time".tr,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -475,6 +582,18 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
 
                 const SizedBox(height: 8),
 
+                if (markTimeLoaded && countdownText.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      countdownText,
+                      style: TextStyle(
+                        color: _isWithinMarkWindow ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+
                 // Confirm
                 SizedBox(
                   width: double.infinity,
@@ -491,7 +610,7 @@ class _CheckStudentPageState extends State<CheckStudentPage> {
                       ),
                     ),
                     onPressed: selectedIds.isEmpty ? null : _onConfirm,
-                    child: const Text('Confirm'),
+                    child: Text('confirm'.tr),
                   ),
                 ),
               ],

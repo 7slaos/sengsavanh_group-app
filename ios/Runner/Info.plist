@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Pathana School</string>
+	<string>CIT Schools</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,6 +26,9 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- Google Maps iOS SDK key (must be enabled for iOS bundle ID) -->
+	<key>GMSApiKey</key>
+	<string>AIzaSyCEwurhgatlx8OZDWVrQ1WzGRvXegtd1ew</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to take a profile picture or scan the student's QR code to check detailed information about the student.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

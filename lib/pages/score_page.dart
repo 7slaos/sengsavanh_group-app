@@ -99,33 +99,31 @@ class _ScorePageState extends State<ScorePage> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: appColor.white,
-      appBar: CustomAppBar(
-        leading: InkWell(
-          onTap: () {
-            // Ensure back always lands on teacher dashboard
-            if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/') {
-              Get.back();
-            } else {
-              Get.offAll(() => const TeacherDashboardPage());
-            }
-          },
-          child: Icon(
-            Icons.arrow_back,
-            color: appColor.white,
+    return WillPopScope(
+      onWillPop: () async {
+        Get.offAll(() => const TeacherDashboardPage());
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: appColor.white,
+        appBar: CustomAppBar(
+          leading: InkWell(
+            onTap: () => Get.offAll(() => const TeacherDashboardPage()),
+            child: Icon(
+              Icons.arrow_back,
+              color: appColor.white,
+            ),
           ),
+          centerTitle: true,
+          orientation: orientation,
+          height: size.height,
+          color: appColor.white,
+          titleSize: fSize * 0.02,
+          title: "score",
+          actions: const [],
         ),
-        centerTitle: true,
-        orientation: orientation,
-        height: size.height,
-        color: appColor.white,
-        titleSize: fSize * 0.02,
-        title: "score",
-        actions: const [],
-      ),
-      body: Column(
-        children: [
+        body: Column(
+          children: [
           Expanded(
             child: GetBuilder<AboutScoreState>(
               builder: (state) {
@@ -532,8 +530,9 @@ class _ScorePageState extends State<ScorePage> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   void showBottomDialog() {
     Size size = MediaQuery.of(context).size;

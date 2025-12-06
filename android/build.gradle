@@ -6,27 +6,25 @@ allprojects {
 }
 
 rootProject.buildDir = "../build"
-subprojects {
+subprojects { project ->
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 
-    // Apply Java 17 via Android's compileOptions (AGP-friendly)
+    // Force Java 8 across Android modules for JVM-target consistency with plugins
     afterEvaluate {
         def androidExt = project.extensions.findByName("android")
         if (androidExt != null) {
             androidExt.compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
+                sourceCompatibility = JavaVersion.VERSION_1_8
+                targetCompatibility = JavaVersion.VERSION_1_8
             }
         }
     }
 
-    // Kotlin bytecode = 17
+    // Kotlin bytecode target = 1.8 to match Java compileOptions
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-        kotlinOptions { jvmTarget = "17" }
+        kotlinOptions { jvmTarget = "1.8" }
     }
-}
-subprojects {
-    project.evaluationDependsOn(":app")
+
 }
 
 tasks.register("clean", Delete) {
