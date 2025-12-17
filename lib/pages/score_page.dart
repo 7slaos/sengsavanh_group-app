@@ -53,14 +53,7 @@ class _ScorePageState extends State<ScorePage> {
     return index == 0 ? 2 : 3;
   }
 
-  Future<void> _loadSubjectsForTab(int index) async {
-    final type = _scheduleTypeForTab(index);
-    scoreState.resetTeacherSubjects();
-    await scoreState.fetchTeacherSubjects(type);
-    await _prefetchStudentsForActiveMonth();
-  }
-
-  Future<void> _prefetchStudentsForActiveMonth() async {
+  Map<String, int> _activeYearMonth() {
     final monthStr = historyPaymentState.selectedMonth2.isNotEmpty
         ? historyPaymentState.selectedMonth2
         : DateTime.now().month.toString().padLeft(2, '0');
@@ -69,13 +62,25 @@ class _ScorePageState extends State<ScorePage> {
         : DateTime.now().year.toString();
     final month = int.tryParse(monthStr) ?? DateTime.now().month;
     final year = int.tryParse(yearStr) ?? DateTime.now().year;
+    return {'year': year, 'month': month};
+  }
+
+  Future<void> _loadSubjectsForTab(int index) async {
+    final type = _scheduleTypeForTab(index);
+    final ym = _activeYearMonth();
+    scoreState.resetTeacherSubjects();
+    await scoreState.fetchTeacherSubjects(
+      scheduleType: type,
+      year: ym['year'] ?? DateTime.now().year,
+      month: ym['month'] ?? DateTime.now().month,
+    );
     final currentSubjects = scoreState.teacherSubjects;
     for (final subj in currentSubjects) {
       await scoreState.fetchSubjectTeacherStudents(
         subjectTeacherId: subj.subjectTeacherId,
         scheduleId: subj.scheduleId,
-        year: year,
-        month: month,
+        year: ym['year'] ?? DateTime.now().year,
+        month: ym['month'] ?? DateTime.now().month,
         force: true,
       );
     }
@@ -374,7 +379,9 @@ class _ScorePageState extends State<ScorePage> {
                                     ],
                                   ),
                                   child: CustomText(
-                                    text: 'ບໍ່ພົບວິຊາສຳລັບຕາຕະລາງນີ້',
+                                    text: tabIndex == 0
+                                        ? 'ບໍ່ມີວິຊາກວດກາ ຫຼື ສອບເສັງສຳຫຼັບເດືອນນີ້'
+                                        : 'ບໍ່ມີວິຊາກວດກາ ຫຼື ສອບເສັງສຳຫຼັບເດືອນນີ້',
                                     fontSize: fSize * 0.0135,
                                     color: appColor.black.withOpacity(0.7),
                                   ),
@@ -397,6 +404,10 @@ class _ScorePageState extends State<ScorePage> {
                           month: activeMonthInt,
                           force: true,
                         );
+                      }
+                      if (subjectData != null && subjectData.hasSchedule == false) {
+                        // No schedule for this month/year -> hide this subject entry
+                        return const SizedBox.shrink();
                       }
                       final students = subjectData?.students ?? <SubjectTeacherStudent>[];
                       final subjectTotal = students.length;

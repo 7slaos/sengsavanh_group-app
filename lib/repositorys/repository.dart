@@ -12,7 +12,7 @@ export 'dart:convert';
 
 class Repository {
   String nuXtJsUrlApi = 'https://www.citschool.net/';
-  // String nuXtJsUrlApi = 'http://192.168.100.230:3000/';
+  // String nuXtJsUrlApi = 'http://192.168.100.202:3000/';
   String getFunctionAvailableByRole = 'api/get_function_available_by_role';
   String loginUser = 'api/Application/login_users';
   String logoutUser = 'api/Application/LoginApiController/logouts';
@@ -167,7 +167,7 @@ class Repository {
         print('[GET] status: ${res.statusCode}');
         print('[GET] response: ' + text);
       }
-      if (res.statusCode == 401 || res.statusCode == 408) {
+      if (res.statusCode == 401 || res.statusCode == 403 || res.statusCode == 408) {
         appVerification.removeToken();
         Get.offAll(() => const LoginPage());
         return res;
@@ -215,7 +215,7 @@ class Repository {
         print('[POST] status: ${res.statusCode}');
         print('[POST] response: ' + text);
       }
-      if (res.statusCode == 401) {
+      if (res.statusCode == 401 || res.statusCode == 403) {
         appVerification.storage.erase();
         appVerification.removeToken();
         Get.offAll(() => const LoginPage());

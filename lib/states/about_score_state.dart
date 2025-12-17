@@ -60,14 +60,22 @@ class AboutScoreState extends GetxController {
     update();
   }
 
-  Future<void> fetchTeacherSubjects(int scheduleType) async {
+  Future<void> fetchTeacherSubjects({
+    required int scheduleType,
+    required int year,
+    required int month,
+  }) async {
     loadingTeacherSubjects = true;
     teacherSubjects = [];
     update();
     try {
       final uri = Uri.parse(
         '${repository.nuXtJsUrlApi}${repository.teacherSubjectsByScheduleType}',
-      ).replace(queryParameters: {'type': scheduleType.toString()});
+      ).replace(queryParameters: {
+        'type': scheduleType.toString(),
+        'year': year.toString(),
+        'month': month.toString(),
+      });
 
       final response = await repository.get(url: uri.toString(), auth: true);
       if (response.statusCode == 200) {
@@ -116,21 +124,23 @@ class AboutScoreState extends GetxController {
 
       final response = await repository.get(url: uri.toString(), auth: true);
       if (response.statusCode == 200) {
-        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
-        final meta = SubjectTeacherMeta.fromJson(
-          Map<String, dynamic>.from(decoded['meta'] ?? {}),
-        );
-        final list = (decoded['data_list'] as List? ?? [])
-            .map((item) => SubjectTeacherStudent.fromJson(
-                  Map<String, dynamic>.from(item as Map),
-                ))
-            .toList();
-        subjectTeacherStudents[subjectTeacherId] = SubjectTeacherStudentsResult(
-          meta: meta,
-          students: list,
-        );
-      }
-    } catch (e) {
+      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+      final meta = SubjectTeacherMeta.fromJson(
+        Map<String, dynamic>.from(decoded['meta'] ?? {}),
+      );
+      final list = (decoded['data_list'] as List? ?? [])
+          .map((item) => SubjectTeacherStudent.fromJson(
+                Map<String, dynamic>.from(item as Map),
+              ))
+          .toList();
+      subjectTeacherStudents[subjectTeacherId] = SubjectTeacherStudentsResult(
+        meta: meta,
+        students: list,
+        hasSchedule: meta.hasSchedule,
+        totalStudents: meta.totalStudents ?? list.length,
+      );
+    }
+  } catch (e) {
       CustomDialogs().showToast(
         backgroundColor: AppColor().black.withOpacity(0.8),
         text: 'something_went_wrong',

@@ -366,7 +366,13 @@ class RegisterState extends GetMaterialController {
           .timeout(const Duration(seconds: 120));
 
       Get.back();
-      final responseBody = response.body;
+      final responseBody = (() {
+        try {
+          return utf8.decode(response.bodyBytes);
+        } catch (_) {
+          return response.body;
+        }
+      })();
       if (response.statusCode == 200) {
         addressState.clearData();
         clearData();

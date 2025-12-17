@@ -3,12 +3,14 @@ class SubjectTeacherScheduleMeta {
   final int? type;
   final String? term;
   final String? academicYear;
+  final String? dated;
 
   SubjectTeacherScheduleMeta({
     this.id,
     this.type,
     this.term,
     this.academicYear,
+    this.dated,
   });
 
   factory SubjectTeacherScheduleMeta.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class SubjectTeacherScheduleMeta {
       type: json['type'] is int ? json['type'] : int.tryParse(json['type']?.toString() ?? ''),
       term: json['term']?.toString(),
       academicYear: json['academic_year']?.toString(),
+      dated: json['dated']?.toString(),
     );
   }
 
@@ -26,6 +29,7 @@ class SubjectTeacherScheduleMeta {
       'type': type,
       'term': term,
       'academic_year': academicYear,
+      'dated': dated,
     };
   }
 }
@@ -37,6 +41,8 @@ class SubjectTeacherMeta {
   final int classId;
   final String? className;
   final SubjectTeacherScheduleMeta? schedule;
+  final bool hasSchedule;
+  final int? totalStudents;
   final int? year;
   final int? month;
   final String? startDate;
@@ -49,6 +55,8 @@ class SubjectTeacherMeta {
     this.subjectName,
     this.className,
     this.schedule,
+    this.hasSchedule = true,
+    this.totalStudents,
     this.year,
     this.month,
     this.startDate,
@@ -71,6 +79,12 @@ class SubjectTeacherMeta {
       schedule: json['schedule'] != null
           ? SubjectTeacherScheduleMeta.fromJson(json['schedule'] as Map<String, dynamic>)
           : null,
+      hasSchedule: json['has_schedule'] == false
+          ? false
+          : json['has_schedule'] == true || json['has_schedule']?.toString() == 'true',
+      totalStudents: json['total_students'] is int
+          ? json['total_students']
+          : int.tryParse(json['total_students']?.toString() ?? ''),
       year: json['year'] is int ? json['year'] : int.tryParse(json['year']?.toString() ?? ''),
       month:
           json['month'] is int ? json['month'] : int.tryParse(json['month']?.toString() ?? ''),
@@ -87,6 +101,8 @@ class SubjectTeacherMeta {
       'class_id': classId,
       'class_name': className,
       'schedule': schedule?.toJson(),
+      'has_schedule': hasSchedule,
+      'total_students': totalStudents,
       'year': year,
       'month': month,
       'start_date': startDate,
@@ -161,9 +177,13 @@ class SubjectTeacherStudent {
 class SubjectTeacherStudentsResult {
   final SubjectTeacherMeta meta;
   final List<SubjectTeacherStudent> students;
+  final bool hasSchedule;
+  final int totalStudents;
 
   SubjectTeacherStudentsResult({
     required this.meta,
     required this.students,
+    this.hasSchedule = true,
+    this.totalStudents = 0,
   });
 }

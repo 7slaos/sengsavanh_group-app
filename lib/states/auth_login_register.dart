@@ -174,29 +174,39 @@ class AuthLoginRegister extends GetxController {
   // End login user
 
   // Start logout user
-  logouts() async {
-    try {
-      var reslogout = await repository.post(
-          url: repository.nuXtJsUrlApi + repository.logoutUser, auth: true);
+  Future<void> logouts({bool showToast = true}) async {
+    final oldToken = (appVerification.nUxtToken.isNotEmpty)
+        ? appVerification.nUxtToken
+        : appVerification.token;
 
-      if (reslogout.statusCode == 200) {
-        appVerification.removeToken();
-        // Clear the entire navigation stack so back cannot return to authenticated pages
-        Get.offAll(() => const LoginPage());
-        CustomDialogs().showToast(
-          // ignore: deprecated_member_use
-          backgroundColor: AppColor().green.withOpacity(0.6),
-          text: 'logouts_successfully'.tr,
-        );
-      } else {
-        reslogout.body;
-      }
-    } catch (e) {
+    await appVerification.removeToken();
+    Get.offAll(() => const LoginPage());
+
+    if (showToast) {
       CustomDialogs().showToast(
-          // ignore: deprecated_member_use
-          backgroundColor: AppColor().red.withOpacity(0.8),
-          text: "something_went_wrong".tr);
+        // ignore: deprecated_member_use
+        backgroundColor: AppColor().green.withOpacity(0.6),
+        text: 'logouts_successfully'.tr,
+      );
     }
+
+    if (oldToken.isEmpty) {
+      update();
+      return;
+    }
+
+    repository
+        .post(
+          url: repository.nuXtJsUrlApi + repository.logoutUser,
+          body: <String, String>{},
+          header: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $oldToken',
+          },
+        )
+        .catchError((_) {});
+
     update();
   }
 

@@ -1,6 +1,7 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:multiple_school_app/custom/app_color.dart';
 import 'package:multiple_school_app/models/profile_teacher_recorde_model.dart';
+import 'package:multiple_school_app/pages/login_page.dart';
 import 'package:multiple_school_app/repositorys/repository.dart';
 import 'package:multiple_school_app/states/appverification.dart';
 import 'package:multiple_school_app/states/register_state.dart';
@@ -16,14 +17,17 @@ class ProfileTeacherState extends GetxController {
   TeacherRcordeModels? teacherModels;
   
 
-  checkToken() {
+  Future<void> checkToken() async {
     // Use Nuxt token for protected APIs
     final t = appVerification.nUxtToken.isNotEmpty
         ? appVerification.nUxtToken
         : appVerification.token;
-    if (t.isNotEmpty) {
-      getProfiledTeacher();
+    if (t.isEmpty) {
+      await appVerification.removeToken();
+      Get.offAll(() => const LoginPage(), transition: Transition.fadeIn);
+      return;
     }
+    await getProfiledTeacher();
   }
 
   getProfiledTeacher() async {
@@ -39,6 +43,26 @@ class ProfileTeacherState extends GetxController {
         final text = (() { try { return utf8.decode(res.bodyBytes); } catch (_) { return res.body; } })();
         teacherModels =
             TeacherRcordeModels.fromJson(jsonDecode(text)['data']);
+      } else {
+        final text = (() {
+          try {
+            return utf8.decode(res.bodyBytes);
+          } catch (_) {
+            return res.body;
+          }
+        })();
+        final lower = text.toLowerCase();
+        final looksLikeAuthError = res.statusCode == 401 ||
+            res.statusCode == 403 ||
+            lower.contains('unauthenticated') ||
+            lower.contains('invalid token') ||
+            lower.contains('jwt') ||
+            lower.contains('token expired');
+        if (looksLikeAuthError) {
+          await appVerification.removeToken();
+          Get.offAll(() => const LoginPage(), transition: Transition.fadeIn);
+          return;
+        }
       }
     } catch (e) {
       // print(e);

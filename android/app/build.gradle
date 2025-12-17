@@ -11,25 +11,25 @@ if (keystorePropertiesFile.exists()) keystoreProperties.load(new FileInputStream
 
 android {
     namespace "com.sschoolapp.s_school_app" // TODO: set to your real namespace
-    compileSdk 36 // Align with plugins that compile against Android 36
+    compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
     defaultConfig {
         applicationId "com.sschoolapp.s_school_app" // TODO: set to your real applicationId
         minSdkVersion flutter.minSdkVersion // Keep aligned with Flutter's configured minSdk
-        targetSdk 36
-        versionCode 17 // TODO: bump per release
+        targetSdk flutter.targetSdkVersion
+        versionCode 18 // TODO: bump per release
         versionName "1.0.16" // TODO: bump per release
         multiDexEnabled true
     }
 
     compileOptions {
         coreLibraryDesugaringEnabled true // Needed for desugar_jdk_libs 2.1.4+
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions { jvmTarget = "1.8" }
+    kotlinOptions { jvmTarget = "17" }
 
     packagingOptions {
         jniLibs.useLegacyPackaging = false // Required for modern Android/16KB page-size ready .so packaging
@@ -57,9 +57,10 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled true // Keep minification on for smaller APK/AAB
-            shrinkResources true
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            // Keep mapping identical to Pathana app so Google Maps + plugins aren't stripped
+            minifyEnabled false
+            shrinkResources false
+            // When ready to obfuscate, add proguard back with verified rules.
         }
     }
 }

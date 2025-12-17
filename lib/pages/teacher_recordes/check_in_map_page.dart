@@ -70,7 +70,7 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
 
   GoogleMapController? _map;
 
-  MapType _mapType = MapType.hybrid; // default to satellite view
+  MapType _mapType = MapType.normal;
   void _toggleMapType() {
     setState(() {
       _mapType =
@@ -98,7 +98,6 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
   LatLng? _schoolCenter;
   LatLng? _userNow;
   double distanceKm = 0;
-  bool _locationAllowed = false;
 
   // Custom icons
   BitmapDescriptor? _schoolIcon;
@@ -199,7 +198,6 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
       final t = profileTeacherState.teacherModels;
       if (t != null && t.lat != null && t.lng != null) {
         _schoolCenter = LatLng(t.lat!, t.lng!);
-        print(t.lat);
         _geofenceKm = _toDouble(t.km); // ເຂດ km ຈາກ DB
       }
     } else {
@@ -210,69 +208,12 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
       }
     }
     setState(() {});
-    _animateToLatest();
-  }
-
-  // Some profiles load after this page builds; resync once data arrives.
-  void _hydrateSchoolFromProfilesIfNeeded() {
-    // Build the latest school center from whichever profile matches the role.
-    LatLng? nextCenter;
-    double? nextKm;
-    if (widget.type == 'a') {
-      final a = profileState.profiledModels;
-      if (a != null && a.lat != null && a.lng != null) {
-        nextCenter = LatLng(a.lat!, a.lng!);
-        nextKm = _toDouble(a.km);
-      }
-    } else if (widget.type == 't') {
-      final t = profileTeacherState.teacherModels;
-      if (t != null && t.lat != null && t.lng != null) {
-        nextCenter = LatLng(t.lat!, t.lng!);
-        nextKm = _toDouble(t.km);
-      }
-    } else {
-      final s = profileStudentState.dataModels;
-      if (s != null && s.lat != null && s.lng != null) {
-        nextCenter = LatLng(s.lat!, s.lng!);
-        nextKm = _toDouble(s.km);
-      }
-    }
-
-    // If we already have a center and it matches, skip.
-    final sameCenter = _schoolCenter != null &&
-        nextCenter != null &&
-        _schoolCenter!.latitude == nextCenter.latitude &&
-        _schoolCenter!.longitude == nextCenter.longitude;
-    final sameKm = (_geofenceKm ?? 0) == (nextKm ?? _geofenceKm);
-
-    if ((nextCenter != null && !sameCenter) || (!sameKm && nextKm != null)) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        setState(() {
-          _schoolCenter = nextCenter;
-          _geofenceKm = nextKm;
-        });
-        _animateToLatest();
-      });
-    }
-  }
-
-  void _animateToLatest() {
-    final target = _schoolCenter ?? _userNow ?? _fallback;
-    if (_map != null) {
-      _map!.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: target, zoom: 17),
-        ),
-      );
-    }
   }
 
   Future<void> _getCurrentPosition() async {
     try {
       final Position pos = await DeterminePosition().determinePosition();
       setState(() {
-        _locationAllowed = true;
         lat = pos.latitude.toString();
         lng = pos.longitude.toString();
         _userNow = LatLng(pos.latitude, pos.longitude);
@@ -281,11 +222,7 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
       if (_userNow != null && _schoolCenter != null) {
         distanceKm = kmBetween(_userNow!, _schoolCenter!);
       }
-      _animateToLatest();
     } catch (_) {
-      setState(() {
-        _locationAllowed = false;
-      });
       // permission denied or GPS off
     }
   }
@@ -366,18 +303,14 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
 
   @override
   Widget build(BuildContext context) {
-    _hydrateSchoolFromProfilesIfNeeded(); // keep geofence in sync when profiles arrive
     return LayoutBuilder(builder: (context, c) {
       final w = c.maxWidth;
       final isTablet = w >= 600;
       final scale = (w / 390).clamp(0.9, 1.3).toDouble();
 
-      // If DB didn't provide a geofence (km null/0), fall back to the 220m default radius.
-      final allowedKm = (_geofenceKm != null && _geofenceKm! > 0)
-          ? _geofenceKm!
-          : _radiusMeters / 1000.0;
-
-      final isInRange = (_userNow != null && _schoolCenter != null)
+      final allowedKm = _geofenceKm ?? 0;
+      final isInRange =
+      (_userNow != null && _schoolCenter != null && allowedKm > 0)
           ? distanceKm <= allowedKm
           : false;
 
@@ -401,8 +334,8 @@ class _CheckInMapPageState extends State<CheckInMapPage> {
               initialCameraPosition:
               CameraPosition(target: _initialTarget, zoom: 17),
               onMapCreated: (c) => _map = c,
-              myLocationEnabled: _locationAllowed,
-              myLocationButtonEnabled: _locationAllowed,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
               markers: _markers,
               circles: _circles,

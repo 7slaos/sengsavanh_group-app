@@ -19,11 +19,11 @@ class ProfileState extends GetxController {
   ProfiledModels? profiledModels;
   bool check = false;
 
-  checkToken() {
-    if (appVerification.token == '') {
-    } else {
-      getProfiled();
+  Future<void> checkToken() async {
+    if (appVerification.token.isEmpty && appVerification.nUxtToken.isEmpty) {
+      return;
     }
+    await getProfiled();
   }
 
   getProfiled() async {
@@ -123,30 +123,33 @@ class ProfileState extends GetxController {
   }
 
   logouts() async {
-    try {
-      var reslogout = await repository.post(
-          url: repository.nuXtJsUrlApi + repository.logoutUser, auth: true);
+    final oldToken = (appVerification.nUxtToken.isNotEmpty)
+        ? appVerification.nUxtToken
+        : appVerification.token;
 
-      if (reslogout.statusCode == 200) {
-        appVerification.removeToken();
-        // Clear the whole stack so back cannot reopen a protected screen
-        Get.offAll(
-          const LoginPage(),
-        );
-        CustomDialogs().showToast(
-          // ignore: deprecated_member_use
-          backgroundColor: AppColor().green.withOpacity(0.6),
-          text: 'logouts_successfully'.tr,
-        );
-      } else {
-        reslogout.body;
-      }
-    } catch (e) {
-      CustomDialogs().showToast(
-          // ignore: deprecated_member_use
-          backgroundColor: AppColor().red.withOpacity(0.8),
-          text: "something_went_wrong".tr);
+    await appVerification.removeToken();
+    Get.offAll(() => const LoginPage());
+
+    CustomDialogs().showToast(
+      // ignore: deprecated_member_use
+      backgroundColor: AppColor().green.withOpacity(0.6),
+      text: 'logouts_successfully'.tr,
+    );
+
+    if (oldToken.isNotEmpty) {
+      repository
+          .post(
+            url: repository.nuXtJsUrlApi + repository.logoutUser,
+            body: <String, String>{},
+            header: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $oldToken',
+            },
+          )
+          .catchError((_) {});
     }
+
     update();
   }
 

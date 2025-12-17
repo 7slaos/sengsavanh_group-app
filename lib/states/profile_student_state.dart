@@ -17,13 +17,13 @@ class ProfileStudentState extends GetxController {
 
   bool check = false;
 
-  checkToken() {
-    if (appVerification.token == '') {
-      appVerification.removeToken();
+  Future<void> checkToken() async {
+    if (appVerification.token.isEmpty && appVerification.nUxtToken.isEmpty) {
+      await appVerification.removeToken();
       Get.offAll(() => const LoginPage(), transition: Transition.fadeIn);
-    } else {
-      getProfileStudent();
+      return;
     }
+    await getProfileStudent();
   }
 
   getProfileStudent() async {
@@ -37,12 +37,22 @@ class ProfileStudentState extends GetxController {
         check = true;
       } else if (res.statusCode == 401 || res.statusCode == 403) {
         // Unauthorized / token invalid → force logout
-        appVerification.removeToken();
+        await appVerification.removeToken();
         Get.offAll(() => const LoginPage(), transition: Transition.fadeIn);
       } else {
         // Other errors (e.g. 404 Student record not found) → keep session, just show message
         try {
           final text = utf8.decode(res.bodyBytes);
+          final lower = text.toLowerCase();
+          final looksLikeAuthError = lower.contains('unauthenticated') ||
+              lower.contains('invalid token') ||
+              lower.contains('jwt') ||
+              lower.contains('token expired');
+          if (looksLikeAuthError) {
+            await appVerification.removeToken();
+            Get.offAll(() => const LoginPage(), transition: Transition.fadeIn);
+            return;
+          }
           final err = jsonDecode(text);
           final msg = (err['statusMessage'] ?? err['message'] ?? 'something_went_wrong').toString();
           CustomDialogs().showToast(
