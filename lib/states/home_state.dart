@@ -13,6 +13,8 @@ class HomeState extends GetxController {
   int currentpage = 0;
   int loanIndex = 0;
   bool check = false;
+  bool hasParentAccess = false;
+  bool parentAccessChecked = false;
   List<HomeModel> data = [];
   int notificationCount = 0; // To store the count retrieved from the API
   AuthNameSchoolModel? nameSchoolModel;
@@ -78,22 +80,36 @@ class HomeState extends GetxController {
 
   getHomeParentAndStudentList() async {
     check = false;
+    parentAccessChecked = false;
+    hasParentAccess = false;
     data = [];
     final url = rep.nuXtJsUrlApi + rep.parentHomeStudentList;
     if (kDebugMode) print('HomeParent_and_StudentList → GET ' + url);
-    var res = await rep.get(url: url, auth: true);
-    if (kDebugMode) {
-      final text = (() { try { return utf8.decode(res.bodyBytes); } catch (_) { return res.body; } })();
-      print('HomeParent_and_StudentList ← ${res.statusCode}: ' + text);
-    }
-    if (res.statusCode == 200) {
-      for (var items
-          in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
-        data.add(HomeModel.fromJson(items));
+    try {
+      final res = await rep.get(url: url, auth: true);
+      hasParentAccess = res.statusCode == 200;
+      if (kDebugMode) {
+        final text = (() {
+          try {
+            return utf8.decode(res.bodyBytes);
+          } catch (_) {
+            return res.body;
+          }
+        })();
+        print('HomeParent_and_StudentList ← ${res.statusCode}: ' + text);
       }
+      if (res.statusCode == 200) {
+        for (var items in jsonDecode(utf8.decode(res.bodyBytes))['data']) {
+          data.add(HomeModel.fromJson(items));
+        }
+      }
+    } catch (_) {
+      hasParentAccess = false;
+    } finally {
+      parentAccessChecked = true;
+      check = true;
+      update();
     }
-    check = true;
-    update();
   }
 
   parentDashboard() async {

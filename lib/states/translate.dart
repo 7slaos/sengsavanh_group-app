@@ -682,7 +682,7 @@ class Translate extends Translations {
           'missing_evening': 'ຂາດຕອນແລງ',
           'missing_all_day': 'ຂາດໝົດມື້',
           'classe': 'ຫ້ອງຮຽນ',
-          'parent': 'ຜູ້ປົກຄອງ',
+          'parent': 'ຜູ້ປົກຄອງ',
           'search_month_year': 'ຄົ້ນຫາເດືອນປີ',
           'Payment_amount': 'ຈໍານວນເງິນຊໍາລະ',
           'transfer': 'ເງິນໂອນ',

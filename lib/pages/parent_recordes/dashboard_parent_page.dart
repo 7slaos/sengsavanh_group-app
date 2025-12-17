@@ -58,6 +58,7 @@ void handleGridTap(int index) {
   }
 
   final routes = <String, VoidCallback>{
+    'teacher'         : () => Get.offAll(() => const TeacherDashboardPage(), transition: Transition.fadeIn),
     'score'           : () => homeState.setCurrentPage(1),
     'Tuition_fees'    : () => homeState.setCurrentPage(2),
     'Missing_school'  : () => Get.to(() => const FollowMissingSchool(),    transition: Transition.fadeIn),

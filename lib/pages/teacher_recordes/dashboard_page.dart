@@ -13,7 +13,6 @@ import 'package:multiple_school_app/pages/mark_student/subject_teacher_page.dart
 import 'package:multiple_school_app/pages/parent_recordes/home_page.dart';
 import 'package:multiple_school_app/pages/parent_recordes/take_children_page.dart';
 import 'package:multiple_school_app/pages/score_page.dart';
-import 'package:multiple_school_app/pages/teacher_recordes/follow_student_page.dart';
 import 'package:multiple_school_app/pages/teacher_recordes/profile_teacher_recorde.dart';
 import 'package:multiple_school_app/pages/teacher_recordes/teacher_card_page.dart';
 import 'package:multiple_school_app/pages/teacher_recordes/chec_in_check_out_page.dart';
@@ -22,8 +21,8 @@ import 'package:multiple_school_app/states/auth_login_register.dart';
 import 'package:multiple_school_app/states/check_role_permission_state.dart';
 import 'package:multiple_school_app/states/dashboard_teacher_state.dart';
 import 'package:multiple_school_app/states/follow_student_state.dart';
+import 'package:multiple_school_app/states/home_state.dart';
 import 'package:multiple_school_app/states/profile_teacher_state.dart';
-import 'package:multiple_school_app/states/register_state.dart';
 import 'package:multiple_school_app/widgets/custom_circle_load.dart';
 import 'package:multiple_school_app/widgets/custom_dialog.dart';
 import 'package:multiple_school_app/widgets/custom_text_widget.dart';
@@ -42,6 +41,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
   CheckRolePermissionState checkRolePermissionState =
       Get.put(CheckRolePermissionState());
   AuthLoginRegister loginRegister = Get.put(AuthLoginRegister());
+  HomeState homeState = Get.put(HomeState());
   DashboardTeacherState dashboardTeacherState =
       Get.put(DashboardTeacherState());
   FollowStudentState followStudentState = Get.put(FollowStudentState());
@@ -73,7 +73,13 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
           transition: Transition.fadeIn),
       'language': () => Get.to(() => const ChangeLanguagePage(),
           transition: Transition.fadeIn),
-      'parent': () => Get.to(() => HomePage()),
+      'parent': () {
+        final homeState = Get.isRegistered<HomeState>()
+            ? Get.find<HomeState>()
+            : Get.put(HomeState());
+        homeState.setCurrentPage(0);
+        Get.offAll(() => const HomePage(), transition: Transition.fadeIn);
+      },
       'Delete_Account': () => deleteAccount(context),
       'logout': () => logots(),
     };
@@ -129,6 +135,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
     dashboardTeacherState.getAll();
     followStudentState.fetchStudentDropdown();
     profileTeacherState.getProfiledTeacher();
+    homeState.getHomeParentAndStudentList();
     addressState.getBloodGroup();
     addressState.getReligion();
     addressState.getNationality();
@@ -160,34 +167,34 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                 children: [Expanded(child: Center(child: CircleLoad()))],
               );
             }
-            subjects.clear();
-            subjects.addAll([
-              {'title': 'score', 'icon': Icons.score, 'color': Colors.blue},
-              {
-                'title': 'profile',
-                'icon': Icons.person_pin,
-                'color': Colors.orange
-              },
-              // {
-              //   'title': 'Missing_school',
-              //   'icon': Icons.cancel,
-              //   'color': Colors.red
-              // },
-              {
-                'title': 'take_children',
-                'icon': Icons.campaign_outlined,
-                'color': Colors.purple
+            return GetBuilder<HomeState>(builder: (home) {
+              subjects.clear();
+              final canSwitchToParent = home.hasParentAccess == true;
+              if (canSwitchToParent) {
+                subjects.add({
+                  'title': 'parent',
+                  'icon': Icons.diversity_1,
+                  'color': Colors.blue
+                });
               }
-            ]);
-            if (getProfile.teacherModels != null &&
-                getProfile.teacherModels!.student.isNotEmpty &&
-                !subjects.any((e) => e['title'] == 'parent')) {
-              subjects.add({
-                'title': 'parent',
-                'icon': Icons.diversity_1,
-                'color': Colors.blue
-              });
-            }
+              subjects.addAll([
+                {'title': 'score', 'icon': Icons.score, 'color': Colors.blue},
+                {
+                  'title': 'profile',
+                  'icon': Icons.person_pin,
+                  'color': Colors.orange
+                },
+                // {
+                //   'title': 'Missing_school',
+                //   'icon': Icons.cancel,
+                //   'color': Colors.red
+                // },
+                {
+                  'title': 'take_children',
+                  'icon': Icons.campaign_outlined,
+                  'color': Colors.purple
+                }
+              ]);
             // if (getProfile.teacherModels != null && getProfile.teacherModels!.appleStore == 1 &&
             //     !subjects.any((e) => e['title'] == 'scan-in-out')) {
               subjects.add({
@@ -374,7 +381,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                               in profileTeacherState.teacherModels!.student)
                             InkWell(
                               onTap: () {
-                                Get.to(() => HomePage());
+                                handleGridTap('parent');
                               },
                               child: Column(
                                 children: [
@@ -455,8 +462,9 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                 ],
               ),
             );
-          });
-        }),
+	            });
+	          });
+	        }),
         floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
         bottomNavigationBar: Column(
           mainAxisSize: MainAxisSize.min,
