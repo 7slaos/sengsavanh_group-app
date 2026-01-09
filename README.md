@@ -1,4 +1,4 @@
-# s_school_app
+# Sengsavnah group school app
 
 Seven S School Application
 
