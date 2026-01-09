@@ -18,8 +18,8 @@ android {
         applicationId "com.sschoolapp.s_school_app" // TODO: set to your real applicationId
         minSdkVersion flutter.minSdkVersion // Keep aligned with Flutter's configured minSdk
         targetSdk flutter.targetSdkVersion
-        versionCode 18 // TODO: bump per release
-        versionName "1.0.16" // TODO: bump per release
+        versionCode 21 // TODO: bump per release
+        versionName "1.0.19" // TODO: bump per release
         multiDexEnabled true
     }
 

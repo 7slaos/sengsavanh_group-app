@@ -14,6 +14,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:multiple_school_app/firebase_options.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:multiple_school_app/widgets/custom_text_widget.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 const AndroidNotificationChannel androidNotificationChannel =
     AndroidNotificationChannel(
@@ -65,6 +66,7 @@ Future<void> main() async {
   debugPrint('[FirebaseOptions] projectId=${opts.projectId} senderId=${opts.messagingSenderId}');
 
   await GetStorage.init();
+  await _logoutIfAppUpdated();
 
   Get.put(LocaleState());
   Get.put(AppVerification());
@@ -184,6 +186,34 @@ Future<void> main() async {
   ]);
 
   runApp(const MyApp());
+}
+
+/// When the installed app version changes (e.g., after store update),
+/// clear persisted auth/session data so the user logs in again.
+Future<void> _logoutIfAppUpdated() async {
+  final storage = GetStorage();
+  try {
+    final pkg = await PackageInfo.fromPlatform();
+    final currentVersion = '${pkg.version}+${pkg.buildNumber}';
+    final storedVersion = storage.read<String>('lastKnownAppVersion');
+
+    if (storedVersion != null &&
+        storedVersion.isNotEmpty &&
+        storedVersion != currentVersion) {
+      await storage.remove('token');
+      await storage.remove('role');
+      await storage.remove('nUxtToken');
+      await storage.remove('phone');
+      await storage.remove('password');
+      await storage.write('rememberMe', false);
+      debugPrint(
+          '[AppVersion] Upgrade detected ($storedVersion -> $currentVersion); clearing session.');
+    }
+
+    await storage.write('lastKnownAppVersion', currentVersion);
+  } catch (e) {
+    debugPrint('[AppVersion] Unable to check version for logout: $e');
+  }
 }
 
 // Support for Android 12+ HTTP Requests
