@@ -402,7 +402,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                       SizedBox(height: size.height * 0.018),
                                       Text(
-                                        'CIT-SChools',
+                                        'SV Schools',
                                         textAlign: TextAlign.center,
                                         style: theme.textTheme.headlineSmall?.copyWith(
                                           fontWeight: FontWeight.w800,

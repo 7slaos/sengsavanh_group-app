@@ -342,10 +342,10 @@ class AdminPaymentPackageState extends GetxController {
     createds = currentTimestamp.toString();
     int expiryTimestamp = currentTimestamp + 3600;
     expireses = expiryTimestamp.toString();
-    String ref1 = "CIT-${generateSixDigitNumber()}";
+    String ref1 = "SV-${generateSixDigitNumber()}";
     ref2s = "CITREF-${generateSixDigitNumber()}";
     //ref2 = billCode;
-    String ref3 = "CIT-${DateTime.now().year}";
+    String ref3 = "SV-${DateTime.now().year}";
     final requestBody = {
       "qrType": "LAO_QR",
       "platformType": "BROWSER",
@@ -363,7 +363,7 @@ class AdminPaymentPackageState extends GetxController {
       "deeplinkMetaData": {
         "deeplink": "Y",
         "switchBackURL": "https://your-deeplink.la?transaction=$ref2s",
-        "switchBackInfo": "CIT Schools"
+        "switchBackInfo": "SV Schools"
       },
       "metadata": "PAYMENT"
     };

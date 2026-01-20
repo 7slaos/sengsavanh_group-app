@@ -10,12 +10,12 @@ def keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    namespace "com.sschoolapp.s_school_app" // TODO: set to your real namespace
+    namespace "com.sengsavanh_app"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
     defaultConfig {
-        applicationId "com.sschoolapp.s_school_app" // TODO: set to your real applicationId
+        applicationId "com.sengsavanh_app"
         minSdkVersion flutter.minSdkVersion // Keep aligned with Flutter's configured minSdk
         targetSdk flutter.targetSdkVersion
         versionCode 21 // TODO: bump per release
