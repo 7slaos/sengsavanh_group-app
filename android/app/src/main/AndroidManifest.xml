@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.sschoolapp.s_school_app">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.sengsavanh_app">
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/> -->
@@ -13,11 +13,11 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/> -->
     <application
-        android:label="CIT Schools"
+        android:label="SV Schools"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
-            android:name="com.sschoolapp.s_school_app.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""

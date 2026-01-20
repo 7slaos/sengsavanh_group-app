@@ -12,12 +12,7 @@
           "package_name": "com.sschoolapp.s_school_app"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "709794416722-v0406sod27lr6arskgid8ta723oij56b.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyDLwHwRPo2LQoPwHtv-TI5Qa3k4w5lS140"
@@ -25,12 +20,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "709794416722-v0406sod27lr6arskgid8ta723oij56b.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
